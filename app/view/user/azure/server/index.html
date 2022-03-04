@@ -1,0 +1,411 @@
+{include file="../app/view/user/header.html" title="Azure 虚拟机列表" /}
+
+<div class="mdui-container-fluid">
+  <div class="mdui-row">
+    <div
+      class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+      <div class="mdui-container-fluid">
+        <p style="color: #3F51B5; font-size: 34px">Azure 虚拟机列表</p>
+      </div>
+
+      <div class="mdui-typo">
+        <p>你可以在这里查看所有 Azure 账户下的虚拟机列表</p>
+      </div>
+
+      <div class="card-body mdui-table-fluid-fixed mdui-m-t-2">
+        <table class="mdui-table" style="border: none;">
+          <thead>
+            <tr>
+              <th>操作</th>
+              <!-- <th>#</th> -->
+              <th>名称</th>
+              <th>备注</th>
+              <th>状态</th>
+              <th>地域</th>
+              <th>规格</th>
+              <th>IP</th>
+              <th>系统版本</th>
+              <th>资源组</th>
+              <th>归属账户</th>
+              <th>硬盘大小</th>
+              <th>添加时间</th>
+            </tr>
+          </thead>
+          <tbody>
+            {volist name="servers" id="server"}
+            <tr>
+              <td>
+                <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-ripple mdui-color-blue-grey"
+                  mdui-menu="{target: '#action-{$server.id}', fixed: true}">操作</button>
+                <ul class="mdui-menu" id="action-{$server.id}">
+                  <li class="mdui-menu-item">
+                    <a class="mdui-ripple" onclick="start(this)" data-id="{$server.vm_id}">
+                      <i class="mdui-menu-item-icon mdui-icon material-icons">power_settings_new</i>启动
+                    </a>
+                  </li>
+                  <li class="mdui-menu-item">
+                    <a class="mdui-ripple" onclick="stop(this)" data-id="{$server.vm_id}">
+                      <i class="mdui-menu-item-icon mdui-icon material-icons">flash_off</i>停止
+                    </a>
+                  </li>
+                  <li class="mdui-menu-item">
+                    <a class="mdui-ripple" onclick="restart(this)" data-id="{$server.vm_id}">
+                      <i class="mdui-menu-item-icon mdui-icon material-icons">refresh</i>重新启动
+                    </a>
+                  </li>
+
+                  <li class="mdui-divider"></li>
+
+                  <li class="mdui-menu-item">
+                    <a class="mdui-ripple" href="/user/server/azure/{$server.id}" target="view_window">
+                      <i class="mdui-menu-item-icon mdui-icon material-icons">memory</i>虚拟机详情
+                    </a>
+                  </li>
+                  <li class="mdui-menu-item">
+                    <a class="mdui-ripple" onclick="remark(this)" data-id="{$server.vm_id}">
+                      <i class="mdui-menu-item-icon mdui-icon material-icons">edit</i>修改备注
+                    </a>
+                  </li>
+                  <li class="mdui-menu-item">
+                    <a class="mdui-ripple" data-clipboard-target="#ip-{$server.id}">
+                      <i class="mdui-menu-item-icon mdui-icon material-icons">content_copy</i>复制 IPv4
+                    </a>
+                  </li>
+                  <li class="mdui-menu-item">
+                    <a class="mdui-ripple" onclick="change(this)" data-id="{$server.vm_id}">
+                      <i class="mdui-menu-item-icon mdui-icon material-icons">repeat_one</i>更换 IPv4
+                    </a>
+                  </li>
+                  <li class="mdui-menu-item">
+                    <a class="mdui-ripple" onclick="check(this)" data-ip="{$server.ip_address}">
+                      <i class="mdui-menu-item-icon mdui-icon material-icons">network_check</i>检查 IPv4
+                    </a>
+                  </li>
+                  <li class="mdui-menu-item">
+                    <a class="mdui-ripple" onclick="refresh(this)" data-id="{$server.vm_id}">
+                      <i class="mdui-menu-item-icon mdui-icon material-icons">autorenew</i>刷新状态
+                    </a>
+                  </li>
+                  <li class="mdui-menu-item">
+                    <a class="mdui-ripple" href="/user/server/azure/{$server.id}/chart" target="view_window">
+                      <i class="mdui-menu-item-icon mdui-icon material-icons">show_chart</i>统计图表
+                    </a>
+                  </li>
+                  <li class="mdui-menu-item">
+                    <a class="mdui-ripple" onclick="remove(this)" data-id="{$server.vm_id}">
+                      <i class="mdui-menu-item-icon mdui-icon material-icons">deleted</i>移出列表
+                    </a>
+                  </li>
+                  <li class="mdui-menu-item">
+                    <a class="mdui-ripple" onclick="destroy(this)" data-id="{$server.vm_id}">
+                      <i class="mdui-menu-item-icon mdui-icon material-icons">delete_forever</i>销毁虚拟机
+                    </a>
+                  </li>
+                </ul>
+              </td>
+              <!-- <td>{$server.id}</td> -->
+              <td>{$server.name}</td>
+              <td>{$server.user_remark ?? 'null'}</td>
+              <td>
+                {:str_replace('PowerState/', '', $server.status)}</td>
+              <td>{$server.location}</td>
+              <td>{:str_replace('Standard_', '', $server.vm_size)}</td>
+              <td id="ip-{$server.id}">{$server.ip_address}</td>
+              <td class="disable-replication" mdui-tooltip="{content: '{$server.os_sku}', position: 'top'}">
+                {$server.os_offer}</td>
+              <td>{$server.resource_group}</td>
+              <td>{$server.account_email}</td>
+              <td>{$server.disk_size}</td>
+              <td>{:date('Y-m-d H:i:s', $server.updated_at)}</td>
+            </tr>
+            {/volist}
+          </tbody>
+        </table>
+      </div>
+
+      <a class="mdui-fab mdui-color-theme-accent mdui-ripple mdui-fab-fixed" href="/user/server/azure/create">
+        <i class="mdui-icon material-icons">add</i>
+      </a>
+
+      <div class="mdui-m-t-2"></div>
+
+    </div>
+  </div>
+</div>
+</body>
+
+<script>
+  let clipboard = new ClipboardJS('.mdui-ripple')
+  clipboard.on('success', (e) => {
+    mdui.snackbar({
+      message: "复制成功"
+    })
+  });
+
+  function getProgress() {
+    $.ajax({
+      method: 'GET',
+      url: "/user/progress",
+      dataType: "json",
+      success: function (data) {
+        var width = data.schedule + '%';
+        $('.mdui-progress-determinate').css('width', width);
+        $('#hint').replaceWith("<p id=\"hint\">" + data.current + "</p>");
+      }
+    });
+  }
+
+  function change(that) {
+    let id = $(that).data('id');
+    mdui.confirm('此操作需重新启动虚拟机', '更换确认',
+      function () {
+        var load = new mdui.alert('<p id=\"hint\">准备中</p><div class=\"mdui-progress\"><div class=\"mdui-progress-determinate\"></div></div>', '进行中');
+        $.ajax({
+          method: 'POST',
+          url: "/user/server/azure/change/" + id,
+          dataType: "json",
+          beforeSend: function () {
+            setInterval(getProgress, 500)
+          },
+          success: function (data) {
+            load.close();
+            if (data.status == '0') {
+              mdui.alert(data.content, data.title);
+            } else {
+              mdui.alert(data.content, data.title);
+              setTimeout("window.location = '/user/server/azure'", 1500);
+            }
+          }
+        });
+      },
+      function () { },
+      {
+        confirmText: "确定",
+        cancelText: "取消",
+      }
+    );
+  };
+
+  function check(that) {
+    let ip = $(that).data('ip');
+    mdui.confirm('检测结果可能与实际情况不符，如提示异常，建议重试数次以确保结果可靠', '检测须知',
+      function () {
+        var load = new mdui.alert('<div class=\"mdui-progress\"><div class=\"mdui-progress-indeterminate\"></div></div>', '进行中');
+        $.ajax({
+          method: 'POST',
+          url: "/user/server/azure/check/" + ip,
+          dataType: "json",
+          success: function (data) {
+            load.close();
+            mdui.alert(data.content, data.title);
+          }
+        });
+      },
+      function () { },
+      {
+        confirmText: "确定",
+        cancelText: "取消",
+      }
+    );
+  };
+
+  function remove(that) {
+    let id = $(that).data('id');
+    mdui.confirm('确认从列表中移出此虚拟机？', '移出确认',
+      function () {
+        $.ajax({
+          method: 'DELETE',
+          url: "/user/server/azure/remove/" + id,
+          dataType: "json",
+          success: function (data) {
+            if (data.status == '0') {
+              mdui.alert(data.content, data.title);
+            } else {
+              mdui.alert(data.content, data.title);
+              $(that).closest('tr').remove();
+            }
+          }
+        });
+      },
+      function () { },
+      {
+        confirmText: "确定",
+        cancelText: "取消"
+      }
+    );
+  };
+
+  function destroy(that) {
+    let id = $(that).data('id');
+    mdui.prompt('输入 yes 销毁其所归属的资源组中的所有资源', '销毁确认',
+      function (value) {
+        if (value == 'yes') {
+          $.ajax({
+            method: 'DELETE',
+            url: "/user/server/azure/destroy/" + id,
+            dataType: "json",
+            success: function (data) {
+              if (data.status == '0') {
+                mdui.alert(data.content, data.title);
+              } else {
+                mdui.alert(data.content, data.title);
+                setTimeout("window.location = '/user/server/azure'", 1500);
+              }
+            }
+          });
+        } else {
+          mdui.alert('为避免误操作，请按提示在文本框中输入 yes', '销毁失败');
+        }
+      },
+      function () { },
+      {
+        confirmText: "确定",
+        cancelText: "取消"
+      }
+    );
+  };
+
+  function refresh(that) {
+    let id = $(that).data('id');
+    mdui.confirm('确认刷新此虚拟机运行状态么？', '刷新确认',
+      function () {
+        $.ajax({
+          method: 'POST',
+          url: "/user/server/azure/refresh/" + id,
+          dataType: "json",
+          success: function (data) {
+            if (data.status == '0') {
+              mdui.alert(data.content, data.title);
+            } else {
+              mdui.alert(data.content, data.title);
+              setTimeout("window.location = '/user/server/azure'", 1500);
+            }
+          }
+        });
+      },
+      function () { },
+      {
+        confirmText: "确定",
+        cancelText: "取消"
+      }
+    );
+  };
+
+  function start(that) {
+    let id = $(that).data('id');
+    mdui.confirm('确认启动此虚拟机么？', '启动确认',
+      function () {
+        $.ajax({
+          method: 'PATCH',
+          url: "/user/server/azure/start/" + id,
+          dataType: "json",
+          success: function (data) {
+            if (data.status == '0') {
+              mdui.alert(data.content, data.title);
+            } else {
+              mdui.alert(data.content, data.title);
+              setTimeout("window.location = '/user/server/azure'", 1500);
+            }
+          }
+        });
+      },
+      function () { },
+      {
+        confirmText: "确定",
+        cancelText: "取消"
+      }
+    );
+  };
+
+  function stop(that) {
+    let id = $(that).data('id');
+    mdui.confirm('确认停止此虚拟机运行么？', '停止确认',
+      function () {
+        $.ajax({
+          method: 'PATCH',
+          url: "/user/server/azure/stop/" + id,
+          dataType: "json",
+          success: function (data) {
+            if (data.status == '0') {
+              mdui.alert(data.content, data.title);
+            } else {
+              mdui.alert(data.content, data.title);
+              setTimeout("window.location = '/user/server/azure'", 1500);
+            }
+          }
+        });
+      },
+      function () { },
+      {
+        confirmText: "确定",
+        cancelText: "取消"
+      }
+    );
+  };
+
+  function restart(that) {
+    let id = $(that).data('id');
+    mdui.confirm('确认重新启动此虚拟机么？', '重启确认',
+      function () {
+        $.ajax({
+          method: 'PATCH',
+          url: "/user/server/azure/restart/" + id,
+          dataType: "json",
+          success: function (data) {
+            if (data.status == '0') {
+              mdui.alert(data.content, data.title);
+            } else {
+              mdui.alert(data.content, data.title);
+              setTimeout("window.location = '/user/server/azure'", 1500);
+            }
+          }
+        });
+      },
+      function () { },
+      {
+        confirmText: "确定",
+        cancelText: "取消"
+      }
+    );
+  };
+
+  function remark(that) {
+    let id = $(that).data('id');
+    mdui.prompt('请输入新备注', '修改备注',
+      function (remark) {
+        $.ajax({
+          method: 'POST',
+          url: "/user/server/azure/remark/" + id,
+          data: {
+            id: id,
+            remark: remark
+          },
+          dataType: "json",
+          success: function (data) {
+            if (data.status == '0') {
+              mdui.alert(data.content, data.title);
+            } else {
+              mdui.alert(data.content, data.title);
+              setTimeout("window.location = '/user/server/azure'", 1500);
+            }
+          }
+        });
+      },
+      function () { },
+      {
+        confirmText: "确定",
+        cancelText: "取消"
+      }
+    );
+  };
+
+  $("td:contains('running')").css("color", "green");
+  $("td:contains('starting')").css("color", "orange");
+  $("td:contains('stopping')").css("color", "orange");
+  $("td:contains('stopped')").css("color", "red");
+  $("td:contains('deallocated')").css("color", "red");
+  $("td:contains('null')").css("font-style", "italic");
+</script>
+{include file="../app/view/user/footer.html" /}
+
+</html>

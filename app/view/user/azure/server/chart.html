@@ -1,0 +1,261 @@
+{include file="../app/view/user/header.html" title="虚拟机统计" /}
+
+<div class="mdui-container-fluid">
+  <div class="mdui-row">
+    <div
+      class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+      <div class="mdui-container-fluid">
+        <p style="color: #3F51B5; font-size: 34px">{$server->name}</p>
+      </div>
+
+      <div class="mdui-typo">
+        {if $chart_day != null}
+        <p>此虚拟机在 {$chart_day} 日的数据图表。查看 
+          <a href="/user/server/azure/{$server->id}/chart/{:input('gap') + 1}">上一日</a>
+          {if date('Y-m-d') != $chart_day}
+          或 <a href="/user/server/azure/{$server->id}/chart/{:input('gap') - 1}">下一日</a>
+          {/if}
+        </p>
+        {else /}
+        <p>此虚拟机在最近 24 小时的数据图表。查看 <a href="/user/server/azure/{$server->id}/chart/2">上一日</a> </p>
+        {/if}
+      </div>
+
+      <div class="mdui-row">
+
+        <div class="mdui-col-md-6 mdui-col-sm-12 mdui-m-t-2">
+          <div class="mdui-card">
+            <div class="mdui-card-content">
+              <div id="network_in_total" style="height: 300px"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mdui-col-md-6 mdui-col-sm-12 mdui-m-t-2">
+          <div class="mdui-card">
+            <div class="mdui-card-content">
+              <div id="network_out_total" style="height: 300px"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mdui-col-md-6 mdui-col-sm-12 mdui-m-t-2">
+          <div class="mdui-card">
+            <div class="mdui-card-content">
+              <div id="percentage_cpu" style="height: 300px"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mdui-col-md-6 mdui-col-sm-12 mdui-m-t-2">
+          <div class="mdui-card">
+            <div class="mdui-card-content">
+              <div id="cpu_credits" style="height: 300px"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mdui-col-md-6 mdui-col-sm-12 mdui-m-t-2">
+          <div class="mdui-card">
+            <div class="mdui-card-content">
+              <div id="available_memory" style="height: 300px"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <p class="mdui-m-t-2" style="color: #3F51B5; font-size: 24px">历史用量</p>
+
+      <div class="card-body mdui-table-fluid-fixed mdui-m-t-2">
+        <table class="mdui-table" style="border: none;">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>上传</th>
+              <th>下载</th>
+              <th>日期</th>
+            </tr>
+          </thead>
+          <tbody>
+            {volist name="traffic_usage" id="usage"}
+            <tr>
+              <td>{$count--}</td>
+              <td>{$usage->u}</td>
+              <td>{$usage->d}</td>
+              <td>{$usage->date}</td>
+            </tr>
+            {/volist}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mdui-m-t-2"></div>
+
+    </div>
+  </div>
+</div>
+</body>
+{include file="../app/view/user/footer.html" /}
+
+<script>
+  anychart.onDocumentReady(function () {
+
+    // create data
+    var data = [
+      {:htmlspecialchars_decode($percentage_cpu_text)}
+    ];
+
+    // create a chart
+    var chart = anychart.line();
+
+    // create a line series and set the data
+    var series = chart.spline(data);
+    series.name('占用');
+
+    // set the chart title
+    chart.title("CPU 占用");
+
+    // set the titles of the axes
+    var xAxis = chart.xAxis();
+    xAxis.title("小时");
+    var yAxis = chart.yAxis();
+    yAxis.title("占用 (%)");
+
+    // set the container id
+    chart.container("percentage_cpu");
+
+    // initiate drawing the chart
+    chart.draw();
+  });
+</script>
+
+<script>
+  anychart.onDocumentReady(function () {
+
+    // create data
+    var data = [
+      {:htmlspecialchars_decode($cpu_credits_text)}
+    ];
+
+    // create a chart
+    var chart = anychart.line();
+
+    // create a line series and set the data
+    var series = chart.spline(data);
+    series.name('剩余');
+
+    // set the chart title
+    chart.title("CPU 积分");
+
+    // set the titles of the axes
+    var xAxis = chart.xAxis();
+    xAxis.title("小时");
+    var yAxis = chart.yAxis();
+    yAxis.title("积分");
+
+    // set the container id
+    chart.container("cpu_credits");
+
+    // initiate drawing the chart
+    chart.draw();
+  });
+</script>
+
+<script>
+  anychart.onDocumentReady(function () {
+
+    // create data
+    var data = [
+      {:htmlspecialchars_decode($available_memory_text)}
+    ];
+
+    // create a chart
+    var chart = anychart.line();
+
+    // create a line series and set the data
+    var series = chart.spline(data);
+    series.name('可用');
+
+    // set the chart title
+    chart.title("可用内存");
+
+    // set the titles of the axes
+    var xAxis = chart.xAxis();
+    xAxis.title("小时");
+    var yAxis = chart.yAxis();
+    yAxis.title("大小 (MB)");
+
+    // set the container id
+    chart.container("available_memory");
+
+    // initiate drawing the chart
+    chart.draw();
+  });
+</script>
+
+<script>
+  anychart.onDocumentReady(function () {
+
+    // create data
+    var data = [
+      {:htmlspecialchars_decode($network_in_total_text)}
+    ];
+
+    // create a chart
+    var chart = anychart.line();
+
+    // create a line series and set the data
+    var series = chart.spline(data);
+    series.name('用量');
+
+    // set the chart title
+    chart.title("入向流量 (合计{$network_in_traffic}GB)");
+
+    // set the titles of the axes
+    var xAxis = chart.xAxis();
+    xAxis.title("小时");
+    var yAxis = chart.yAxis();
+    yAxis.title("用量 (GB)");
+
+    // set the container id
+    chart.container("network_in_total");
+
+    // initiate drawing the chart
+    chart.draw();
+  });
+</script>
+
+<script>
+  anychart.onDocumentReady(function () {
+
+    // create data
+    var data = [
+      {:htmlspecialchars_decode($network_out_total_text)}
+    ];
+
+    // create a chart
+    var chart = anychart.line();
+
+    // create a line series and set the data
+    var series = chart.spline(data);
+    series.name('用量');
+
+    // set the chart title
+    chart.title("出向流量 (合计{$network_out_traffic}GB)");
+
+    // set the titles of the axes
+    var xAxis = chart.xAxis();
+    xAxis.title("小时");
+    var yAxis = chart.yAxis();
+    yAxis.title("用量 (GB)");
+
+    // set the container id
+    chart.container("network_out_total");
+
+    // initiate drawing the chart
+    chart.draw();
+  });
+</script>
+
+</html>

@@ -1,0 +1,83 @@
+{include file="../app/view/auth/header.html" title="重置密码" /}
+
+<div class="mdui-container-fluid">
+  <div class="mdui-row">
+    <div class="mdui-col-xs-12 mdui-col-md-4 mdui-col-offset-md-4">
+      <div class="mdui-card" style="transform: translateY(20%)">
+        <div class="mdui-card-content">
+          <div class="mdui-textfield mdui-textfield-floating-label"><i
+              class="mdui-icon material-icons">account_circle</i>
+            <label class="mdui-textfield-label">注册邮箱</label>
+            <input class="mdui-textfield-input" type="text" id="email" />
+          </div>
+                    
+          <div class="mdui-textfield mdui-textfield-floating-label">
+            <i class="mdui-icon material-icons">vpn_key</i>
+            <label class="mdui-textfield-label">设置新密码</label>
+            <input class="mdui-textfield-input" type="password" id="passwd" />
+          </div>
+          
+          <div class="mdui-textfield mdui-textfield-floating-label">
+            <i class="mdui-icon material-icons">vpn_key</i>
+            <label class="mdui-textfield-label">再次输入新密码</label>
+            <input class="mdui-textfield-input" type="password" id="repeat_passwd" />
+          </div>
+          
+          <div class="mdui-textfield mdui-textfield-floating-label">
+            <i class="mdui-icon material-icons">code</i>
+            <label class="mdui-textfield-label">请输入邮箱验证码</label>
+            <input class="mdui-textfield-input" id="verify_code" />
+          </div>
+          
+          <div class="mdui-card-actions">
+            <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-indigo" id="request_code">获取</button>
+            <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-indigo mdui-float-right"
+              id="forget_password">重置</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+
+<script>
+  var $ = mdui.$;
+  $('#forget_password').on('click', function () {
+    $.ajax({
+      method: 'POST',
+      url: "/forget",
+      data: {
+        email: $('#email').val(),
+        passwd: $('#passwd').val(),
+        verify_code: $('#verify_code').val(),
+        repeat_passwd: $('#repeat_passwd').val()
+      },
+      dataType: "json",
+      success: function (data) {
+        if (data.status == '0') {
+          mdui.alert(data.content, data.title);
+        } else {
+          mdui.alert(data.content, data.title);
+          setTimeout("window.location.href = '/login'", 1500);
+        }
+      }
+    });
+  });
+
+  $('#request_code').on('click', function () {
+    $.ajax({
+      method: 'POST',
+      url: "/forget/code",
+      data: {
+        email: $('#email').val()
+      },
+      dataType: "json",
+      success: function (data) {
+        mdui.alert(data.content, data.title);
+      }
+    });
+  });
+</script>
+
+</html>

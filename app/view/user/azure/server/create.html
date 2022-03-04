@@ -1,0 +1,186 @@
+{include file="../app/view/user/header.html" title="Azure 创建虚拟机" /}
+
+<div class="mdui-container-fluid">
+  <div class="mdui-row">
+    <div
+      class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+      <div class="mdui-container-fluid">
+        <p style="color: #3F51B5; font-size: 34px">Azure 创建虚拟机</p>
+      </div>
+
+      <div class="mdui-typo">
+        <div class="mdui-panel" mdui-panel>
+
+          <div class="mdui-panel-item">
+            <div class="mdui-panel-item-header">
+              <div class="mdui-panel-item-title">使用说明</div>
+              <i class="mdui-panel-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
+            </div>
+            <div class="mdui-panel-item-body">
+              <ul>
+                <li>归属账户默认使用最新添加的</li>
+                <li>只显示订阅状态为 <code>Enabled</code> 的账户</li>
+                <li>你可以在 <a href="/user/profile">个人资料</a> 页设置各项开机默认参数</li>
+                <li>归属账户后括号内的数字，代表此账户下除 <code>B1s</code> 以外规格的虚拟机数目</li>
+                <li>创建多个虚拟机时，备注和名称的填写需使用英文逗号分隔</li>
+                <li>不能使用这些用户名：<code>root</code>, <code>admin</code>, <code>centos</code>, <code>debian</code>, <code>ubuntu</code></li>
+                <li>密码必须包含小写字母、大写字母、数字和特殊符号这四个组成部分中的三个，长度大于 12 且小于 72</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mdui-card mdui-m-t-2" style="overflow: visible">
+        <div class="mdui-card-content mdui-container">
+          <div class="mdui-textfield mdui-textfield-floating-label">
+            <i class="mdui-icon material-icons">bookmark</i>
+            <label class="mdui-textfield-label">列表备注（必填）</label>
+            <input class="mdui-textfield-input" id="vm_remark" required>
+          </div>
+          <div class="mdui-textfield mdui-textfield-floating-label">
+            <i class="mdui-icon material-icons">flag</i>
+            <label class="mdui-textfield-label">虚拟机名称（必填）</label>
+            <input class="mdui-textfield-input" id="vm_name" required>
+          </div>
+          <div class="mdui-textfield mdui-textfield-floating-label">
+            <i class="mdui-icon material-icons">tune</i>
+            <label class="mdui-textfield-label">数量</label>
+            <input class="mdui-textfield-input" id="vm_number" type="number" setp="1" value="1" min="1" required>
+          </div>
+          <div class="mdui-textfield mdui-textfield-floating-label">
+            <i class="mdui-icon material-icons">assignment_ind</i>
+            <label class="mdui-textfield-label">用户名</label>
+            <input class="mdui-textfield-input" id="vm_user" value="{$personalise.vm_default_identity}">
+          </div>
+          <div class="mdui-textfield mdui-textfield-floating-label">
+            <i class="mdui-icon material-icons">vpn_key</i>
+            <label class="mdui-textfield-label">密码</label>
+            <input class="mdui-textfield-input" id="vm_passwd" value="{$personalise.vm_default_credentials}">
+          </div>
+          <div class="mdui-textfield mdui-textfield-floating-label">
+            <i class="mdui-icon material-icons">code</i>
+            <label class="mdui-textfield-label">bash 脚本（可不填）</label>
+            <textarea class="mdui-textfield-input" id="vm_script" rows="6">{$personalise.vm_default_script ?? ''}</textarea>
+          </div>
+          <div class="mdui-m-t-2">
+            地区：<select id="vm_location" class="mdui-select" mdui-select>
+            {volist name="locations" id="location"}
+              <option value="{$key}">{$location}</option>
+            {/volist}
+            </select>
+          </div>
+          <div class="mdui-m-t-2">
+            规格：<select id="vm_size" class="mdui-select" mdui-select>
+            {volist name="sizes" id="size"}
+              <option value="{$key}">
+                {:str_replace('Standard_', '', $key)} {$size.cpu}C_{$size.memory}G ({:round($size.cost, 1)} USD / Month)
+              </option>
+            {/volist}
+            </select>
+          </div>
+          <div class="mdui-m-t-2">
+            归属：<select id="vm_account" class="mdui-select" mdui-select>
+            {volist name="accounts" id="account"}
+              <option value="{$account->id}">{$account->az_email} ({$has_vm_num[$account->id]})</option>
+            {/volist}
+            </select>
+          </div>
+          <div class="mdui-m-t-2">
+            存储：<select id="vm_disk_size" class="mdui-select" mdui-select>
+            {foreach $disk_sizes as $disk_size}
+              <option value="{$disk_size}">{$disk_size} GB</option>
+            {/foreach}
+            </select>
+          </div>
+          <div class="mdui-m-t-2">
+            镜像：<select id="vm_image" class="mdui-select" mdui-select>
+            {volist name="images" id="image"}
+              <option value="{$key}">{$image.display}</option>
+            {/volist}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="mdui-card mdui-m-t-2">
+        <div class="mdui-card-actions">
+          <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised" id="create">创建</button>
+        </div>
+      </div>
+
+      <div class="mdui-m-t-2"></div>
+
+    </div>
+  </div>
+</div>
+</body>
+
+<script>
+  var $ = mdui.$;
+
+  function getProgress() {
+    $.ajax({
+      method: 'GET',
+      url: "/user/progress",
+      dataType: "json",
+      success: function (data) {
+        var width = data.schedule + '%';
+        $('.mdui-progress-determinate').css('width', width);
+        $('#hint').replaceWith("<p id=\"hint\">" + data.current + "</p>");
+      }
+    });
+  }
+
+  $('#create').on('click', function () {
+    mdui.confirm('创建过程中请不要离开本页面', '创建确认',
+      function () {
+        var load = new mdui.alert('<p id=\"hint\">准备中</p><div class=\"mdui-progress\"><div class=\"mdui-progress-determinate\"></div></div>', '进行中');
+        var cycle = setInterval(getProgress, 500);
+        $.ajax({
+          method: 'POST',
+          url: "/user/server/azure",
+          data: {
+            vm_remark:    $('#vm_remark').val(),
+            vm_name:      $('#vm_name').val(),
+            vm_number:    $('#vm_number').val(),
+            vm_user:      $('#vm_user').val(),
+            vm_passwd:    $('#vm_passwd').val(),
+            vm_script:    $('#vm_script').val(),
+            vm_location:  $('#vm_location').val(),
+            vm_size:      $('#vm_size').val(),
+            vm_account:   $('#vm_account').val(),
+            vm_disk_size: $('#vm_disk_size').val(),
+            vm_image:     $('#vm_image').val()
+          },
+          dataType: "json",
+          success: function (data) {
+            load.close();
+            clearInterval(cycle);
+            if (data.status == '0') {
+              mdui.alert(data.content, data.title);
+            } else {
+              mdui.alert(data.content, data.title);
+              setTimeout("window.location = '/user/server/azure'", 1500);
+            }
+          }
+        });
+      },
+      function () { },
+      {
+        confirmText: "确定",
+        cancelText: "取消"
+      }
+    );
+  });
+  
+  $("#vm_size").prop('value', '{$personalise.vm_size}');
+  $("#vm_image").prop('value', '{$personalise.vm_image}');
+  $("#vm_location").prop('value', '{$personalise.vm_location}');
+  $("#vm_disk_size").prop('value', '{$personalise.vm_disk_size}');
+  $("#vm_default_identity").prop('value', '{$personalise.vm_default_identity}');
+  $("#vm_default_credentials").prop('value', '{$personalise.vm_default_credentials}');
+</script>
+{include file="../app/view/user/footer.html" /}
+
+</html>

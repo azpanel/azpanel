@@ -1,0 +1,165 @@
+{include file="../app/view/user/header.html" title="Azure 虚拟机详情" /}
+
+<div class="mdui-container-fluid">
+  <div class="mdui-row">
+    <div
+      class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+      <div class="mdui-container-fluid">
+        <p style="color: #3F51B5; font-size: 34px">Azure 虚拟机详情</p>
+      </div>
+
+      <div class="mdui-typo">
+        <p>有关该 Azure 虚拟机的更多细节</p>
+      </div>
+
+      <div class="mdui-row">
+        <div class="mdui-col-md-4 mdui-col-sm-12 mdui-m-t-2">
+          <div class="mdui-card">
+            <div class="mdui-card-content">
+              <p style="color: #3F51B5; font-size: 18px"><i class="mdui-icon material-icons">memory</i>&nbsp;虚拟机
+              </p>
+              <div class="mdui-typo">
+                <p>名称：<code>{$vm_details.name}</code></p>
+                <p>地域：<code>{$vm_details.location}</code></p>
+                <p>类型：<code>{$vm_details.type}</code></p>
+                <p>规格：<code>{$vm_details.properties.hardwareProfile.vmSize}</code></p>
+                <p>ID：<code>{$vm_details.properties.vmId}</code></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mdui-col-md-4 mdui-col-sm-12 mdui-m-t-2">
+          <div class="mdui-card">
+            <div class="mdui-card-content">
+              <p style="color: #3F51B5; font-size: 18px"><i class="mdui-icon material-icons">devices_other</i>&nbsp;镜像
+              </p>
+              <div class="mdui-typo">
+                <p>发布者：<code>{$vm_details.properties.storageProfile.imageReference.publisher}</code></p>
+                <p>产品：<code>{$vm_details.properties.storageProfile.imageReference.sku}</code></p>
+                <p>类型：<code>{$vm_details.properties.storageProfile.imageReference.offer}</code></p>
+                <p>版本：<code>{$vm_details.properties.storageProfile.imageReference.version}</code></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mdui-col-md-4 mdui-col-sm-12 mdui-m-t-2">
+          <div class="mdui-card">
+            <div class="mdui-card-content">
+              <p style="color: #3F51B5; font-size: 18px"><i class="mdui-icon material-icons">device_hub</i>&nbsp;硬盘
+              </p>
+              <div class="mdui-typo">
+                <p>类别：<code>{$vm_details.properties.storageProfile.osDisk.osType}</code></p>
+                <p>
+                  类型：<code>{$vm_details.properties.storageProfile.osDisk.managedDisk.storageAccountType ?? 'null'}</code>
+                </p>
+                <p>大小：<code>{$vm_details.properties.storageProfile.osDisk.diskSizeGB ?? 'null'} GB</code></p>
+                <p>创建时间：<code>{$instance_details.disks.0.statuses.0.time}</code></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mdui-row">
+        <div class="mdui-col-md-4 mdui-col-sm-12 mdui-m-t-2">
+          <div class="mdui-card">
+            <div class="mdui-card-content">
+              <p style="color: #3F51B5; font-size: 18px"><i
+                  class="mdui-icon material-icons">settings_ethernet</i>&nbsp;内部网络
+              </p>
+              <div class="mdui-typo">
+                <p>名称：<code>{$network_details.name}</code></p>
+                <p>地址：<code>{$network_details.properties.ipConfigurations.0.properties.privateIPAddress}</code></p>
+                <p>类型：<code>{$network_details.properties.ipConfigurations.0.properties.privateIPAllocationMethod}</code></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mdui-col-md-4 mdui-col-sm-12 mdui-m-t-2">
+          <div class="mdui-card">
+            <div class="mdui-card-content">
+              <p style="color: #3F51B5; font-size: 18px"><i
+                  class="mdui-icon material-icons">settings_ethernet</i>&nbsp;外部网络
+              </p>
+              <div class="mdui-typo">
+                <p>名称：<code>{$network_details.properties.ipConfigurations.0.properties.publicIPAddress.name}</code></p>
+                <p>
+                  地址：<code>{$network_details.properties.ipConfigurations.0.properties.publicIPAddress.properties.ipAddress ?? 'null'}</code>
+                </p>
+                <p>
+                  类型：<code>{$network_details.properties.ipConfigurations.0.properties.publicIPAddress.properties.publicIPAllocationMethod ?? 'null'}</code>
+                </p>
+                <p>
+                  SKU：<code>{$network_details.properties.ipConfigurations.0.properties.publicIPAddress.sku.name ?? 'null'} - {$network_details.properties.ipConfigurations.0.properties.publicIPAddress.sku.tier ?? 'null'}</code>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mdui-container">
+        <div class="mdui-dialog" id="raw-vm-vm_detailss">
+          <div class="mdui-dialog-content">
+            <div class="mdui-dialog-title">虚拟机原始数据</div>
+            <div class="mdui-dialog-content">
+              <pre><code class="language-php">{:var_dump($vm_details)}</code></pre>
+            </div>
+          </div>
+          <div class="mdui-dialog-actions">
+            <button class="mdui-btn mdui-ripple" mdui-dialog-close>关闭</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mdui-container">
+        <div class="mdui-dialog" id="raw-vm-instance_details">
+          <div class="mdui-dialog-content">
+            <div class="mdui-dialog-title">虚拟机原始数据</div>
+            <div class="mdui-dialog-content">
+              <pre><code class="language-php">{:var_dump($instance_details)}</code></pre>
+            </div>
+          </div>
+          <div class="mdui-dialog-actions">
+            <button class="mdui-btn mdui-ripple" mdui-dialog-close>关闭</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mdui-container">
+        <div class="mdui-dialog" id="raw-network-vm_detailss">
+          <div class="mdui-dialog-content">
+            <div class="mdui-dialog-title">网络接口原始数据</div>
+            <div class="mdui-dialog-content">
+              <pre><code class="language-php">{:var_dump($network_details)}</code></pre>
+            </div>
+          </div>
+          <div class="mdui-dialog-actions">
+            <button class="mdui-btn mdui-ripple" mdui-dialog-close>关闭</button>
+          </div>
+        </div>
+      </div>
+
+      <p style="color: #3F51B5; font-size: 20px">原始数据</p>
+
+      <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple"
+        mdui-dialog="{target: '#raw-vm-vm_detailss'}">虚拟机详情</button>
+
+      <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple"
+        mdui-dialog="{target: '#raw-vm-instance_details'}">虚拟机状态</button>
+
+      <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple"
+        mdui-dialog="{target: '#raw-network-vm_detailss'}">网络接口</button>
+
+      <div class="mdui-m-t-2"></div>
+
+    </div>
+  </div>
+</div>
+</body>
+{include file="../app/view/user/footer.html" /}
+
+</html>

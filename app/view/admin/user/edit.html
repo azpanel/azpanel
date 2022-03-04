@@ -1,0 +1,127 @@
+{include file="../app/view/admin/header.html" title="编辑资料" /}
+
+<div class="mdui-container-fluid">
+  <div class="mdui-row">
+    <div class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+      <div class="mdui-container-fluid">
+        <p style="color: #3F51B5; font-size: 34px">编辑资料</p>
+      </div>
+
+      <div class="mdui-typo">
+        <p>你可以在这里编辑此用户资料</p>
+      </div>
+
+      <div class="mdui-card mdui-m-t-2" style="overflow: visible">
+        <div class="mdui-card-content mdui-container">
+          <div class="mdui-textfield mdui-textfield-floating-label">
+            <i class="mdui-icon material-icons">account_circle</i>
+            <label class="mdui-textfield-label">用户编号</label>
+            <input class="mdui-textfield-input" type="text" value="{$user.id}" disabled/>
+          </div>
+          <div class="mdui-textfield mdui-textfield-floating-label">
+            <i class="mdui-icon material-icons">bookmark</i>
+            <label class="mdui-textfield-label">用户备注</label>
+            <input class="mdui-textfield-input" type="text" id="user_remark" value="{$user.remark}" />
+          </div>
+          <div class="mdui-textfield mdui-textfield-floating-label">
+            <i class="mdui-icon material-icons">email</i>
+            <label class="mdui-textfield-label">注册邮箱</label>
+            <input class="mdui-textfield-input" type="text" id="user_email" value="{$user.email}" />
+          </div>
+          <div class="mdui-textfield mdui-textfield-floating-label">
+            <i class="mdui-icon material-icons">vpn_key</i>
+            <label class="mdui-textfield-label">登录密码（不修改请留空）</label>
+            <input class="mdui-textfield-input" type="text" id="user_passwd" />
+          </div>
+          <div class="mdui-textfield mdui-textfield-floating-label">
+            <i class="mdui-icon material-icons">contact_mail</i>
+            <label class="mdui-textfield-label">通知接收邮箱</label>
+            <input class="mdui-textfield-input" type="text" value="{$user.notify_email ?? 'null'}" disabled/>
+          </div>
+          <div class="mdui-textfield mdui-textfield-floating-label">
+            <i class="mdui-icon material-icons">call</i>
+            <label class="mdui-textfield-label">Telegram 用户名</label>
+            <input class="mdui-textfield-input" type="text" value="{$user.notify_tg ?? 'null'}" disabled/>
+          </div>
+          <div class="mdui-textfield mdui-textfield-floating-label">
+            <i class="mdui-icon material-icons">code</i>
+            <label class="mdui-textfield-label">Telegram UID</label>
+            <input class="mdui-textfield-input" type="text" value="{$user.notify_tgid ?? 'null'}" disabled/>
+          </div>
+          <div class="mdui-textfield mdui-textfield-floating-label">
+            <i class="mdui-icon material-icons">access_time</i>
+            <label class="mdui-textfield-label">注册时间</label>
+            <input class="mdui-textfield-input" type="text" value="{:date('Y-m-d H:i:s', $user.created_at)}" disabled/>
+          </div>
+          <div class="mdui-textfield mdui-textfield-floating-label">
+            <i class="mdui-icon material-icons">timer</i>
+            <label class="mdui-textfield-label">更新时间</label>
+            <input class="mdui-textfield-input" type="text" value="{:date('Y-m-d H:i:s', $user.updated_at)}" disabled/>
+          </div>
+          <div class="mdui-m-t-2">
+            身份：<select id="is_admin" class="mdui-select" mdui-select>
+              <option value="0">注册用户</option>
+              <option value="1" {if $user.is_admin == '1'}selected{/if}>管理员</option>
+            </select>
+          </div>
+          <div class="mdui-m-t-2">
+            状态：<select id="status" class="mdui-select" mdui-select>
+              <option value="0">停用</option>
+              <option value="1" {if $user.status == '1'}selected{/if}>启用</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="mdui-card mdui-m-t-2">
+        <div class="mdui-card-actions">
+          <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised" id="update">修改</button>
+        </div>
+      </div>
+      
+      <div class="mdui-m-t-2"></div>
+
+    </div>
+  </div>
+</div>
+</body>
+
+<script>
+  var $ = mdui.$;
+  $('#update').on('click', function () {
+    mdui.confirm('确认修改用户资料么', '修改确认',
+      function () {
+        $.ajax({
+          method: 'PUT',
+          url: "/admin/user/{$user.id}",
+          data: {
+            remark: $('#user_remark').val(),
+            email: $('#user_email').val(),
+            passwd: $('#user_passwd').val(),
+            admin: $('#is_admin').val(),
+            status: $('#status').val(),
+          },
+          dataType: "json",
+          success: function (data) {
+            if (data.status == '0') {
+              mdui.alert(data.content, data.title);
+            }
+            else {
+              mdui.alert(data.content, data.title);
+              setTimeout("window.location = '/admin/user'", 1500);
+            }
+          }
+        });
+      },
+      function () {
+      },
+      {
+        confirmText: "确定",
+        cancelText: "取消"
+      }
+    );
+  });
+</script>
+{include file="../app/view/admin/footer.html" /}
+
+</html>

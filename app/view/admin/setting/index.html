@@ -1,0 +1,202 @@
+{include file="../app/view/admin/header.html" title="基础设置" /}
+
+<div class="mdui-container-fluid">
+  <div class="mdui-row">
+    <div
+      class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+      <div class="mdui-container-fluid">
+        <p style="color: #3F51B5; font-size: 34px">基础设置</p>
+      </div>
+
+      <div class="mdui-typo">
+        <p>你可以在这里配置基础设置</p>
+      </div>
+
+      <div class="mdui-row">
+        <div class="mdui-col-md-4 mdui-col-sm-12 mdui-m-t-2">
+          <div class="mdui-card">
+            <div class="mdui-card-content">
+              <p style="color: #3F51B5; font-size: 18px"><i
+                  class="mdui-icon material-icons">flight_takeoff</i>&nbsp;通知开关
+              </p>
+              <div class="mdui-m-t-2">
+                邮件：<select id="email_notify" class="mdui-select" mdui-select>
+                  <option value="0">关闭</option>
+                  <option value="1" {if $switch.email_notify==true}selected{/if}>开启</option>
+                </select>
+              </div>
+              <div class="mdui-m-t-2">
+                Telegram：<select id="telegram_notify" class="mdui-select" mdui-select>
+                  <option value="0">关闭</option>
+                  <option value="1" {if $switch.telegram_notify==true}selected{/if}>开启</option>
+                </select>
+              </div>
+              <button id="save_switch"
+                class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">保存</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="mdui-col-md-4 mdui-col-sm-12 mdui-m-t-2">
+          <div class="mdui-card">
+            <div class="mdui-card-content">
+              <p style="color: #3F51B5; font-size: 18px"><i class="mdui-icon material-icons">flash_on</i>&nbsp;
+                邮件推送
+              </p>
+              <div class="mdui-textfield mdui-textfield-floating-label">
+                <i class="mdui-icon material-icons">email</i>
+                <label class="mdui-textfield-label">测试收件人邮箱</label>
+                <textarea class="mdui-textfield-input" id="email_recipient"></textarea>
+              </div>
+
+              <button id="test_email"
+                class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">测试邮件</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="mdui-col-md-4 mdui-col-sm-12 mdui-m-t-2">
+          <div class="mdui-card">
+            <div class="mdui-card-content">
+              <p style="color: #3F51B5; font-size: 18px"><i class="mdui-icon material-icons">phone_forwarded</i>&nbsp;
+                Telegram 推送
+              </p>
+              <div class="mdui-textfield mdui-textfield-floating-label">
+                <i class="mdui-icon material-icons">message</i>
+                <label class="mdui-textfield-label">与 @userinfobot 互动获取 uid</label>
+                <textarea class="mdui-textfield-input" id="telegram_recipient"></textarea>
+              </div>
+
+              <button id="test_telegram"
+                class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">测试电报</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mdui-row">
+        <div class="mdui-col-md-4 mdui-col-sm-12 mdui-m-t-2">
+          <div class="mdui-card">
+            <div class="mdui-card-content">
+              <p style="color: #3F51B5; font-size: 18px"><i
+                  class="mdui-icon material-icons">accessibility</i>&nbsp;注册开关
+              </p>
+              <div class="mdui-m-t-2">
+                开放注册：<select id="allow_public_reg" class="mdui-select" mdui-select>
+                  <option value="0">关闭</option>
+                  <option value="1" {if $register.allow_public_reg==true}selected{/if}>开启</option>
+                </select>
+              </div>
+              <div class="mdui-m-t-2">
+                注册邮箱验证码：<select id="reg_email_veriy" class="mdui-select" mdui-select>
+                  <option value="0">关闭</option>
+                  <option value="1" {if $register.reg_email_veriy == true}selected{/if}>开启</option>
+                </select>
+              </div>
+              <button id="save_register"
+                class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">保存</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mdui-m-t-2"></div>
+
+    </div>
+  </div>
+</div>
+</body>
+
+<script>
+  var $ = mdui.$;
+  $('#save_switch').on('click', function () {
+    mdui.confirm('确认提交这些信息么？', '修改确认',
+      function () {
+        $.ajax({
+          method: 'PUT',
+          url: "/admin/setting",
+          data: {
+            class: 'notify',
+            email_notify: $('#email_notify').val(),
+            telegram_notify: $('#telegram_notify').val()
+          },
+          dataType: "json",
+          success: function (data) {
+            if (data.status == '0') {
+              mdui.alert(data.content, data.title);
+            } else {
+              mdui.alert(data.content, data.title);
+              setTimeout("window.location = '/admin/setting'", 1500);
+            }
+          }
+        });
+      },
+      function () { },
+      {
+        confirmText: "确定",
+        cancelText: "取消"
+      }
+    );
+  });
+
+  $('#save_register').on('click', function () {
+    mdui.confirm('确认提交这些信息么？', '修改确认',
+      function () {
+        $.ajax({
+          method: 'PUT',
+          url: "/admin/setting",
+          data: {
+            class: 'register',
+            allow_public_reg: $('#allow_public_reg').val(),
+            reg_email_veriy: $('#reg_email_veriy').val()
+          },
+          dataType: "json",
+          success: function (data) {
+            if (data.status == '0') {
+              mdui.alert(data.content, data.title);
+            } else {
+              mdui.alert(data.content, data.title);
+              setTimeout("window.location = '/admin/setting'", 1500);
+            }
+          }
+        });
+      },
+      function () { },
+      {
+        confirmText: "确定",
+        cancelText: "取消"
+      }
+    );
+  });
+
+  $('#test_email').on('click', function () {
+    $.ajax({
+      method: 'POST',
+      url: "/admin/setting/email/test",
+      data: {
+        recipient: $('#email_recipient').val()
+      },
+      dataType: "json",
+      success: function (data) {
+        mdui.alert(data.content, data.title);
+      }
+    });
+  });
+
+  $('#test_telegram').on('click', function () {
+    $.ajax({
+      method: 'POST',
+      url: "/admin/setting/telegram/test",
+      data: {
+        recipient: $('#telegram_recipient').val()
+      },
+      dataType: "json",
+      success: function (data) {
+        mdui.alert(data.content, data.title);
+      }
+    });
+  });
+</script>
+{include file="../app/view/admin/footer.html" /}
+
+</html>
