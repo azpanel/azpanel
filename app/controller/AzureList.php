@@ -68,77 +68,21 @@ class AzureList
                 'version' => 'latest',
                 'offer' => '0001-com-ubuntu-server-focal',
             ],
-            // Publishers/procomputers/ArtifactTypes/VMImage/Offers/centos-7/Skus/centos-7
-            'Centos_7' => [
-                'display' => 'Centos 7',
-                'sku' => 'centos-7',
-                'publisher' => 'procomputers',
-                'version' => 'latest',
-                'offer' => 'centos-7',
-            ],
-            // Publishers/procomputers/ArtifactTypes/VMImage/Offers/centos-7-6/Skus/centos-7-6
-            'Centos_7_6' => [
-                'display' => 'Centos 7.6',
-                'sku' => 'centos-7-6',
-                'publisher' => 'procomputers',
-                'version' => 'latest',
-                'offer' => 'centos-7-6',
-            ],
-            // Publishers/procomputers/ArtifactTypes/VMImage/Offers/centos-7-9/Skus/centos-7-9
-            'Centos_7_9' => [
+            // Providers/Microsoft.Compute/Locations/eastasia/Publishers/OpenLogic/ArtifactTypes/VMImage/Offers/CentOS/Skus/7_9-gen2
+            'Centos_79' => [
                 'display' => 'Centos 7.9',
-                'sku' => 'centos-7-9',
-                'publisher' => 'procomputers',
+                'sku' => '7_9-gen2',
+                'publisher' => 'OpenLogic',
                 'version' => 'latest',
-                'offer' => 'centos-7-9',
+                'offer' => 'CentOS',
             ],
-            // Publishers/procomputers/ArtifactTypes/VMImage/Offers/centos-8/Skus/centos-8
-            'Centos_8' => [
-                'display' => 'Centos 8',
-                'sku' => 'centos-8',
-                'publisher' => 'procomputers',
-                'version' => 'latest',
-                'offer' => 'centos-8',
-            ],
-            // Publishers/procomputers/ArtifactTypes/VMImage/Offers/centos-8-3/Skus/centos-8-3
-            'Centos_8_3' => [
-                'display' => 'Centos 8.3',
-                'sku' => 'centos-8-3',
-                'publisher' => 'procomputers',
-                'version' => 'latest',
-                'offer' => 'centos-8-3',
-            ],
-            // Publishers/procomputers/ArtifactTypes/VMImage/Offers/centos-8-5/Skus/centos-8-5
-            'Centos_8_5' => [
+            // Publishers/OpenLogic/ArtifactTypes/VMImage/Offers/CentOS/Skus/8_5-gen2
+            'Centos_85' => [
                 'display' => 'Centos 8.5',
-                'sku' => 'centos-8-5',
-                'publisher' => 'procomputers',
+                'sku' => '8_5-gen2',
+                'publisher' => 'OpenLogic',
                 'version' => 'latest',
-                'offer' => 'centos-8-5',
-            ],
-            // Publishers/procomputers/ArtifactTypes/VMImage/Offers/rhel-7-9/Skus/rhel-7-9
-            'Rhel_7_9' => [
-                'display' => 'Rhel 7.9',
-                'sku' => 'rhel-7-9',
-                'publisher' => 'procomputers',
-                'version' => 'latest',
-                'offer' => 'rhel-7-9',
-            ],
-            // Publishers/procomputers/ArtifactTypes/VMImage/Offers/rhel-8-5/Skus/rhel-8-5
-            'Rhel_8_5' => [
-                'display' => 'Rhel 8.5',
-                'sku' => 'rhel-8-5',
-                'publisher' => 'procomputers',
-                'version' => 'latest',
-                'offer' => 'rhel-8-5',
-            ],
-            // Publishers/procomputers/ArtifactTypes/VMImage/Offers/almalinux-8-5/Skus/almalinux-8-5
-            'Almalinux_8_5' => [
-                'display' => 'Almalinux 8.5',
-                'sku' => 'almalinux-8-5',
-                'publisher' => 'procomputers',
-                'version' => 'latest',
-                'offer' => 'almalinux-8-5',
+                'offer' => 'CentOS',
             ],
         ];
 

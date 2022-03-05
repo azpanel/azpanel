@@ -1,6 +1,7 @@
 <?php
 namespace app\controller;
 
+use think\facade\Log;
 use app\BaseController;
 use app\model\Azure;
 use app\model\AzureServer;
@@ -234,6 +235,8 @@ class AzureApi extends BaseController
                 $network_interfaces = explode('/', $virtual_machine['properties']['networkProfile']['networkInterfaces']['0']['id']);
                 $network_interfaces = end($network_interfaces);
                 $instance_details   = self::getAzureVirtualMachineStatus($account_id, $virtual_machine['id']);
+                
+                // Log::write($instance_details, 'notice');
 
                 // 新建
                 $server = new AzureServer;
