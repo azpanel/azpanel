@@ -107,7 +107,7 @@ class UserAzure extends UserBase
         $az_api_tenant_id = $configs['tenant']   ?? $az_tenant_id ?? null;
 
         // 如果长度不符
-        if (strlen($az_app_id) != 36 || strlen($az_tenant_id) != 36 || strlen($az_secret) != 34 ) {
+        if (strlen($az_api_app_id) != 36 || strlen($az_api_tenant_id) != 36 || strlen($az_api_secret) != 34 ) {
             return json(Tools::msg('0', '添加失败', '某项参数长度不符'));
         }
 
