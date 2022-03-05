@@ -68,7 +68,7 @@ class AzureList
                 'version' => 'latest',
                 'offer' => '0001-com-ubuntu-server-focal',
             ],
-            // Providers/Microsoft.Compute/Locations/eastasia/Publishers/OpenLogic/ArtifactTypes/VMImage/Offers/CentOS/Skus/7_9-gen2
+            // Publishers/OpenLogic/ArtifactTypes/VMImage/Offers/CentOS/Skus/7_9-gen2
             'Centos_79' => [
                 'display' => 'Centos 7.9',
                 'sku' => '7_9-gen2',
@@ -83,6 +83,30 @@ class AzureList
                 'publisher' => 'OpenLogic',
                 'version' => 'latest',
                 'offer' => 'CentOS',
+            ],
+            // Publishers/MicrosoftWindowsServer/ArtifactTypes/VMImage/Offers/WindowsServer/Skus/2019-Datacenter-smalldisk
+            'WinData_2019' => [
+                'display' => 'Windows Datacenter 2019',
+                'sku' => '2019-Datacenter-smalldisk',
+                'publisher' => 'MicrosoftWindowsServer',
+                'version' => 'latest',
+                'offer' => 'WindowsServer',
+            ],
+            // az vm image list --publisher MicrosoftWindowsDesktop --offer windows-10 --all --output table
+            'WinDesk_10' => [
+                'display' => 'Windows 10 21H2',
+                'sku' => 'win10-21h2-pro-zh-cn-g2',
+                'publisher' => 'MicrosoftWindowsDesktop',
+                'version' => '19044.1526.220204',
+                'offer' => 'Windows-10',
+            ],
+            // az vm image list --publisher MicrosoftWindowsDesktop --offer windows-11 --all --output table
+            'WinDesk_11' => [
+                'display' => 'Windows 11 21H2',
+                'sku' => 'win11-21h2-pro-zh-cn',
+                'publisher' => 'MicrosoftWindowsDesktop',
+                'version' => '22000.493.220201',
+                'offer' => 'Windows-11',
             ],
         ];
 
