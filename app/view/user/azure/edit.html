@@ -49,6 +49,8 @@
             <label class="mdui-textfield-label">subscription_id</label>
             <textarea class="mdui-textfield-input" disabled>{$account.az_sub_id}</textarea>
           </div>
+          <p style="color: #3F51B5; font-size: 18px">操作</p>
+          <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-blue-grey" data-clipboard-text="{$account->az_api}">复制API参数</button>
         </div>
       </div>
 
@@ -66,6 +68,13 @@
 </body>
 
 <script>
+  let clipboard = new ClipboardJS('.mdui-color-blue-grey')
+  clipboard.on('success', (e) => {
+    mdui.snackbar({
+      message: "复制成功"
+    })
+  });
+
   var $ = mdui.$;
   $('#update').on('click', function () {
     mdui.confirm('确认更新此账户资料么', '更新确认',
