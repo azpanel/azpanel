@@ -153,6 +153,11 @@ class UserAzureServer extends UserBase
 
         // 脚本检查
         $vm_script = ($vm_script == '') ? 'null' : base64_encode($vm_script);
+        
+        // 硬盘大小检查
+        if (strpos($vm_image, 'Win') !== false && $vm_disk_size < '127') {
+            return json(Tools::msg('0', '创建失败', 'Windows 系统镜像要求硬盘大小不低于 127 GB'));
+        }
 
         $create_step_count = 0;
         // 步骤数 = (创建数量 * 创建一台的流程数) + 将虚拟机加入列表这一步骤
@@ -193,7 +198,7 @@ class UserAzureServer extends UserBase
                     $account, $vm_resource_group_name, $vm_location
                 );
 
-                sleep(1);
+                sleep(2);
 
                 // (2/6) 创建公网地址
                 $text = '在资源组 ' . $vm_resource_group_name . ' 中创建公网地址';
