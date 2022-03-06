@@ -114,21 +114,15 @@ class AdminUser extends AdminBase
         return json(Tools::msg('1', '删除结果', '已删除此用户'));
     }
 
-    public function accountList($id)
+    public function userAssets($id)
     {
         $accounts = Azure::where('user_id', $id)->select();
-
-        View::assign('count', 0);
-        View::assign('accounts', $accounts);
-        return View::fetch('../app/view/admin/user/account.html');
-    }
-
-    public function azureList($id)
-    {
         $servers = AzureServer::where('user_id', $id)->select();
 
-        View::assign('count', 0);
+        View::assign('server_count', 0);
+        View::assign('account_count', 0);
         View::assign('servers', $servers);
-        return View::fetch('../app/view/admin/user/server.html');
+        View::assign('accounts', $accounts);
+        return View::fetch('../app/view/admin/user/assets.html');
     }
 }

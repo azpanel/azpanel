@@ -65,8 +65,7 @@ Route::get('/user/server/azure/:id/chart/[:gap]',  'UserAzureServer/chart');
 Route::get('/admin',                              'AdminDashboard/index');
 Route::resource('/admin/ann',                     'AdminAnn');
 Route::resource('/admin/user',                    'AdminUser');
-Route::get('/admin/user/account/:id',             'AdminUser/accountList');
-Route::get('/admin/user/azure/:id',               'AdminUser/azureList');
+Route::get('/admin/user/assets/:id',              'AdminUser/userAssets');
 Route::patch('/admin/user/remark/:id',            'AdminUser/remark');
 
 Route::get('/admin/setting',                      'AdminSetting/baseIndex');
