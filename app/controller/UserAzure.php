@@ -14,16 +14,18 @@ class UserAzure extends UserBase
     public function index()
     {
         $limit = Env::get('APP.paginate') ?? '15';
-        $page_num = (input('page') == '') ? '1' : input('page');
+        $pages_num = (input('page') == '') ? '1' : input('page');
+        $accounts_num = Azure::where('user_id', session('user_id'))->count();
         $accounts = Azure::where('user_id', session('user_id'))
         ->order('id', 'desc')
         ->paginate($limit);
 
         $page = $accounts->render();
+        $count = $accounts_num - (($pages_num - 1) * $limit);
 
         View::assign('page', $page);
+        View::assign('count', $count);
         View::assign('accounts', $accounts);
-        View::assign('count', ($page_num * $limit) - $limit);
         return View::fetch('../app/view/user/azure/index.html');
     }
 

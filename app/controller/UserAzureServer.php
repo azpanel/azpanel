@@ -18,7 +18,8 @@ class UserAzureServer extends UserBase
     public function index()
     {
         $limit = Env::get('APP.paginate') ?? '15';
-        $page_num = (input('page') == '') ? '1' : input('page');
+        $pages_num = (input('page') == '') ? '1' : input('page');
+        $servers_num = AzureServer::where('user_id', session('user_id'))->count();
         $servers = AzureServer::where('user_id', session('user_id'))
         ->order('id', 'desc')
         ->paginate($limit);
@@ -34,10 +35,11 @@ class UserAzureServer extends UserBase
         }
 
         $page = $servers->render();
+        $count = $servers_num - (($pages_num - 1) * $limit);
 
         View::assign('page', $page);
         View::assign('servers', $servers);
-        View::assign('count', ($page_num * $limit) - $limit);
+        View::assign('count', $count);
         return View::fetch('../app/view/user/azure/server/index.html');
     }
 
