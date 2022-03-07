@@ -28,7 +28,7 @@ class Auth extends BaseController
     {
         $email      = input('email/s');
         $password   = Tools::encryption(input('password/s'));
-        $ip_address = request()->ip();
+        $ip_address = Tools::getClientIp();
 
         if ($email == '' || $password == '') {
             $data = ['status' => '0', 'title' => '登录失败', 'content' => '邮箱或密码不能为空'];
@@ -106,7 +106,7 @@ class Auth extends BaseController
 
     public function registerCode()
     {
-        $ip    = request()->ip();
+        $ip    = Tools::getClientIp();
         $email = input('email/s');
 
         if (!Tools::emailCheck($email)) {
@@ -225,7 +225,7 @@ class Auth extends BaseController
 
     public function forgetCode()
     {
-        $ip    = request()->ip();
+        $ip    = Tools::getClientIp();
         $email = input('email/s');
 
         if (!Config::obtain('reg_email_veriy')) {

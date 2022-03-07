@@ -2,6 +2,7 @@
 namespace app\controller;
 
 use app\controller\Ip;
+use think\facade\Request;
 
 class Tools
 {
@@ -46,5 +47,29 @@ class Tools
     public static function emailCheck($address)
     {
         return (!filter_var($address, FILTER_VALIDATE_EMAIL)) ? false : true;
+    }
+
+    public static function getClientIp()
+    {
+        $http_headers = [
+            'HTTP_X_FORWARDED_FOR',
+            'HTTP_ALI_CDN_REAL_IP',
+            'True-Client-Ip',
+            'X-Real-IP',
+        ];
+
+        foreach ($http_headers as $header) {
+            if (isset($_SERVER[$header])) {
+                $list = explode(',', $_SERVER[$header]);
+                $client_ip = $list[0];
+                break;
+            }
+        }
+
+        if (!isset($client_ip)) {
+            $client_ip = request()->ip();
+        }
+
+        return $client_ip;
     }
 }
