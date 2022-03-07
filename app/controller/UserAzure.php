@@ -13,7 +13,7 @@ class UserAzure extends UserBase
 {
     public function index()
     {
-        $limit = Env::get('APP.paginate');
+        $limit = Env::get('APP.paginate') ?? '15';
         $page_num = (input('page') == '') ? '1' : input('page');
         $accounts = Azure::where('user_id', session('user_id'))
         ->order('id', 'desc')
