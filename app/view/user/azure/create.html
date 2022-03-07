@@ -71,6 +71,7 @@
   $('#add').on('click', function () {
     mdui.confirm('添加账户时，面板需要获取此账户的订阅详情，以及账户下所创建的虚拟机列表，这将花费 3~5 秒，等待期间请勿重复点击添加按钮', '添加确认',
       function () {
+        var load = new mdui.alert('<div class=\"mdui-progress\"><div class=\"mdui-progress-indeterminate\"></div></div>', '进行中');
         $.ajax({
           method: 'POST',
           url: "/user/azure",
@@ -85,6 +86,7 @@
           },
           dataType: "json",
           success: function (data) {
+            load.close();
             if (data.status == '0') {
               mdui.alert(data.content, data.title);
             } else {
