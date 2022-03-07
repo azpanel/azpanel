@@ -21,9 +21,9 @@ class UserAzure extends UserBase
 
         $page = $accounts->render();
 
-        View::assign('count', ($page_num * $limit) - $limit);
         View::assign('page', $page);
         View::assign('accounts', $accounts);
+        View::assign('count', ($page_num * $limit) - $limit);
         return View::fetch('../app/view/user/azure/index.html');
     }
 

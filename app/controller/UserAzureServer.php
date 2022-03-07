@@ -1,6 +1,7 @@
 <?php
 namespace app\controller;
 
+use think\facade\Env;
 use think\facade\View;
 use Carbon\Carbon;
 use app\model\Azure;
@@ -16,7 +17,11 @@ class UserAzureServer extends UserBase
 {
     public function index()
     {
-        $servers = AzureServer::where('user_id', session('user_id'))->select();
+        $limit = Env::get('APP.paginate');
+        $page_num = (input('page') == '') ? '1' : input('page');
+        $servers = AzureServer::where('user_id', session('user_id'))
+        ->order('id', 'desc')
+        ->paginate($limit);
 
         foreach($servers as $server)
         {
@@ -28,8 +33,11 @@ class UserAzureServer extends UserBase
             }
         }
 
-        View::assign('count', 0);
+        $page = $servers->render();
+
+        View::assign('page', $page);
         View::assign('servers', $servers);
+        View::assign('count', ($page_num * $limit) - $limit);
         return View::fetch('../app/view/user/azure/server/index.html');
     }
 

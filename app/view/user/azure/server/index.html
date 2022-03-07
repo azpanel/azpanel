@@ -17,7 +17,7 @@
           <thead>
             <tr>
               <th>操作</th>
-              <!-- <th>#</th> -->
+              <th>#</th>
               <th>名称</th>
               <th>备注</th>
               <th>状态</th>
@@ -103,7 +103,7 @@
                   </li>
                 </ul>
               </td>
-              <!-- <td>{$server.id}</td> -->
+              <td>{++$count}</td>
               <td>{$server.name}</td>
               <td>{$server.user_remark ?? 'null'}</td>
               <td>
@@ -123,6 +123,8 @@
         </table>
       </div>
 
+      {$page | raw}
+
       <a class="mdui-fab mdui-color-theme-accent mdui-ripple mdui-fab-fixed" href="/user/server/azure/create">
         <i class="mdui-icon material-icons">add</i>
       </a>
@@ -131,6 +133,7 @@
 
     </div>
   </div>
+  <br/>
 </div>
 </body>
 
