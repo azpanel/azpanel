@@ -10,3 +10,7 @@
 - lnmp.org
 
 [https://github.com/azpanel/azpanel/wiki/lnmp.org](https://github.com/azpanel/azpanel/wiki/lnmp.org)
+
+- bt.cn
+
+[https://github.com/azpanel/azpanel/wiki/bt.cn](https://github.com/azpanel/azpanel/wiki/bt.cn)
