@@ -1,6 +1,7 @@
 <?php
 namespace app\controller;
 
+use think\facade\Env;
 use think\facade\View;
 use app\controller\Tools;
 use app\controller\AzureApi;
@@ -12,9 +13,16 @@ class UserAzure extends UserBase
 {
     public function index()
     {
-        $accounts = Azure::where('user_id', session('user_id'))->select();
+        $limit = Env::get('APP.paginate');
+        $page_num = (input('page') == '') ? '1' : input('page');
+        $accounts = Azure::where('user_id', session('user_id'))
+        ->order('id', 'desc')
+        ->paginate($limit);
 
-        View::assign('count', 0);
+        $page = $accounts->render();
+
+        View::assign('count', ($page_num * $limit) - $limit);
+        View::assign('page', $page);
         View::assign('accounts', $accounts);
         return View::fetch('../app/view/user/azure/index.html');
     }
