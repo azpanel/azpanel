@@ -153,10 +153,13 @@ class UserAzureServer extends UserBase
 
         // 脚本检查
         $vm_script = ($vm_script == '') ? 'null' : base64_encode($vm_script);
-        
+
         // 硬盘大小检查
-        if (strpos($vm_image, 'Win') !== false && $vm_disk_size < '127') {
-            return json(Tools::msg('0', '创建失败', 'Windows 系统镜像要求硬盘大小不低于 127 GB'));
+        $images = AzureList::images();
+        if (strpos($vm_image, 'Win') !== false
+        && strpos($images[$vm_image]['sku'], 'smalldisk') !== true
+        && $vm_disk_size < '127') {
+            return json(Tools::msg('0', '创建失败', '此 Windows 系统镜像要求硬盘大小不低于 127 GB'));
         }
 
         $create_step_count = 0;
