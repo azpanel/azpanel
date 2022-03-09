@@ -1,6 +1,7 @@
 <?php
 namespace app\controller;
 
+use think\helper\Str;
 use think\facade\Env;
 use think\facade\View;
 use Carbon\Carbon;
@@ -166,11 +167,11 @@ class UserAzureServer extends UserBase
 
         // 硬盘大小检查
         $images = AzureList::images();
-        if (strpos($vm_image, 'Win') !== false
-        && strpos($images[$vm_image]['sku'], 'smalldisk') !== true
-        && $vm_disk_size < '127') {
+        if (Str::contains($vm_image, 'Win') && !Str::contains($images[$vm_image]['sku'], 'smalldisk') && $vm_disk_size < '127') {
             return json(Tools::msg('0', '创建失败', '此 Windows 系统镜像要求硬盘大小不低于 127 GB'));
         }
+
+        // return json(Tools::msg('0', '创建检查完成', '没有发现问题'));
 
         $create_step_count = 0;
         // 步骤数 = (创建数量 * 创建一台的流程数) + 将虚拟机加入列表这一步骤
