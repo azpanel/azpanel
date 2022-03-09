@@ -325,9 +325,13 @@ class UserAzure extends UserBase
             return View::fetch('../app/view/user/reject.html');
         }
 
-        $resources = AzureApi::getAzureResourceGroupsList($id);
+        $count = 0;
+        $resources = AzureApi::getAzureResourceGroupsList($id, $account->az_sub_id);
+        $virtual_machines = AzureApi::getAzureVirtualMachinesList($id, $account->az_sub_id);
 
+        View::assign('count', $count);
         View::assign('resources', $resources);
+        View::assign('virtual_machines', $virtual_machines);
         return View::fetch('../app/view/user/azure/resources.html');
     }
 

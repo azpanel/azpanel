@@ -42,6 +42,39 @@
         </table>
       </div>
 
+      <p style="color: #3F51B5; font-size: 18px">虚拟机列表</p>
+
+      <div class="card-body mdui-table-fluid-fixed mdui-m-t-2">
+        <table class="mdui-table" style="border: none;">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>名称</th>
+              <th>地域</th>
+              <th>规格</th>
+              <th>系统 Offer</th>
+              <th>系统 Sku</th>
+              <th>资源组</th>
+              <th>硬盘大小</th>
+            </tr>
+          </thead>
+          <tbody>
+            {volist name="virtual_machines" id="virtual_machine"}
+            <tr>
+              <td>{++$count}</td>
+              <td>{$virtual_machine['name']}</td>
+              <td>{$virtual_machine['location']}</td>
+              <td>{$virtual_machine['properties']['hardwareProfile']['vmSize']}</td>
+              <td>{$virtual_machine['properties']['storageProfile']['imageReference']['offer']}</td>
+              <td>{$virtual_machine['properties']['storageProfile']['imageReference']['sku']}</td>
+              <td>{:explode('/', $virtual_machine['id'])['4']}</td>
+              <td>{$virtual_machine['properties']['storageProfile']['osDisk']['diskSizeGB'] ?? 'null'}</td>
+            </tr>
+            {/volist}
+          </tbody>
+        </table>
+      </div>
+
       <div class="mdui-m-t-2"></div>
 
     </div>

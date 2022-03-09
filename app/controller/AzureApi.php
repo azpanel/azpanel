@@ -93,18 +93,16 @@ class AzureApi extends BaseController
         $azure_sub->save();
     }
 
-    public static function getAzureResourceGroupsList($account_id)
+    public static function getAzureResourceGroupsList($account_id, $az_sub_id)
     {
         // https://docs.microsoft.com/zh-cn/rest/api/resources/resource-groups/list
-
-        $azure_sub = Azure::find($account_id);
 
         $headers = [
             'Authorization' => 'Bearer ' . self::getAzureAccessToken($account_id)
         ];
 
         $client = new Client();
-        $url = 'https://management.azure.com/subscriptions/'. $azure_sub->az_sub_id . '/resourcegroups?api-version=2021-04-01';
+        $url = 'https://management.azure.com/subscriptions/'. $az_sub_id . '/resourcegroups?api-version=2021-04-01';
         $result = $client->get($url, [
             'headers' => $headers
         ]);
@@ -268,6 +266,24 @@ class AzureApi extends BaseController
         }
 
         return $count;
+    }
+
+    public static function getAzureVirtualMachinesList($account_id, $az_sub_id)
+    {
+        // https://docs.microsoft.com/zh-cn/rest/api/compute/virtual-machines/list-all
+
+        $headers = [
+            'Authorization' => 'Bearer ' . self::getAzureAccessToken($account_id)
+        ];
+
+        $client = new Client();
+        $url = 'https://management.azure.com/subscriptions/' . $az_sub_id . '/providers/Microsoft.Compute/virtualMachines?api-version=2021-07-01';
+        $result = $client->get($url, [
+            'headers' => $headers
+        ]);
+
+        $virtual_machines = json_decode($result->getBody(), true);
+        return $virtual_machines['value'];
     }
 
     public static function manageVirtualMachine($action, $account_id, $request_url)
