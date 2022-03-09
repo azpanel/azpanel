@@ -58,7 +58,7 @@ class UserAzure extends UserBase
         }
 
         $share = [
-            'login_id' => $account->az_email,
+            'login_user' => $account->az_email,
             'login_passwd' => $account->az_passwd,
             'subscription_id' => $account->az_sub_id,
             'appId' => $az_api['appId'],
