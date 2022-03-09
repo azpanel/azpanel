@@ -36,29 +36,20 @@ class AzureList
                 'version' => 'latest',
                 'offer' => 'debian-11',
             ],
-            // Publishers/Canonical/ArtifactTypes/VMImage/Offers/0001-com-ubuntu-pro-trusty/Skus/pro-14_04-lts
-            'Ubuntu_14_04' => [
-                'display' => 'Ubuntu 14.04',
-                'sku' => 'pro-14_04-lts',
-                'publisher' => 'Canonical',
-                'version' => 'latest',
-                'offer' => '0001-com-ubuntu-pro-trusty',
-            ],
-            // Publishers/Canonical/ArtifactTypes/VMImage/Offers/0001-com-ubuntu-pro-xenial/Skus/pro-16_04-lts-gen2
+            // az vm image list --publisher Canonical --offer UbuntuServer --all --output table
             'Ubuntu_16_04' => [
                 'display' => 'Ubuntu 16.04',
-                'sku' => 'pro-16_04-lts-gen2',
+                'sku' => '16_04-lts-gen2',
                 'publisher' => 'Canonical',
                 'version' => 'latest',
-                'offer' => '0001-com-ubuntu-pro-xenial',
+                'offer' => 'UbuntuServer',
             ],
-            // Publishers/Canonical/ArtifactTypes/VMImage/Offers/0001-com-ubuntu-pro-bionic/Skus/pro-18_04-lts-gen2
             'Ubuntu_18_04' => [
                 'display' => 'Ubuntu 18.04',
-                'sku' => 'pro-18_04-lts-gen2',
+                'sku' => '18_04-lts-gen2',
                 'publisher' => 'Canonical',
                 'version' => 'latest',
-                'offer' => '0001-com-ubuntu-pro-bionic',
+                'offer' => 'UbuntuServer',
             ],
             // Publishers/Canonical/ArtifactTypes/VMImage/Offers/0001-com-ubuntu-server-focal/Skus/20_04-lts-gen2
             'Ubuntu_20_04' => [
