@@ -84,10 +84,31 @@ class AzureList
                 'version' => 'latest',
                 'offer' => 'CentOS',
             ],
-            // Publishers/MicrosoftWindowsServer/ArtifactTypes/VMImage/Offers/WindowsServer/Skus/2019-Datacenter-smalldisk
+            // az vm image list --publisher MicrosoftWindowsServer --all --output table
+            'WinData_2022' => [
+                'display' => 'Windows Datacenter 2022',
+                'sku' => '2022-Datacenter-smalldisk',
+                'publisher' => 'MicrosoftWindowsServer',
+                'version' => 'latest',
+                'offer' => 'WindowsServer',
+            ],
             'WinData_2019' => [
                 'display' => 'Windows Datacenter 2019',
                 'sku' => '2019-Datacenter-smalldisk',
+                'publisher' => 'MicrosoftWindowsServer',
+                'version' => 'latest',
+                'offer' => 'WindowsServer',
+            ],
+            'WinData_2016' => [
+                'display' => 'Windows Datacenter 2016',
+                'sku' => '2016-Datacenter-smalldisk',
+                'publisher' => 'MicrosoftWindowsServer',
+                'version' => 'latest',
+                'offer' => 'WindowsServer',
+            ],
+            'WinData_2012' => [
+                'display' => 'Windows Datacenter 2012',
+                'sku' => '2012-Datacenter-smalldisk',
                 'publisher' => 'MicrosoftWindowsServer',
                 'version' => 'latest',
                 'offer' => 'WindowsServer',
@@ -97,7 +118,7 @@ class AzureList
                 'display' => 'Windows 10 21H2',
                 'sku' => 'win10-21h2-pro-zh-cn-g2',
                 'publisher' => 'MicrosoftWindowsDesktop',
-                'version' => '19044.1526.220204',
+                'version' => 'latest',
                 'offer' => 'Windows-10',
             ],
             // az vm image list --publisher MicrosoftWindowsDesktop --offer windows-11 --all --output table
@@ -105,7 +126,7 @@ class AzureList
                 'display' => 'Windows 11 21H2',
                 'sku' => 'win11-21h2-pro-zh-cn',
                 'publisher' => 'MicrosoftWindowsDesktop',
-                'version' => '22000.493.220201',
+                'version' => 'latest',
                 'offer' => 'Windows-11',
             ],
         ];
