@@ -37,10 +37,11 @@ class UserAzure extends UserBase
     public function read($id)
     {
         $account = Azure::where('user_id', session('user_id'))->find($id);
+        $az_sub = json_decode($account->az_sub, true);
+
         if ($account == null) {
             return View::fetch('../app/view/user/reject.html');
         }
-        $az_sub = json_decode($account->az_sub, true);
 
         View::assign('az_sub', $az_sub);
         View::assign('account', $account);
@@ -50,13 +51,24 @@ class UserAzure extends UserBase
     public function edit($id)
     {
         $account = Azure::where('user_id', session('user_id'))->find($id);
+        $az_api = json_decode($account->az_api, true);
+
         if ($account == null) {
             return View::fetch('../app/view/user/reject.html');
         }
-        $az_api = json_decode($account->az_api, true);
+
+        $share = [
+            'login_id' => $account->az_email,
+            'login_passwd' => $account->az_passwd,
+            'subscription_id' => $account->az_sub_id,
+            'appId' => $az_api['appId'],
+            'password' => $az_api['password'],
+            'tenant' => $az_api['tenant']
+        ];
 
         View::assign('az_api', $az_api);
         View::assign('account', $account);
+        View::assign('share', json_encode($share));
         return View::fetch('../app/view/user/azure/edit.html');
     }
 
