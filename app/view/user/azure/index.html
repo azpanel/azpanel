@@ -35,7 +35,7 @@
                   mdui-menu="{target: '#action-{$account.id}', fixed: true}">操作</button>
                 <ul class="mdui-menu" id="action-{$account.id}">
                   <li class="mdui-menu-item">
-                    <a target="view_window" class="mdui-ripple" href="/user/azure/{$account.id}/edit">
+                    <a target="_blank" class="mdui-ripple" href="/user/azure/{$account.id}/edit">
                       <i class="mdui-menu-item-icon mdui-icon material-icons">edit</i>编辑信息
                     </a>
                   </li>
@@ -45,12 +45,17 @@
                     </a>
                   </li>
                   <li class="mdui-menu-item">
-                    <a target="view_window" class="mdui-ripple" href="/user/azure/{$account.id}">
+                    <a target="_blank" class="mdui-ripple" href="/user/azure/{$account.id}">
                       <i class="mdui-menu-item-icon mdui-icon material-icons">redeem</i>订阅详情
                     </a>
                   </li>
                   <li class="mdui-menu-item">
-                    <a target="view_window" class="mdui-ripple" href="/user/azure/resources/{$account.id}">
+                    <a target="_blank" class="mdui-ripple" href="/user/server/azure/create?id={$account.id}">
+                      <i class="mdui-menu-item-icon mdui-icon material-icons">create_new_folder</i>创建实例
+                    </a>
+                  </li>
+                  <li class="mdui-menu-item">
+                    <a target="_blank" class="mdui-ripple" href="/user/azure/resources/{$account.id}">
                       <i class="mdui-menu-item-icon mdui-icon material-icons">subject</i>资源列表
                     </a>
                   </li>

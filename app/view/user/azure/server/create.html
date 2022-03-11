@@ -79,6 +79,7 @@
             {/volist}
             </select>
           </div>
+          {if empty($designated_account)}
           <div class="mdui-m-t-2">
             归属：<select id="vm_account" class="mdui-select" mdui-select>
             {volist name="accounts" id="account"}
@@ -86,6 +87,19 @@
             {/volist}
             </select>
           </div>
+          {else /}
+          <div>
+            <p class="mdui-typo">
+              <span style="color: red">你正在使用指定账户创建模式，该模式下无法选择其他账户</span>。退出模式请 <a href="/user/server/azure/create">点击此处</a>
+            </p>
+          </div>
+          <div class="mdui-m-t-2">
+            归属：
+            <select id="vm_account" class="mdui-select" mdui-select>
+              <option value="{$designated_account->id}">{$designated_account->az_email} ({$has_vm_num[$designated_account->id]})</option>
+            </select>
+          </div>
+          {/if}
           <div class="mdui-m-t-2">
             存储：<select id="vm_disk_size" class="mdui-select" mdui-select>
             {foreach $disk_sizes as $disk_size}

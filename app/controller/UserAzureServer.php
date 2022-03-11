@@ -51,6 +51,15 @@ class UserAzureServer extends UserBase
         ->order('id', 'desc')
         ->select();
 
+        $designated_id = (int) input('id');
+        if ($designated_id != '') {
+            $designated_account = Azure::where('user_id', session('user_id'))->where('id', $designated_id)->find();
+            if ($designated_account == null) {
+                return View::fetch('../app/view/user/reject.html');
+            }
+            View::assign('designated_account', $designated_account);
+        }
+
         $user         = User::find(session('user_id'));
         $personalise  = json_decode($user->personalise, true);
         $disk_sizes   = ['32', '64', '128', '256', '512', '1024'];
