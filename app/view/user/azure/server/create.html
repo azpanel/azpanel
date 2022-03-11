@@ -24,7 +24,8 @@
                 <li>归属账户后括号内的数字，代表此账户下除 <code>B1s</code> 以外规格的虚拟机数目</li>
                 <li>创建多个虚拟机时，备注和名称的填写需使用英文逗号分隔</li>
                 <li>不能使用这些用户名：<code>root</code>, <code>admin</code>, <code>centos</code>, <code>debian</code>,
-                  <code>ubuntu</code></li>
+                  <code>ubuntu</code>
+                </li>
                 <li>密码必须包含小写字母、大写字母、数字和特殊符号这四个组成部分中的三个，长度大于 12 且小于 72</li>
               </ul>
             </div>
@@ -34,89 +35,110 @@
 
       <div class="mdui-card mdui-m-t-2" style="overflow: visible">
         <div class="mdui-card-content mdui-container">
-          <div class="mdui-textfield mdui-textfield-floating-label">
-            <i class="mdui-icon material-icons">bookmark</i>
-            <label class="mdui-textfield-label">列表备注（必填）</label>
-            <input class="mdui-textfield-input" id="vm_remark" required>
+          <div class="mdui-col-sm-12 mdui-col-md-6">
+            <div class="mdui-textfield mdui-textfield-floating-label">
+              <i class="mdui-icon material-icons">flag</i>
+              <label class="mdui-textfield-label">虚拟机名称（必填）</label>
+              <input class="mdui-textfield-input" id="vm_name" required>
+            </div>
           </div>
-          <div class="mdui-textfield mdui-textfield-floating-label">
-            <i class="mdui-icon material-icons">flag</i>
-            <label class="mdui-textfield-label">虚拟机名称（必填）</label>
-            <input class="mdui-textfield-input" id="vm_name" required>
+          <div class="mdui-col-sm-12 mdui-col-md-6">
+            <div class="mdui-textfield mdui-textfield-floating-label">
+              <i class="mdui-icon material-icons">bookmark</i>
+              <label class="mdui-textfield-label">列表备注（必填）</label>
+              <input class="mdui-textfield-input" id="vm_remark" required>
+            </div>
           </div>
-          <div class="mdui-textfield mdui-textfield-floating-label">
-            <i class="mdui-icon material-icons">tune</i>
-            <label class="mdui-textfield-label">数量</label>
-            <input class="mdui-textfield-input" id="vm_number" type="number" setp="1" value="1" min="1" required>
+          <div class="mdui-col-sm-12 mdui-col-md-2">
+            <div class="mdui-textfield mdui-textfield-floating-label">
+              <i class="mdui-icon material-icons">tune</i>
+              <label class="mdui-textfield-label">数量</label>
+              <input class="mdui-textfield-input" id="vm_number" type="number" setp="1" value="1" min="1" required>
+            </div>
           </div>
-          <div class="mdui-textfield mdui-textfield-floating-label">
-            <i class="mdui-icon material-icons">assignment_ind</i>
-            <label class="mdui-textfield-label">用户名</label>
-            <input class="mdui-textfield-input" id="vm_user" value="{$personalise.vm_default_identity}">
+          <div class="mdui-col-sm-12 mdui-col-md-4">
+            <div class="mdui-textfield mdui-textfield-floating-label">
+              <i class="mdui-icon material-icons">assignment_ind</i>
+              <label class="mdui-textfield-label">用户名</label>
+              <input class="mdui-textfield-input" id="vm_user" value="{$personalise.vm_default_identity}">
+            </div>
           </div>
-          <div class="mdui-textfield mdui-textfield-floating-label">
-            <i class="mdui-icon material-icons">vpn_key</i>
-            <label class="mdui-textfield-label">密码</label>
-            <input class="mdui-textfield-input" id="vm_passwd" value="{$personalise.vm_default_credentials}">
+          <div class="mdui-col-sm-12 mdui-col-md-6">
+            <div class="mdui-textfield mdui-textfield-floating-label">
+              <i class="mdui-icon material-icons">vpn_key</i>
+              <label class="mdui-textfield-label">密码</label>
+              <input class="mdui-textfield-input" id="vm_passwd" value="{$personalise.vm_default_credentials}">
+            </div>
           </div>
-          <div class="mdui-textfield mdui-textfield-floating-label">
-            <i class="mdui-icon material-icons">code</i>
-            <label class="mdui-textfield-label">bash 脚本（可不填）</label>
-            <textarea class="mdui-textfield-input" id="vm_script"
-              rows="6">{$personalise.vm_default_script ?? ''}</textarea>
+          <div class="mdui-col-sm-12 mdui-col-md-6">
+            <div class="mdui-textfield mdui-textfield-floating-label">
+              <i class="mdui-icon material-icons">code</i>
+              <label class="mdui-textfield-label">bash 脚本（可不填）</label>
+              <textarea class="mdui-textfield-input" id="vm_script"
+                rows="8">{$personalise.vm_default_script ?? ''}</textarea>
+            </div>
           </div>
-          <div class="mdui-m-t-2">
-            地区：<select id="vm_location" class="mdui-select" mdui-select>
-              {volist name="locations" id="location"}
-              <option value="{$key}">{$location}</option>
-              {/volist}
-            </select>
-          </div>
-          <div class="mdui-m-t-2">
-            规格：<select id="vm_size" class="mdui-select" mdui-select>
-              {volist name="sizes" id="size"}
-              <option value="{$key}">
-                {:str_replace('Standard_', '', $key)} {$size.cpu}C_{$size.memory}G ({:round($size.cost, 1)} USD / Month)
-              </option>
-              {/volist}
-            </select>
-          </div>
-          {if empty($designated_account)}
-          <div class="mdui-m-t-2">
-            归属：<select id="vm_account" class="mdui-select" mdui-select>
-              {volist name="accounts" id="account"}
-              <option value="{$account->id}">{$account->az_email} ({$has_vm_num[$account->id]})</option>
-              {/volist}
-            </select>
-          </div>
-          {else /}
-          <div>
-            <p class="mdui-typo">
-              <span style="color: red">你正在使用指定账户创建模式，该模式下无法选择其他账户</span>。退出模式请 <a
-                href="/user/server/azure/create">点击此处</a>
-            </p>
-          </div>
-          <div class="mdui-m-t-2">
-            归属：
-            <select id="vm_account" class="mdui-select" mdui-select>
-              <option value="{$designated_account->id}">{$designated_account->az_email}
-                ({$has_vm_num[$designated_account->id]})</option>
-            </select>
-          </div>
-          {/if}
-          <div class="mdui-m-t-2">
-            存储：<select id="vm_disk_size" class="mdui-select" mdui-select>
-              {foreach $disk_sizes as $disk_size}
-              <option value="{$disk_size}">{$disk_size} GB</option>
-              {/foreach}
-            </select>
-          </div>
-          <div class="mdui-m-t-2">
-            镜像：<select id="vm_image" class="mdui-select" mdui-select>
-              {volist name="images" id="image"}
-              <option value="{$key}">{$image.display}</option>
-              {/volist}
-            </select>
+          <div class="mdui-col-sm-12 mdui-col-md-6">
+            <div class="mdui-m-t-2">
+              地区：<select id="vm_location" class="mdui-select" mdui-select>
+                {volist name="locations" id="location"}
+                <option value="{$key}">{$location}</option>
+                {/volist}
+              </select>
+            </div>
+            <div class="mdui-m-t-2">
+              规格：<select id="vm_size" class="mdui-select" mdui-select>
+                {volist name="sizes" id="size"}
+                <option value="{$key}">
+                  {:str_replace('Standard_', '', $key)} {$size.cpu}C_{$size.memory}G ({:round($size.cost, 1)} USD /
+                  Month)
+                </option>
+                {/volist}
+              </select>
+            </div>
+            {if empty($designated_account)}
+            <div class="mdui-m-t-2">
+              归属：<select id="vm_account" class="mdui-select" mdui-select>
+                {volist name="accounts" id="account"}
+                <option value="{$account->id}">{$account->az_email} ({$has_vm_num[$account->id]})</option>
+                {/volist}
+              </select>
+            </div>
+            {else /}
+            <div>
+              <p class="mdui-typo">
+                <span style="color: red">你正在使用指定账户创建模式，该模式下无法选择其他账户</span>。退出模式请 <a
+                  href="/user/server/azure/create">点击此处</a>
+              </p>
+            </div>
+            <div class="mdui-m-t-2">
+              归属：
+              <select id="vm_account" class="mdui-select" mdui-select>
+                <option value="{$designated_account->id}">{$designated_account->az_email}
+                  ({$has_vm_num[$designated_account->id]})</option>
+              </select>
+            </div>
+            {/if}
+            <div class="mdui-row">
+              <div class="mdui-col-sm-12 mdui-col-md-7">
+                <div class="mdui-m-t-2">
+                  镜像：<select id="vm_image" class="mdui-select" mdui-select>
+                    {volist name="images" id="image"}
+                    <option value="{$key}">{$image.display}</option>
+                    {/volist}
+                  </select>
+                </div>
+              </div>
+              <div class="mdui-col-sm-12 mdui-col-md-5">
+                <div class="mdui-m-t-2 ">
+                  存储：<select id="vm_disk_size" class="mdui-select" mdui-select>
+                    {foreach $disk_sizes as $disk_size}
+                    <option value="{$disk_size}">{$disk_size} GB</option>
+                    {/foreach}
+                  </select>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

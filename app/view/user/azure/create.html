@@ -14,48 +14,68 @@
 
       <div class="mdui-card mdui-m-t-2" style="overflow: visible">
         <div class="mdui-card-content mdui-container">
-          <div class="mdui-textfield mdui-textfield-floating-label">
-            <i class="mdui-icon material-icons">mail</i>
-            <label class="mdui-textfield-label">登录邮箱</label>
-            <textarea class="mdui-textfield-input" id="az_email" required></textarea>
+          <div class="mdui-col-sm-12 mdui-col-md-4">
+            <div class="mdui-textfield mdui-textfield-floating-label">
+              <i class="mdui-icon material-icons">mail</i>
+              <label class="mdui-textfield-label">登录邮箱</label>
+              <textarea class="mdui-textfield-input" id="az_email" required></textarea>
+            </div>
           </div>
-          <div class="mdui-textfield mdui-textfield-floating-label">
-            <i class="mdui-icon material-icons">lock</i>
-            <label class="mdui-textfield-label">登录密码（选填）</label>
-            <textarea class="mdui-textfield-input" id="az_passwd"></textarea>
+          <div class="mdui-col-sm-12 mdui-col-md-4">
+            <div class="mdui-textfield mdui-textfield-floating-label">
+              <i class="mdui-icon material-icons">lock</i>
+              <label class="mdui-textfield-label">登录密码（选填）</label>
+              <textarea class="mdui-textfield-input" id="az_passwd"></textarea>
+            </div>
           </div>
-          <div class="mdui-textfield mdui-textfield-floating-label">
-            <i class="mdui-icon material-icons">bookmark</i>
-            <label class="mdui-textfield-label">备注</label>
-            <textarea class="mdui-textfield-input" id="user_mark"></textarea>
+          <div class="mdui-col-sm-12 mdui-col-md-4">
+            <div class="mdui-textfield mdui-textfield-floating-label">
+              <i class="mdui-icon material-icons">bookmark</i>
+              <label class="mdui-textfield-label">备注</label>
+              <textarea class="mdui-textfield-input" id="user_mark"></textarea>
+            </div>
           </div>
-          <div class="mdui-textfield mdui-textfield-floating-label">
-            <i class="mdui-icon material-icons">apps</i>
-            <label class="mdui-textfield-label">appId（若使用自动识别可不填）</label>
-            <textarea class="mdui-textfield-input" id="az_app_id"></textarea>
+          <div class="mdui-col-sm-12 mdui-col-md-6">
+            <div class="mdui-textfield mdui-textfield-floating-label">
+              <i class="mdui-icon material-icons">apps</i>
+              <label class="mdui-textfield-label">appId（若使用自动识别可不填）</label>
+              <textarea class="mdui-textfield-input" id="az_app_id"></textarea>
+            </div>
           </div>
-          <div class="mdui-textfield mdui-textfield-floating-label">
-            <i class="mdui-icon material-icons">vpn_key</i>
-            <label class="mdui-textfield-label">password（若使用自动识别可不填）</label>
-            <textarea class="mdui-textfield-input" id="az_secret"></textarea>
+          <div class="mdui-col-sm-12 mdui-col-md-6">
+            <div class="mdui-textfield mdui-textfield-floating-label">
+              <i class="mdui-icon material-icons">vpn_key</i>
+              <label class="mdui-textfield-label">password（若使用自动识别可不填）</label>
+              <textarea class="mdui-textfield-input" id="az_secret"></textarea>
+            </div>
           </div>
-          <div class="mdui-textfield mdui-textfield-floating-label">
-            <i class="mdui-icon material-icons">location_city</i>
-            <label class="mdui-textfield-label">tenant（若使用自动识别可不填）</label>
-            <textarea class="mdui-textfield-input" id="az_tenant_id"></textarea>
+          <div class="mdui-col-sm-12 mdui-col-md-6">
+            <div class="mdui-textfield mdui-textfield-floating-label">
+              <i class="mdui-icon material-icons">location_city</i>
+              <label class="mdui-textfield-label">tenant（若使用自动识别可不填）</label>
+              <textarea class="mdui-textfield-input" id="az_tenant_id"></textarea>
+            </div>
           </div>
-          <div class="mdui-textfield mdui-textfield-floating-label">
-            <i class="mdui-icon material-icons">wrap_text</i>
-            <label class="mdui-textfield-label">自动识别填写区块（完整的 JSON 内容）</label>
-            <textarea class="mdui-textfield-input" id="az_configs" rows="6"></textarea>
+          <div class="mdui-col-sm-12 mdui-col-md-6">
+            <div class="mdui-textfield mdui-textfield-floating-label">
+              <i class="mdui-icon material-icons">subscriptions</i>
+              <label class="mdui-textfield-label">subscription</label>
+              <textarea class="mdui-textfield-input" disabled>此项将自动获取</textarea>
+            </div>
+          </div>
+          <div class="mdui-col-sm-12 mdui-col-md-12">
+            <div class="mdui-textfield mdui-textfield-floating-label">
+              <i class="mdui-icon material-icons">wrap_text</i>
+              <label class="mdui-textfield-label">自动识别填写区块（完整的 JSON 内容）</label>
+              <textarea class="mdui-textfield-input" id="az_configs" rows="6"></textarea>
+            </div>
           </div>
         </div>
       </div>
 
       <div class="mdui-card mdui-m-t-2">
         <div class="mdui-card-actions">
-          <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised"
-            id="add">添加</button>
+          <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised" id="add">添加</button>
         </div>
       </div>
 
@@ -76,13 +96,13 @@
           method: 'POST',
           url: "/user/azure",
           data: {
-            user_mark:    $('#user_mark').val(),
-            az_email:     $('#az_email').val(),
-            az_passwd:    $('#az_passwd').val(),
-            az_app_id:    $('#az_app_id').val(),
-            az_secret:    $('#az_secret').val(),
+            user_mark: $('#user_mark').val(),
+            az_email: $('#az_email').val(),
+            az_passwd: $('#az_passwd').val(),
+            az_app_id: $('#az_app_id').val(),
+            az_secret: $('#az_secret').val(),
             az_tenant_id: $('#az_tenant_id').val(),
-            az_configs:   $('#az_configs').val()
+            az_configs: $('#az_configs').val()
           },
           dataType: "json",
           success: function (data) {
