@@ -275,14 +275,20 @@ class UserAzureServer extends UserBase
 
         UserTask::update($task_id, (++$create_step_count / $number_of_steps), '等待创建完成');
 
-        // 直到最后创建的虚拟机运行状态变为 running 再将所创建的虚拟机加入到列表中
+        // 直到最后一个创建的虚拟机运行状态变为 running 再将所创建的虚拟机加入到列表中
         do {
             sleep(1);
             $vm_status = AzureApi::getAzureVirtualMachineStatus($account->id, $vm_url);
             $status = $vm_status['statuses']['1']['code'] ?? 'null';
         } while ($status != 'PowerState/running');
 
-        AzureApi::getAzureVirtualMachines($account->id);
+        // 加载到虚拟机列表
+        try {
+            AzureApi::getAzureVirtualMachines($account->id);
+        } catch (\Exception $e) {
+            UserTask::end($task_id, true);
+            return json(Tools::msg('0', '创建失败', $e->getMessage()));
+        }
 
         // 将设置的备注应用
         $pointer = 0;
