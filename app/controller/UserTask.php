@@ -67,7 +67,7 @@ class UserTask
         $task->save();
     }
 
-    public static function end($task_id, $crash)
+    public static function end($task_id, $crash, $error = null)
     {
         $task = Task::find($task_id);
         $total = json_decode($task->total, true);
@@ -80,7 +80,11 @@ class UserTask
             $task->schedule = '100';
             $task->current = '任务已完成';
         }
-        
+
+        if ($error != null) {
+            $task->error = $error;
+        }
+
         $info = [
             'time' => time(),
             'info' => ($crash == true) ? '任务出错' : '任务已完成'

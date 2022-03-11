@@ -286,8 +286,9 @@ class UserAzureServer extends UserBase
         try {
             AzureApi::getAzureVirtualMachines($account->id);
         } catch (\Exception $e) {
-            UserTask::end($task_id, true);
-            return json(Tools::msg('0', '创建失败', $e->getMessage()));
+            $error = $e->getMessage();
+            UserTask::end($task_id, true, $error);
+            return json(Tools::msg('0', '创建失败', $error));
         }
 
         // 将设置的备注应用
