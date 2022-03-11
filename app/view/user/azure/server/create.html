@@ -23,7 +23,8 @@
                 <li>你可以在 <a href="/user/profile">个人资料</a> 页设置各项开机默认参数</li>
                 <li>归属账户后括号内的数字，代表此账户下除 <code>B1s</code> 以外规格的虚拟机数目</li>
                 <li>创建多个虚拟机时，备注和名称的填写需使用英文逗号分隔</li>
-                <li>不能使用这些用户名：<code>root</code>, <code>admin</code>, <code>centos</code>, <code>debian</code>, <code>ubuntu</code></li>
+                <li>不能使用这些用户名：<code>root</code>, <code>admin</code>, <code>centos</code>, <code>debian</code>,
+                  <code>ubuntu</code></li>
                 <li>密码必须包含小写字母、大写字母、数字和特殊符号这四个组成部分中的三个，长度大于 12 且小于 72</li>
               </ul>
             </div>
@@ -61,57 +62,60 @@
           <div class="mdui-textfield mdui-textfield-floating-label">
             <i class="mdui-icon material-icons">code</i>
             <label class="mdui-textfield-label">bash 脚本（可不填）</label>
-            <textarea class="mdui-textfield-input" id="vm_script" rows="6">{$personalise.vm_default_script ?? ''}</textarea>
+            <textarea class="mdui-textfield-input" id="vm_script"
+              rows="6">{$personalise.vm_default_script ?? ''}</textarea>
           </div>
           <div class="mdui-m-t-2">
             地区：<select id="vm_location" class="mdui-select" mdui-select>
-            {volist name="locations" id="location"}
+              {volist name="locations" id="location"}
               <option value="{$key}">{$location}</option>
-            {/volist}
+              {/volist}
             </select>
           </div>
           <div class="mdui-m-t-2">
             规格：<select id="vm_size" class="mdui-select" mdui-select>
-            {volist name="sizes" id="size"}
+              {volist name="sizes" id="size"}
               <option value="{$key}">
                 {:str_replace('Standard_', '', $key)} {$size.cpu}C_{$size.memory}G ({:round($size.cost, 1)} USD / Month)
               </option>
-            {/volist}
+              {/volist}
             </select>
           </div>
           {if empty($designated_account)}
           <div class="mdui-m-t-2">
             归属：<select id="vm_account" class="mdui-select" mdui-select>
-            {volist name="accounts" id="account"}
+              {volist name="accounts" id="account"}
               <option value="{$account->id}">{$account->az_email} ({$has_vm_num[$account->id]})</option>
-            {/volist}
+              {/volist}
             </select>
           </div>
           {else /}
           <div>
             <p class="mdui-typo">
-              <span style="color: red">你正在使用指定账户创建模式，该模式下无法选择其他账户</span>。退出模式请 <a href="/user/server/azure/create">点击此处</a>
+              <span style="color: red">你正在使用指定账户创建模式，该模式下无法选择其他账户</span>。退出模式请 <a
+                href="/user/server/azure/create">点击此处</a>
             </p>
           </div>
           <div class="mdui-m-t-2">
             归属：
             <select id="vm_account" class="mdui-select" mdui-select>
-              <option value="{$designated_account->id}">{$designated_account->az_email} ({$has_vm_num[$designated_account->id]})</option>
+              <option value="{$designated_account->id}">{$designated_account->az_email}
+                ({$has_vm_num[$designated_account->id]})</option>
             </select>
           </div>
           {/if}
           <div class="mdui-m-t-2">
             存储：<select id="vm_disk_size" class="mdui-select" mdui-select>
-            {foreach $disk_sizes as $disk_size}
+              {foreach $disk_sizes as $disk_size}
               <option value="{$disk_size}">{$disk_size} GB</option>
-            {/foreach}
+              {/foreach}
             </select>
           </div>
           <div class="mdui-m-t-2">
             镜像：<select id="vm_image" class="mdui-select" mdui-select>
-            {volist name="images" id="image"}
+              {volist name="images" id="image"}
               <option value="{$key}">{$image.display}</option>
-            {/volist}
+              {/volist}
             </select>
           </div>
         </div>
@@ -155,17 +159,17 @@
           method: 'POST',
           url: "/user/server/azure",
           data: {
-            vm_remark:    $('#vm_remark').val(),
-            vm_name:      $('#vm_name').val(),
-            vm_number:    $('#vm_number').val(),
-            vm_user:      $('#vm_user').val(),
-            vm_passwd:    $('#vm_passwd').val(),
-            vm_script:    $('#vm_script').val(),
-            vm_location:  $('#vm_location').val(),
-            vm_size:      $('#vm_size').val(),
-            vm_account:   $('#vm_account').val(),
+            vm_remark: $('#vm_remark').val(),
+            vm_name: $('#vm_name').val(),
+            vm_number: $('#vm_number').val(),
+            vm_user: $('#vm_user').val(),
+            vm_passwd: $('#vm_passwd').val(),
+            vm_script: $('#vm_script').val(),
+            vm_location: $('#vm_location').val(),
+            vm_size: $('#vm_size').val(),
+            vm_account: $('#vm_account').val(),
             vm_disk_size: $('#vm_disk_size').val(),
-            vm_image:     $('#vm_image').val()
+            vm_image: $('#vm_image').val()
           },
           dataType: "json",
           success: function (data) {
@@ -187,7 +191,7 @@
       }
     );
   });
-  
+
   $("#vm_size").prop('value', '{$personalise.vm_size}');
   $("#vm_image").prop('value', '{$personalise.vm_image}');
   $("#vm_location").prop('value', '{$personalise.vm_location}');
