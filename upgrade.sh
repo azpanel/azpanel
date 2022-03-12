@@ -66,6 +66,7 @@ main()
     checkGit
     checkoutConfirm
     pullUpdate
+    modifyVersion
 }
 
 main
