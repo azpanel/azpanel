@@ -24,7 +24,7 @@ checkoutConfirm()
 {
     echo -ne "${yellow_color}The update will execute the [git checkout .] command, which will lose all your custom modifications, are you sure you want to continue? [y/n]:${color_end}"
     read reply
-    
+
     if [[ ${reply} == 'n' ]];then
         echo -e "${green_color}In fact, if you have experience with git, you can update it with your custom changes saved by using the [git stash] command.${color_end}"
         exit
@@ -39,6 +39,26 @@ pullUpdate()
     git merge
 
     echo -e "${green_color}Update to the latest version is complete.${color_end}"
+}
+
+modifyVersion()
+{
+    version=$(cat ${dir}/version)
+    if [[ $version == '' ]];then
+        version=$(git log --format="%ct" | wc -l)
+    fi
+    
+    big_v='1'
+    medium_v='0'
+    small_v=$(expr ${version} + 1)
+    hash=$(git log -1 --format="%h")
+    
+    # tvl = tpl version line
+    user_tvl=$(cat -n ${dir}/app/view/user/header.html | grep '<span>v.' | awk '{print $1}')
+    admin_tvl=$(cat -n ${dir}/app/view/admin/header.html | grep '<span>v.' | awk '{print $1}')
+
+    sed "${user_tvl}c\ 	       <span>v.${big_v}.${medium_v}.${small_v} ${hash}</span>" ${dir}/app/view/admin/header.html
+    sed "${admin_tvl}c\ 	       <span>v.${big_v}.${medium_v}.${small_v} ${hash}</span>" ${dir}/app/view/admin/header.html
 }
 
 main()
