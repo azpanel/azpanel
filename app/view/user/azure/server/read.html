@@ -72,7 +72,8 @@
               <div class="mdui-typo">
                 <p>名称：<code>{$network_details.name}</code></p>
                 <p>地址：<code>{$network_details.properties.ipConfigurations.0.properties.privateIPAddress}</code></p>
-                <p>类型：<code>{$network_details.properties.ipConfigurations.0.properties.privateIPAllocationMethod}</code></p>
+                <p>类型：<code>{$network_details.properties.ipConfigurations.0.properties.privateIPAllocationMethod}</code>
+                </p>
               </div>
             </div>
           </div>
@@ -101,10 +102,39 @@
         </div>
       </div>
 
+      <p style="color: #3F51B5; font-size: 20px">更多操作</p>
+
+      <div class="mdui-row">
+        <div class="mdui-col-md-4 mdui-col-sm-12">
+          <div class="mdui-card" style="overflow: visible">
+            <div class="mdui-card-content">
+              <p style="color: #3F51B5; font-size: 18px"><i class="mdui-icon material-icons">tune</i>&nbsp;调整配置
+              </p>
+              <div class="mdui-typo">
+                <div class="mdui-m-t-2">
+                  规格：<select id="new_size" class="mdui-select" mdui-select>
+                    {volist name="vm_sizes" id="size"}
+                    <option value="{$key}">
+                      {:str_replace('Standard_', '', $key)} {$size.cpu}C_{$size.memory}G ({:round($size.cost, 1)} USD /
+                      Month)
+                    </option>
+                    {/volist}
+                  </select>
+                </div>
+                <div class="mdui-m-t-2">
+                  <button id="switch_size" onclick="resize(this)" data-id="{$server->vm_id}"
+                    class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-blue-grey">调整</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="mdui-container">
         <div class="mdui-dialog" id="raw-vm-vm_detailss">
           <div class="mdui-dialog-content">
-            <div class="mdui-dialog-title">虚拟机原始数据</div>
+            <div class="mdui-dialog-title">虚拟机详情</div>
             <div class="mdui-dialog-content">
               <pre><code class="language-php">{:var_dump($vm_details)}</code></pre>
             </div>
@@ -118,7 +148,7 @@
       <div class="mdui-container">
         <div class="mdui-dialog" id="raw-vm-instance_details">
           <div class="mdui-dialog-content">
-            <div class="mdui-dialog-title">虚拟机原始数据</div>
+            <div class="mdui-dialog-title">虚拟机状态</div>
             <div class="mdui-dialog-content">
               <pre><code class="language-php">{:var_dump($instance_details)}</code></pre>
             </div>
@@ -132,7 +162,7 @@
       <div class="mdui-container">
         <div class="mdui-dialog" id="raw-network-vm_detailss">
           <div class="mdui-dialog-content">
-            <div class="mdui-dialog-title">网络接口原始数据</div>
+            <div class="mdui-dialog-title">网络接口</div>
             <div class="mdui-dialog-content">
               <pre><code class="language-php">{:var_dump($network_details)}</code></pre>
             </div>
@@ -160,6 +190,39 @@
   </div>
 </div>
 </body>
+
+<script>
+  function resize(that) {
+    mdui.confirm('规格变配过程中需要重新启动虚拟机，请注意保存重要数据', '变配确认',
+      function () {
+        var id = $(that).data('id');
+        var load = new mdui.alert('<div class=\"mdui-progress\"><div class=\"mdui-progress-indeterminate\"></div></div>', '进行中');
+        $.ajax({
+          method: 'PUT',
+          url: "/user/server/azure/resize/" + id,
+          data: {
+            new_size: $('#new_size').val(),
+          },
+          dataType: "json",
+          success: function (data) {
+            load.close();
+            if (data.status == '0') {
+              mdui.alert(data.content, data.title);
+            } else {
+              mdui.alert(data.content, data.title);
+              setTimeout("window.location = '/user/server/azure'", 1500);
+            }
+          }
+        });
+      },
+      function () { },
+      {
+        confirmText: "确定",
+        cancelText: "取消"
+      }
+    );
+  };
+</script>
 {include file="../app/view/user/footer.html" /}
 
 </html>

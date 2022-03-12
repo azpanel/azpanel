@@ -53,13 +53,14 @@ Route::get('/user/azure/resources/:id/:name',     'UserAzure/readResourceGroup')
 // Azure 服务器
 Route::resource('/user/server/azure',             'UserAzureServer');
 Route::patch('/user/server/azure/:action/:uuid',  'UserAzureServer/status');
+Route::put('/user/server/azure/resize/:uuid',     'UserAzureServer/resize');
 Route::post('/user/server/azure/remark/:uuid',    'UserAzureServer/remark');
 Route::post('/user/server/azure/refresh/:uuid',   'UserAzureServer/refresh');
 Route::post('/user/server/azure/change/:uuid',    'UserAzureServer/change');
 Route::post('/user/server/azure/check/:ipv4',     'UserAzureServer/check');
 Route::delete('/user/server/azure/remove/:uuid',  'UserAzureServer/delete');
 Route::delete('/user/server/azure/destroy/:uuid', 'UserAzureServer/destroy');
-Route::get('/user/server/azure/:id/chart/[:gap]',  'UserAzureServer/chart');
+Route::get('/user/server/azure/:id/chart/[:gap]', 'UserAzureServer/chart');
 
 // 管理员
 Route::get('/admin',                              'AdminDashboard/index');

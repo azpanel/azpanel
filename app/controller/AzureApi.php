@@ -608,4 +608,31 @@ class AzureApi extends BaseController
 
         return json_decode($result->getBody(), true); // array
     }
+
+    public static function virtualMachinesResize($new_size, $location, $account_id, $request_url)
+    {
+        // https://stackoverflow.com/questions/65444722/how-to-downgrade-and-upgrade-azure-virtual-machine-programmatically
+
+        $headers = [
+            'Authorization' => 'Bearer ' . self::getAzureAccessToken($account_id),
+            'Content-Type' => 'application/json'
+        ];
+
+        $body = [
+            'location' => $location,
+            'properties' => [
+                'hardwareProfile' => [
+                    'vmSize' => $new_size
+                ]
+            ]
+        ];
+
+        $url = 'https://management.azure.com' . $request_url . '?api-version=2021-11-01';
+
+        $client = new Client();
+        $object = $client->put($url,[
+            'headers' => $headers,
+            'json' => $body
+        ]);
+    }
 }

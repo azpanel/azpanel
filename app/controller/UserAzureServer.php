@@ -62,7 +62,6 @@ class UserAzureServer extends UserBase
 
         $user         = User::find(session('user_id'));
         $personalise  = json_decode($user->personalise, true);
-        $disk_sizes   = ['32', '64', '128', '256', '512', '1024'];
 
         if (!$accounts->isEmpty()) {
             foreach ($accounts as $account)
@@ -78,10 +77,10 @@ class UserAzureServer extends UserBase
         }
 
         View::assign('locations',   AzureList::locations());
+        View::assign('disk_sizes',  AzureList::diskSizes());
         View::assign('images',      AzureList::images());
         View::assign('sizes',       AzureList::sizes());
         View::assign('personalise', $personalise);
-        View::assign('disk_sizes',  $disk_sizes);
         View::assign('accounts',    $accounts);
         return View::fetch('../app/view/user/azure/server/create.html');
     }
@@ -311,10 +310,15 @@ class UserAzureServer extends UserBase
             return View::fetch('../app/view/user/reject.html');
         }
 
+        $vm_sizes = AzureList::sizes();
+        unset($vm_sizes[$server->vm_size]);
+
         $vm_details = json_decode($server->vm_details, true);
         $network_details = json_decode($server->network_details, true);
         $instance_details = json_decode($server->instance_details, true);
 
+        View::assign('server', $server);
+        View::assign('vm_sizes', $vm_sizes);
         View::assign('vm_details', $vm_details);
         View::assign('network_details', $network_details);
         View::assign('instance_details', $instance_details);
@@ -355,6 +359,23 @@ class UserAzureServer extends UserBase
         $server->save();
 
         return json(Tools::msg('1', '修改结果', '修改成功'));
+    }
+
+    public function resize($uuid)
+    {
+        $new_size = input('new_size/s');
+        $server = AzureServer::where('vm_id', $uuid)->find();
+
+        try {
+            AzureApi::virtualMachinesResize($new_size, $server->location, $server->account_id, $server->request_url);
+        } catch (\Exception $e) {
+            return json(Tools::msg('0', '变配失败', $e->getMessage()));
+        }
+
+        $server->vm_size = $new_size;
+        $server->save();
+
+        return json(Tools::msg('1', '变配结果', '变配成功'));
     }
 
     public function status($action, $uuid)

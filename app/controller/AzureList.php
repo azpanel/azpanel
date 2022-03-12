@@ -256,4 +256,21 @@ class AzureList
 
         return json_encode($personalise);
     }
+
+    public static function diskSizes()
+    {
+        $sizes = [
+            '32',
+            '64',
+            '128',
+            '256',
+            '512',
+            '1024',
+            '2048',
+            '4096',
+            '8192'
+        ];
+
+        return $sizes;
+    }
 }
