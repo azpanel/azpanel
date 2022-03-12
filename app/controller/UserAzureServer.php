@@ -10,6 +10,7 @@ use app\model\User;
 use app\model\Config;
 use app\model\Traffic;
 use app\model\AzureServer;
+use app\model\AzureServerResize;
 use app\controller\Tools;
 use app\controller\AzureApi;
 use app\controller\AzureList;
@@ -371,6 +372,14 @@ class UserAzureServer extends UserBase
         } catch (\Exception $e) {
             return json(Tools::msg('0', '变配失败', $e->getMessage()));
         }
+
+        $log = new AzureServerResize;
+        $log->user_id     = session('user_id');
+        $log->vm_id       = $server->vm_id;
+        $log->before_size = $server->vm_size;
+        $log->after_size  = $new_size;
+        $log->created_at  = time();
+        $log->save();
 
         $server->vm_size = $new_size;
         $server->save();
