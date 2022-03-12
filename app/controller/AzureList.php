@@ -170,20 +170,35 @@ class AzureList
                 'memory' => '4',
                 'cost' => 0.0990 * 720,
             ],
-            'Standard_F2s_v2' => [
-                'cpu' => '2',
-                'memory' => '4',
-                'cost' => 0.0846 * 720,
-            ],
             'Standard_F4s' => [
                 'cpu' => '4',
                 'memory' => '8',
                 'cost' => 0.1990 * 720,
             ],
-            'Standard_F4s_v2' => [
+            'Standard_F8s' => [
+                'cpu' => '8',
+                'memory' => '16',
+                'cost' => 0.3980 * 720,
+            ],
+            'Standard_DS1_v2' => [
+                'cpu' => '1',
+                'memory' => '3.5',
+                'cost' => 0.0730 * 720,
+            ],
+            'Standard_DS1_v2' => [
+                'cpu' => '1',
+                'memory' => '3.5',
+                'cost' => 0.0730 * 720,
+            ],
+            'Standard_DS2_v2' => [
+                'cpu' => '2',
+                'memory' => '7',
+                'cost' => 0.1460 * 720,
+            ],
+            'Standard_DS3_v2' => [
                 'cpu' => '4',
-                'memory' => '8',
-                'cost' => 0.1690 * 720,
+                'memory' => '14',
+                'cost' => 0.2930 * 720,
             ],
         ];
 
