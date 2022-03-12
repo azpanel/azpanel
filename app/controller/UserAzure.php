@@ -327,6 +327,14 @@ class UserAzure extends UserBase
             return json(Tools::msg('0', '删除失败', $e->getMessage()));
         }
 
+        $resource_group = explode('/', $url);
+        $subscriptions = $resource_group['2'];
+        $resource_group = end($resource_group);
+
+        AzureServer::where('at_subscription_id', $subscriptions)
+        ->where('resource_group', $resource_group)
+        ->delete();
+
         return json(Tools::msg('1', '删除结果', '删除所有资源需要 3~5 分钟完成'));
     }
 
