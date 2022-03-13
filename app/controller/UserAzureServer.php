@@ -298,7 +298,7 @@ class UserAzureServer extends UserBase
         } while ($status != 'PowerState/running' && $count < 120);
 
         if ($count >= 120) {
-            UserTask::end($task_id, true);
+            UserTask::end($task_id, true, $vm_status);
             return json(Tools::msg('0', '创建失败', '原因未知。建议前往账户列表，进入创建账户的资源组列表中，将创建失败的资源组删除，在删除完成后重试。重新创建时，建议设定与之前不同的虚拟机名称。如若仍然失败，可记录创建参数，在 github issue 区寻求帮助'));
         }
 

@@ -47,13 +47,14 @@ modifyVersion()
     #if [[ $version == '' ]];then
         #version=$(git log --format="%ct" | wc -l)
     #fi
-    
+
+    version=$(git log --format="%ct" | wc -l)
+
     big_v='1'
     medium_v='0'
     small_v=$(expr ${version} + 1)
-    version=$(git log --format="%ct" | wc -l)
     hash=$(git log -1 --format="%h")
-    
+
     # tvl = tpl version line
     user_tvl=$(cat -n ${dir}/app/view/user/header.html | grep '<span>v.' | awk '{print $1}')
     admin_tvl=$(cat -n ${dir}/app/view/admin/header.html | grep '<span>v.' | awk '{print $1}')
