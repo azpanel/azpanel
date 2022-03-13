@@ -276,11 +276,18 @@ class UserAzureServer extends UserBase
         UserTask::update($task_id, (++$create_step_count / $number_of_steps), '等待创建完成');
 
         // 直到最后一个创建的虚拟机运行状态变为 running 再将所创建的虚拟机加入到列表中
+        $count = 0;
         do {
             sleep(1);
+            ++$count;
             $vm_status = AzureApi::getAzureVirtualMachineStatus($account->id, $vm_url);
             $status = $vm_status['statuses']['1']['code'] ?? 'null';
-        } while ($status != 'PowerState/running');
+        } while ($status != 'PowerState/running' && $count < 120);
+
+        if ($count >= 120) {
+            UserTask::end($task_id, true);
+            return json(Tools::msg('0', '创建失败', '原因未知。建议前往账户列表，在创建账户资源组列表中，将创建失败的资源组删除，等待删除完成后重试。重新创建时，建议设定与之前不同的名称。如若仍然失败，可记录创建参数，在 github issue 区寻求帮助'));
+        }
 
         // 加载到虚拟机列表
         try {
