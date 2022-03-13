@@ -261,15 +261,16 @@ class UserAzureServer extends UserBase
                 sleep(2);
 
                 // (6/6) 创建虚拟机
-                $text = '在资源组 ' . $vm_resource_group_name . ' 中创建虚拟机 ' . $vm_name;
+                $text = '在资源组 ' . $vm_resource_group_name . ' 中创建虚拟机';
                 UserTask::update($task_id, (++$create_step_count / $number_of_steps), $text);
 
                 $vm_url = AzureApi::createAzureVm(
                     $account, $vm_name, $vm_config, $vm_image, $interfaces, $vm_location
                 );
             } catch (\Exception $e) {
-                UserTask::end($task_id, true);
-                return json(Tools::msg('0', '创建失败', $e->getResponse()->getBody()->getContents()));
+                $error = $e->getResponse()->getBody()->getContents();
+                UserTask::end($task_id, true, $error);
+                return json(Tools::msg('0', '创建失败', $error));
             }
         }
 

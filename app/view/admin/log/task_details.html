@@ -1,0 +1,88 @@
+{include file="../app/view/admin/header.html" title="任务详情" /}
+
+<div class="mdui-container-fluid">
+  <div class="mdui-row">
+    <div
+      class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+      <div class="mdui-container-fluid">
+        <p style="color: #3F51B5; font-size: 34px">{$log.name}</p>
+      </div>
+
+      <div class="mdui-typo">
+        <p>有关此任务的信息</p>
+      </div>
+
+      <div class="mdui-row">
+        <div class="mdui-col-md-4 mdui-col-sm-12 mdui-m-t-2">
+          <div class="mdui-card">
+            <div class="mdui-card-content">
+              <p style="color: #3F51B5; font-size: 18px">
+                <i class="mdui-icon material-icons">event_available</i>&nbsp;任务
+              </p>
+              <div class="mdui-typo">
+                <p>任务编号：<code>{$log.id}</code></p>
+                <p>提交用户：<code>{$log.user_id}</code></p>
+                <p>任务进度：<code>{$log.schedule}</code></p>
+                <p>任务状态：<code>{$log.status}</code></p>
+                <p>创建时间：<code>{:date('Y-m-d H:i:s', $log.created_at)}</code></p>
+                <p>更新时间：<code>{:date('Y-m-d H:i:s', $log.created_at)}</code></p>
+                <p>累计耗时：<code>{$log.total_time}</code></p>
+                {if $log.status != 'completed'}
+                <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple"
+                  mdui-dialog="{target: '#task-error'}">
+                  查看错误
+                </button>
+                {/if}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mdui-col-md-8 mdui-col-sm-12 mdui-m-t-2">
+          <div class="mdui-table-fluid">
+            <table class="mdui-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>时间</th>
+                  <th>进展</th>
+                </tr>
+              </thead>
+              <tbody>
+                {foreach $total as $key => $value}
+                <tr>
+                  <td>{++$count}</td>
+                  <td>{:date('Y-m-d H:i:s', $value.time)}</td>
+                  <td>{$value.info}</td>
+                </tr>
+                {/foreach}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="mdui-container">
+        <div class="mdui-dialog" id="task-error">
+          <div class="mdui-dialog-content">
+            <div class="mdui-dialog-title">任务错误</div>
+            <div class="mdui-dialog-content">
+              <pre><code class="language-php">{:var_dump($log.error)}</code></pre>
+            </div>
+          </div>
+          <div class="mdui-dialog-actions">
+            <button class="mdui-btn mdui-ripple" mdui-dialog-close>关闭</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mdui-m-t-2"></div>
+
+    </div>
+  </div>
+</div>
+</body>
+
+{include file="../app/view/admin/footer.html" /}
+
+</html>

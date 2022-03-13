@@ -69,15 +69,26 @@ Route::resource('/admin/user',                    'AdminUser');
 Route::get('/admin/user/assets/:id',              'AdminUser/userAssets');
 Route::patch('/admin/user/remark/:id',            'AdminUser/remark');
 
+// 设置
 Route::get('/admin/setting',                      'AdminSetting/baseIndex');
 Route::put('/admin/setting',                      'AdminSetting/baseSave');
+
 // 邮件
 Route::get('/admin/setting/email',                'AdminSetting/emailIndex');
 Route::put('/admin/setting/email',                'AdminSetting/emailSave');
 Route::post('/admin/setting/email/test',          'AdminSetting/emailPushTest');
-// Telegram
+
+// 电报
 Route::get('/admin/setting/telegram',             'AdminSetting/telegramIndex');
 Route::put('/admin/setting/telegram',             'AdminSetting/telegramSave');
 Route::post('/admin/setting/telegram/test',       'AdminSetting/telegramPushTest');
 
+// 日志
+Route::get('/admin/log/login',                    'AdminLog/login');
+Route::get('/admin/log/verify',                   'AdminLog/verify');
+Route::get('/admin/log/resize',                   'AdminLog/resize');
+Route::get('/admin/log/task',                     'AdminLog/task');
+Route::get('/admin/log/task/:id',                 'AdminLog/taskDetails');
+
+// 其他
 Route::get('/user/progress',   'UserTask/ajaxQuery')->json();
