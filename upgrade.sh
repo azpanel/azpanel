@@ -43,14 +43,15 @@ pullUpdate()
 
 modifyVersion()
 {
-    version=$(cat ${dir}/version)
-    if [[ $version == '' ]];then
-        version=$(git log --format="%ct" | wc -l)
-    fi
+    #version=$(cat ${dir}/version)
+    #if [[ $version == '' ]];then
+        #version=$(git log --format="%ct" | wc -l)
+    #fi
     
     big_v='1'
     medium_v='0'
     small_v=$(expr ${version} + 1)
+    version=$(git log --format="%ct" | wc -l)
     hash=$(git log -1 --format="%h")
     
     # tvl = tpl version line
