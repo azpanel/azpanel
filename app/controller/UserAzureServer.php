@@ -180,6 +180,18 @@ class UserAzureServer extends UserBase
             return json(Tools::msg('0', '创建失败', '此 Windows 系统镜像要求硬盘大小不低于 127 GB'));
         }
 
+        // 资源组检测
+        $resource_groups = AzureApi::getAzureResourceGroupsList($account->id, $account->az_sub_id);
+        foreach ($resource_groups['value'] as $resource_group)
+        {
+            foreach ($names as $vm_name) {
+                $resource_group_name = $vm_name . '_group';
+                if ($resource_group['name'] == $resource_group_name) {
+                    return json(Tools::msg('0', '创建失败', '存在同名资源组，请修改虚拟机名称 ' . $vm_name));
+                }
+            }
+        }
+
         // return json(Tools::msg('0', '创建检查完成', '没有发现问题'));
 
         $create_step_count = 0;
@@ -287,7 +299,7 @@ class UserAzureServer extends UserBase
 
         if ($count >= 120) {
             UserTask::end($task_id, true);
-            return json(Tools::msg('0', '创建失败', '原因未知。建议前往账户列表，在创建账户资源组列表中，将创建失败的资源组删除，等待删除完成后重试。重新创建时，建议设定与之前不同的名称。如若仍然失败，可记录创建参数，在 github issue 区寻求帮助'));
+            return json(Tools::msg('0', '创建失败', '原因未知。建议前往账户列表，进入创建账户的资源组列表中，将创建失败的资源组删除，在删除完成后重试。重新创建时，建议设定与之前不同的虚拟机名称。如若仍然失败，可记录创建参数，在 github issue 区寻求帮助'));
         }
 
         // 加载到虚拟机列表

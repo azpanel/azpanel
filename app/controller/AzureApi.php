@@ -68,26 +68,20 @@ class AzureApi extends BaseController
     {
         // https://docs.microsoft.com/zh-cn/rest/api/resources/providers/register
 
+        $client = new Client();
         $azure_sub = Azure::find($account_id);
 
         $headers = [
             'Authorization' => 'Bearer ' . self::getAzureAccessToken($account_id)
         ];
 
-        $client = new Client();
-        $url = 'https://management.azure.com/subscriptions/'. $azure_sub->az_sub_id . '/providers/Microsoft.Network/register?api-version=2021-04-01';
-        $result = $client->post($url, [
-            'headers' => $headers
-        ]);
+        // Microsoft.Network
+        $network_url = 'https://management.azure.com/subscriptions/'. $azure_sub->az_sub_id . '/providers/Microsoft.Network/register?api-version=2021-04-01';
+        $client->post($network_url, ['headers' => $headers]);
 
-        sleep(1);
-
-        $url = 'https://management.azure.com/subscriptions/'. $azure_sub->az_sub_id . '/providers/Microsoft.Compute/register?api-version=2021-04-01';
-        $result = $client->post($url, [
-            'headers' => $headers
-        ]);
-
-        sleep(1);
+        // Microsoft.Compute
+        $compute_url = 'https://management.azure.com/subscriptions/'. $azure_sub->az_sub_id . '/providers/Microsoft.Compute/register?api-version=2021-04-01';
+        $client->post($compute_url, ['headers' => $headers]);
 
         $azure_sub->providers_register = 1;
         $azure_sub->save();
