@@ -1,6 +1,7 @@
 <?php
 namespace app\controller;
 
+use think\helper\Str;
 use app\controller\Ip;
 
 class AzureList
@@ -259,13 +260,16 @@ class AzureList
 
     public static function defaultPersonalise()
     {
+        $user = Str::random($length = 8);
+        $user = Str::lower($user);
+
         $personalise = [
             'vm_size'                => 'Standard_B2s',
             'vm_image'               => 'Debian_11',
             'vm_location'            => 'eastasia',
             'vm_disk_size'           => '32',
             'vm_default_script'      => '',
-            'vm_default_identity'    => 'azuser',
+            'vm_default_identity'    => $user,
             'vm_default_credentials' => 'Azure123456789',
         ];
 
