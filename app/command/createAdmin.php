@@ -19,14 +19,14 @@ class createAdmin extends Command
     {
         // 指令配置
         $this->setName('createAdmin')
-        	->addOption('email', null, Option::VALUE_REQUIRED, 'login email')
+            ->addOption('email', null, Option::VALUE_REQUIRED, 'login email')
             ->addOption('passwd', null, Option::VALUE_REQUIRED, 'login passwd')
-        	->setDescription('Create administrator account');
+            ->setDescription('Create administrator account');
     }
 
     protected function execute(Input $input, Output $output)
     {
-    	$email = trim($input->getOption('email'));
+        $email = trim($input->getOption('email'));
         $passwd = trim($input->getOption('passwd'));
 
         if ($email == '') {

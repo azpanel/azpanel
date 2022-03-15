@@ -6,5 +6,6 @@ return [
     'commands' => [
         'tools' => 'app\command\Tools',
         'createAdmin' => 'app\command\createAdmin',
+        'autoRefreshAccount' => 'app\command\autoRefreshAccount',
     ]
 ];

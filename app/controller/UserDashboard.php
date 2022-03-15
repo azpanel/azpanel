@@ -1,12 +1,13 @@
 <?php
 namespace app\controller;
 
-use think\facade\View;
-use app\controller\Tools;
 use app\model\User;
 use app\model\Ann;
 use app\model\Config;
 use app\model\LoginLog;
+use app\model\AutoRefresh;
+use app\controller\Tools;
+use think\facade\View;
 
 class UserDashboard extends UserBase
 {
@@ -23,13 +24,13 @@ class UserDashboard extends UserBase
     public function loginLog()
     {
         $user = User::find(session('user_id'));
-        
+
         $logs = LoginLog::where('email', $user->email)
         ->order('id', 'desc')
         ->paginate(30);
 
         $page = $logs->render();
-        
+
         View::assign('page', $page);
         View::assign('logs', $logs);
         return View::fetch('../app/view/user/loginlog.html');
@@ -37,23 +38,39 @@ class UserDashboard extends UserBase
 
     public function profile()
     {
-        $profile     = User::find(session('user_id'));
+        $user_id     = session('user_id');
+        $profile     = User::find($user_id);
         $telegram    = Config::class('telegram');
         $switch      = Config::class('switch');
         $personalise = json_decode($profile->personalise, true);
-        $disk_sizes   = ['32', '64', '128', '256', '512', '1024'];
-        
-        View::assign('locations', AzureList::locations());
-        View::assign('images', AzureList::images());
-        View::assign('sizes', AzureList::sizes());
-        View::assign('personalise', $personalise);
-        View::assign('disk_sizes', $disk_sizes);
-        View::assign('telegram', $telegram);
-        View::assign('profile', $profile);
+
+        $refresh_setting = AutoRefresh::where('user_id', $user_id)->find();
+        if ($refresh_setting == null) {
+            $auto_refresh = new AutoRefresh;
+
+            $auto_refresh->user_id         = $user_id;
+            $auto_refresh->rate            = '24';
+            $auto_refresh->push_swicth     = '0';
+            $auto_refresh->function_swicth = '0';
+            $auto_refresh->created_at      = time();
+            $auto_refresh->updated_at      = time();
+            $auto_refresh->save();
+
+            $refresh_setting = AutoRefresh::where('user_id', $user_id)->find();
+        }
+
         View::assign('switch', $switch);
+        View::assign('profile', $profile);
+        View::assign('telegram', $telegram);
+        View::assign('personalise', $personalise);
+        View::assign('refresh_setting', $refresh_setting);
+        View::assign('sizes', AzureList::sizes());
+        View::assign('images', AzureList::images());
+        View::assign('locations', AzureList::locations());
+        View::assign('disk_sizes', AzureList::diskSizes());
         return View::fetch('../app/view/user/profile.html');
     }
-    
+
     public function savePasswd()
     {
         $passwd       = Tools::encryption(input('now_passwd/s'));
@@ -82,14 +99,17 @@ class UserDashboard extends UserBase
 
     public function saveNotify()
     {
-        if (!Tools::emailCheck(input('user_email/s'))) {
+        $user_id    = session('user_id');
+        $user_email = input('user_email/s');
+
+        if (!Tools::emailCheck($user_email)) {
             return json(Tools::msg('0', '保存失败', '邮箱格式不规范'));
         }
-        
-        $user = User::find(session('user_id'));
+
+        $user               = User::find($user_id);
         $user->notify_email = input('user_email/s');
         $user->notify_tg    = input('user_telegram/s');
-        $user->notify_tgid  = input('user_telegram_id');
+        $user->notify_tgid  = (int) input('user_telegram_id/s');
         $user->save();
 
         return json(Tools::msg('1', '保存结果', '保存成功'));
@@ -100,11 +120,11 @@ class UserDashboard extends UserBase
         $vm_user   = input('vm_default_identity/s');
         $vm_passwd = input('vm_default_credentials/s');
         $prohibit_user = ['root', 'admin', 'centos', 'debian', 'ubuntu'];
-        
+
         if (in_array($vm_user, $prohibit_user)) {
             return json(Tools::msg('0', '保存失败', '不能使用常见用户名'));
         }
-        
+
         if (!preg_match('/^[a-zA-Z0-9]+$/', $vm_user)) {
             return json(Tools::msg('0', '保存失败', '用户名只允许使用大小写字母与数字的组合'));
         }
@@ -116,7 +136,7 @@ class UserDashboard extends UserBase
         if (!$uppercase || !$lowercase || !$number || strlen($vm_passwd) < 12 || strlen($vm_passwd) > 72) {
             return json(Tools::msg('0', '保存失败', '密码不符合规范，请阅读创建虚拟机页面的使用说明'));
         }
-        
+
         $personalise = [
             'vm_size'                => input('vm_size/s'),
             'vm_image'               => input('vm_image/s'),
