@@ -260,7 +260,7 @@ class UserAzureServer extends UserBase
                 );
 
                 // 避免 http 429 error
-                sleep(1);
+                sleep(2);
 
                 // (5/6) 创建网络接口
                 $text = '在资源组 ' . $vm_resource_group_name . ' 中创建网络接口';

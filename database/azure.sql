@@ -151,7 +151,8 @@ CREATE TABLE `user` (
   `personalise` text COLLATE utf8mb4_general_ci COMMENT '用户偏好',
   `created_at` int NOT NULL COMMENT '创建时间',
   `updated_at` int NOT NULL COMMENT '更新时间',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `verify`;
