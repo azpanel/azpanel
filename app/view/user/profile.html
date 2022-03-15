@@ -9,22 +9,21 @@
       </div>
 
       <div class="mdui-typo">
-        <p>你可以在这里设置推送接收账户，修改登录密码，以及个人偏好</p>
-        <ul>
-          {if $telegram.telegram_account != '' && $switch.telegram_notify == true}
-          <li>如需使用 Telegram Bot 推送服务，请先向机器人 <a
-              href="https://telegram.me/{:app\\model\\Config::obtain('telegram_account')}"
-              target="view_window">@{:app\\model\\Config::obtain('telegram_account')}</a> 发送 <code>/start</code> 启用</li>
-          <li>Telegram UID 可通过与 <a href="https://telegram.me/userinfobot" target="view_window">@userinfobot</a> 互动获取
-          </li>
-          {/if}
-        </ul>
+        <p>可在此设置推送接收，修改密码，以及个人偏好</p>
       </div>
 
       <div class="mdui-card mdui-col-md-12 mdui-m-t-2" style="overflow: visible">
         <div class="mdui-card-content">
           <!-- 导航栏开始 -->
           <div class="mdui-tab" mdui-tab>
+            <a href="#timed-refresh" class="mdui-ripple">
+              <i class="mdui-icon material-icons">refresh</i>
+              <label>定时刷新</label>
+            </a>
+            <a href="#personalize-config" class="mdui-ripple">
+              <i class="mdui-icon material-icons">perm_contact_calendar</i>
+              <label>个性化设置</label>
+            </a>
             <a href="#push-receive" class="mdui-ripple">
               <i class="mdui-icon material-icons">message</i>
               <label>推送接收</label>
@@ -33,17 +32,22 @@
               <i class="mdui-icon material-icons">lock</i>
               <label>密码修改</label>
             </a>
-            <a href="#personalize-config" class="mdui-ripple">
-              <i class="mdui-icon material-icons">perm_contact_calendar</i>
-              <label>个性化设置</label>
-            </a>
-            <a href="#timed-refresh" class="mdui-ripple">
-              <i class="mdui-icon material-icons">refresh</i>
-              <label>定时刷新</label>
-            </a>
           </div>
           <!-- 推送接收 -->
           <div id="push-receive">
+            <div class="mdui-typo mdui-m-t-2">
+              <ul>
+                {if $telegram.telegram_account != '' && $switch.telegram_notify == true}
+                <li>如需使用 Telegram Bot 推送服务，请先向机器人 <a
+                    href="https://telegram.me/{:app\\model\\Config::obtain('telegram_account')}"
+                    target="view_window">@{:app\\model\\Config::obtain('telegram_account')}</a> 发送 <code>/start</code>
+                  启用</li>
+                <li>Telegram UID 可通过与 <a href="https://telegram.me/userinfobot" target="view_window">@userinfobot</a>
+                  互动获取
+                </li>
+                {/if}
+              </ul>
+            </div>
             <div class="mdui-textfield mdui-textfield-floating-label mdui-col-md-4">
               <i class="mdui-icon material-icons">email</i>
               <label class="mdui-textfield-label">接收邮箱</label>
@@ -145,7 +149,7 @@
             </button>
           </div>
           <!-- 定时刷新 -->
-          <div id="timed-refresh" class="mdui-m-a-2">
+          <div id="timed-refresh">
             <div class="mdui-m-t-2">
               频率：<select id="auto_refresh_rate" class="mdui-select" mdui-select>
                 <option value="1">1</option>
@@ -161,13 +165,13 @@
             <div class="mdui-m-t-2">
               开关：<select id="auto_refresh_switch" class="mdui-select" mdui-select>
                 <option value="0">关闭</option>
-                <option value="1" {if $refresh_setting.function_swicth == '1' }selected{/if}>开启</option>
+                <option value="1" {if $refresh_setting.function_swicth=='1' }selected{/if}>开启</option>
               </select>
             </div>
             <div class="mdui-m-t-2">
               电报推送：<select id="auto_refresh_telegram_push" class="mdui-select" mdui-select>
                 <option value="0">关闭</option>
-                <option value="1" {if $refresh_setting.push_swicth == '1' }selected{/if}>开启</option>
+                <option value="1" {if $refresh_setting.push_swicth=='1' }selected{/if}>开启</option>
               </select>
             </div>
 

@@ -156,11 +156,19 @@ class UserDashboard extends UserBase
 
     public function saveRefresh()
     {
+        $user_id                    = session('user_id');
         $auto_refresh_rate          = input('auto_refresh_rate/s');
         $auto_refresh_switch        = input('auto_refresh_switch/s');
         $auto_refresh_telegram_push = input('auto_refresh_telegram_push/s');
 
-        $refresh_setting = AutoRefresh::where('user_id', session('user_id'))->find();
+        $user = User::find($user_id);
+        if ($auto_refresh_telegram_push == '1' && $auto_refresh_switch == '1') {
+            if (empty($user->notify_tgid)) {
+                return json(Tools::msg('0', '保存失败', '请先设置 Telegram 推送接收账户'));
+            }
+        }
+
+        $refresh_setting = AutoRefresh::where('user_id', $user_id)->find();
         $refresh_setting->rate            = (int) $auto_refresh_rate;
         $refresh_setting->push_swicth     = (int) $auto_refresh_telegram_push;
         $refresh_setting->function_swicth = (int) $auto_refresh_switch;
