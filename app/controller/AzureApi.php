@@ -1,6 +1,7 @@
 <?php
 namespace app\controller;
 
+use think\helper\Str;
 use think\facade\Log;
 use app\BaseController;
 use app\model\Azure;
@@ -464,7 +465,7 @@ class AzureApi extends BaseController
         return $subnet_object->id;
     }
 
-    public static function createAzureVirtualNetworkInterfaces($account, $vm_name, $ip_url, $subnets_url, $location) {
+    public static function createAzureVirtualNetworkInterfaces($account, $vm_name, $ip_url, $subnets_url, $location, $vm_size) {
         // https://docs.microsoft.com/zh-cn/rest/api/virtualnetwork/network-interfaces/create-or-update
 
         $headers = [
@@ -493,6 +494,12 @@ class AzureApi extends BaseController
             ]
 
         ];
+
+        // With the GA of AN, region limitations have been removed, making the feature widely available around the world. Supported VM series include D/DSv2, D/DSv3, E/ESv3, F/FS, FSv2, and Ms/Mms.
+
+        if (Str::contains($vm_size, 'Standard_D') || Str::contains($vm_size, 'Standard_F')) {
+            $body['properties']['enableAcceleratedNetworking'] == true;
+        }
 
         $client = new Client();
         $url = 'https://management.azure.com/subscriptions/' . $account->az_sub_id . '/resourceGroups/' . $vm_name . '_group/providers/Microsoft.Network/networkInterfaces/' . $vm_name . '_vif?api-version=2021-03-01';

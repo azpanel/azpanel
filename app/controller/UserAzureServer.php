@@ -267,7 +267,7 @@ class UserAzureServer extends UserBase
                 UserTask::update($task_id, (++$create_step_count / $number_of_steps), $text);
 
                 $interfaces = AzureApi::createAzureVirtualNetworkInterfaces(
-                    $account, $vm_name, $ip, $subnets, $vm_location
+                    $account, $vm_name, $ip, $subnets, $vm_location, $vm_size
                 );
 
                 sleep(2);
