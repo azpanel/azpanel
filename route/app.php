@@ -35,6 +35,7 @@ Route::get('/user/login',      'UserDashboard/loginLog');
 Route::get('/user/profile',                       'UserDashboard/profile');
 Route::put('/user/profile/notify',                'UserDashboard/saveNotify');
 Route::put('/user/profile/passwd',                'UserDashboard/savePasswd');
+Route::put('/user/profile/refresh',               'UserDashboard/saveRefresh');
 Route::put('/user/profile/personalise',           'UserDashboard/savePersonalise');
 
 Route::get('/user/license',                       'UserDashboard/license');

@@ -279,6 +279,36 @@
     );
   });
 
+  $('#update_refresh').on('click', function () {
+    mdui.confirm('确认提交这些设置么？', '定时刷新',
+      function () {
+        $.ajax({
+          method: 'PUT',
+          url: "/user/profile/refresh",
+          data: {
+            auto_refresh_rate: $('#auto_refresh_rate').val(),
+            auto_refresh_switch: $('#auto_refresh_switch').val(),
+            auto_refresh_telegram_push: $('#auto_refresh_telegram_push').val()
+          },
+          dataType: "json",
+          success: function (data) {
+            if (data.status == '0') {
+              mdui.alert(data.content, data.title);
+            } else {
+              mdui.alert(data.content, data.title);
+              setTimeout("window.location = '/user/profile'", 1500);
+            }
+          }
+        });
+      },
+      function () { },
+      {
+        confirmText: "确定",
+        cancelText: "取消"
+      }
+    );
+  });
+
   $("#vm_size").prop('value', '{$personalise.vm_size}');
   $("#vm_image").prop('value', '{$personalise.vm_image}');
   $("#vm_location").prop('value', '{$personalise.vm_location}');

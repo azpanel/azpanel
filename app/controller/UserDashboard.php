@@ -154,6 +154,21 @@ class UserDashboard extends UserBase
         return json(Tools::msg('1', '保存结果', '保存成功'));
     }
 
+    public function saveRefresh()
+    {
+        $auto_refresh_rate          = input('auto_refresh_rate/s');
+        $auto_refresh_switch        = input('auto_refresh_switch/s');
+        $auto_refresh_telegram_push = input('auto_refresh_telegram_push/s');
+
+        $refresh_setting = AutoRefresh::where('user_id', session('user_id'))->find();
+        $refresh_setting->rate            = (int) $auto_refresh_rate;
+        $refresh_setting->push_swicth     = (int) $auto_refresh_telegram_push;
+        $refresh_setting->function_swicth = (int) $auto_refresh_switch;
+        $refresh_setting->save();
+
+        return json(Tools::msg('1', '保存结果', '保存成功'));
+    }
+
     public function license()
     {
         return View::fetch('../app/view/user/license.html');
