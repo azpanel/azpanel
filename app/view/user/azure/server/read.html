@@ -96,6 +96,9 @@
                 <p>
                   SKU：<code>{$network_details.properties.ipConfigurations.0.properties.publicIPAddress.sku.name ?? 'null'} - {$network_details.properties.ipConfigurations.0.properties.publicIPAddress.sku.tier ?? 'null'}</code>
                 </p>
+                <p>
+                  DDNS：<code>{$network_details.properties.ipConfigurations.0.properties.publicIPAddress.properties.dnsSettings.fqdn ?? 'null'}</code>
+                </p>
               </div>
             </div>
           </div>

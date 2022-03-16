@@ -376,12 +376,15 @@ class AzureApi extends BaseController
             'Accept' => 'application/json'
         ];
 
+        $label = Str::random($length = 10);
+        $label = Str::lower($label);
+
         $body = [
             'location' => $location,
             'properties' => [
-                'publicIPAllocationMethod' => 'Dynamic',
-                'publicIPAddressVersion' => 'IPV4',
-                'idleTimeoutInMinutes' => 10,
+                'dnsSettings' => [
+                    'domainNameLabel' => $label
+                ]
             ]
         ];
 
