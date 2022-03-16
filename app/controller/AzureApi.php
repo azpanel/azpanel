@@ -629,4 +629,9 @@ class AzureApi extends BaseController
             'json' => $body
         ]);
     }
+
+    public static function getQuota()
+    {
+        // https://docs.microsoft.com/zh-cn/rest/api/reserved-vm-instances/quota/list
+    }
 }
