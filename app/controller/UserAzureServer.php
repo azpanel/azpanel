@@ -5,6 +5,7 @@ use think\helper\Str;
 use think\facade\Env;
 use think\facade\View;
 use Carbon\Carbon;
+use GuzzleHttp\Client;
 use app\model\Azure;
 use app\model\User;
 use app\model\Config;
@@ -128,7 +129,7 @@ class UserAzureServer extends UserBase
         // $symbol    = preg_match('@[^\w]@', $vm_passwd);
 
         if (!$uppercase || !$lowercase || !$number || strlen($vm_passwd) < 12 || strlen($vm_passwd) > 72) {
-            return json(Tools::msg('0', '创建失败', '密码不符合规范，请阅读使用说明'));
+            return json(Tools::msg('0', '创建失败', '密码不符合要求，请阅读使用说明'));
         }
 
         // 虚拟机名称设置检查
@@ -159,7 +160,7 @@ class UserAzureServer extends UserBase
             ->find();
 
             if ($name_exist != null) {
-                return json(Tools::msg('0', '创建失败', '此账户下存在同名虚拟机'));
+                return json(Tools::msg('0', '创建失败', '此账户下存在同名虚拟机，请修改虚拟机名称 ' . $name));
             }
         }
 
@@ -184,21 +185,20 @@ class UserAzureServer extends UserBase
         $resource_groups = AzureApi::getAzureResourceGroupsList($account->id, $account->az_sub_id);
         foreach ($resource_groups['value'] as $resource_group)
         {
-            foreach ($names as $vm_name) {
-                $resource_group_name = $vm_name . '_group';
+            foreach ($names as $name) {
+                $resource_group_name = $name . '_group';
                 if ($resource_group['name'] == $resource_group_name) {
-                    return json(Tools::msg('0', '创建失败', '存在同名资源组，请修改虚拟机名称 ' . $vm_name));
+                    return json(Tools::msg('0', '创建失败', '存在同名资源组，请修改虚拟机名称 ' . $name));
                 }
             }
         }
 
         // return json(Tools::msg('0', '创建检查完成', '没有发现问题'));
 
-        $create_step_count = 0;
-        // 步骤数 = (创建数量 * 创建一台的流程数) + 将虚拟机加入列表这一步骤
-        $number_of_steps = (count($names) * 6) + 2;
-        // 创建任务
-        $task_id = UserTask::create(session('user_id'), '创建虚拟机');
+        $progress = 0;
+        $client   = new Client();
+        $steps    = ($vm_number * 6) + 2;
+        $task_id  = UserTask::create(session('user_id'), '创建虚拟机');
 
         foreach ($names as $vm_name)
         {
@@ -217,67 +217,52 @@ class UserAzureServer extends UserBase
             try {
                 // 向资源提供程序注册订阅
                 if ($account->providers_register == '0') {
-                    $number_of_steps += 1;
-                    UserTask::update($task_id, (++$create_step_count / $number_of_steps), '向资源提供程序注册订阅');
-                    AzureApi::registerMainAzureProviders($account->id);
-                    // 保存
+                    UserTask::update($task_id, (++$progress / $steps), '向资源提供程序注册订阅');
+                    AzureApi::registerMainAzureProviders($client, $account->id);
+
                     $account->providers_register = 1;
                     $account->save();
+                    $steps += 1;
                 }
 
-                // (1/6) 创建资源组
+                // 创建资源组
                 sleep(1);
-                UserTask::update($task_id, (++$create_step_count / $number_of_steps), '创建资源组 ' . $vm_resource_group_name);
-
+                UserTask::update($task_id, (++$progress / $steps), '创建资源组 ' . $vm_resource_group_name);
                 AzureApi::createAzureResourceGroup(
-                    $account, $vm_resource_group_name, $vm_location
+                    $client, $account, $vm_resource_group_name, $vm_location
                 );
 
+                // 创建公网地址
                 sleep(2);
-
-                // (2/6) 创建公网地址
-                $text = '在资源组 ' . $vm_resource_group_name . ' 中创建公网地址';
-                UserTask::update($task_id, (++$create_step_count / $number_of_steps), $text);
-
+                UserTask::update($task_id, (++$progress / $steps), '在资源组 ' . $vm_resource_group_name . ' 中创建公网地址');
                 $ip = AzureApi::createAzurePublicNetworkIpv4(
-                    $account, $vm_ip_name, $vm_resource_group_name, $vm_location
+                    $client, $account, $vm_ip_name, $vm_resource_group_name, $vm_location
                 );
 
-                // (3/6) 创建虚拟网络
-                $text = '在资源组 ' . $vm_resource_group_name . ' 中创建虚拟网络';
-                UserTask::update($task_id, (++$create_step_count / $number_of_steps), $text);
-
+                // 创建虚拟网络
+                UserTask::update($task_id, (++$progress / $steps), '在资源组 ' . $vm_resource_group_name . ' 中创建虚拟网络');
                 AzureApi::createAzureVirtualNetwork(
-                    $account, $vm_virtual_network_name, $vm_resource_group_name, $vm_location
+                    $client, $account, $vm_virtual_network_name, $vm_resource_group_name, $vm_location
                 );
 
-                // (4/6) 创建子网
-                $text = '在虚拟网络 ' . $vm_virtual_network_name . ' 中创建子网';
-                UserTask::update($task_id, (++$create_step_count / $number_of_steps), $text);
-
+                // 创建子网
+                UserTask::update($task_id, (++$progress / $steps), '在虚拟网络 ' . $vm_virtual_network_name . ' 中创建子网');
                 $subnets = AzureApi::createAzureVirtualNetworkSubnets(
-                    $account, $vm_virtual_network_name, $vm_resource_group_name, $vm_location
+                    $client, $account, $vm_virtual_network_name, $vm_resource_group_name, $vm_location
                 );
 
-                // 避免 http 429 error
+                // 创建网络接口
                 sleep(2);
-
-                // (5/6) 创建网络接口
-                $text = '在资源组 ' . $vm_resource_group_name . ' 中创建网络接口';
-                UserTask::update($task_id, (++$create_step_count / $number_of_steps), $text);
-
+                UserTask::update($task_id, (++$progress / $steps), '在资源组 ' . $vm_resource_group_name . ' 中创建网络接口');
                 $interfaces = AzureApi::createAzureVirtualNetworkInterfaces(
-                    $account, $vm_name, $ip, $subnets, $vm_location, $vm_size
+                    $client, $account, $vm_name, $ip, $subnets, $vm_location, $vm_size
                 );
 
+                // 创建虚拟机
                 sleep(2);
-
-                // (6/6) 创建虚拟机
-                $text = '在资源组 ' . $vm_resource_group_name . ' 中创建虚拟机';
-                UserTask::update($task_id, (++$create_step_count / $number_of_steps), $text);
-
+                UserTask::update($task_id, (++$progress / $steps), '在资源组 ' . $vm_resource_group_name . ' 中创建虚拟机');
                 $vm_url = AzureApi::createAzureVm(
-                    $account, $vm_name, $vm_config, $vm_image, $interfaces, $vm_location
+                    $client, $account, $vm_name, $vm_config, $vm_image, $interfaces, $vm_location
                 );
             } catch (\Exception $e) {
                 $error = $e->getResponse()->getBody()->getContents();
@@ -286,7 +271,7 @@ class UserAzureServer extends UserBase
             }
         }
 
-        UserTask::update($task_id, (++$create_step_count / $number_of_steps), '等待创建完成');
+        UserTask::update($task_id, (++$progress / $steps), '等待创建完成');
 
         // 直到最后一个创建的虚拟机运行状态变为 running 再将所创建的虚拟机加入到列表中
         $count = 0;
@@ -298,7 +283,7 @@ class UserAzureServer extends UserBase
         } while ($status != 'PowerState/running' && $count < 120);
 
         if ($count >= 120) {
-            UserTask::end($task_id, true, $vm_status);
+            UserTask::end($task_id, true);
             return json(Tools::msg('0', '创建失败', '原因未知。建议前往账户列表，进入创建账户的资源组列表中，将创建失败的资源组删除，在删除完成后重试。重新创建时，建议设定与之前不同的虚拟机名称。如若仍然失败，可记录创建参数，在 github issue 区寻求帮助'));
         }
 

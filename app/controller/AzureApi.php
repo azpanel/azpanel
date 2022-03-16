@@ -65,11 +65,10 @@ class AzureApi extends BaseController
         return json_decode($result->getBody(), true);
     }
 
-    public static function registerMainAzureProviders($account_id)
+    public static function registerMainAzureProviders($client, $account_id)
     {
         // https://docs.microsoft.com/zh-cn/rest/api/resources/providers/register
 
-        $client = new Client();
         $azure_sub = Azure::find($account_id);
 
         $headers = [
@@ -346,7 +345,7 @@ class AzureApi extends BaseController
         ]);
     }
 
-    public static function createAzureResourceGroup($account, $resource_group_name, $location)
+    public static function createAzureResourceGroup($client, $account, $resource_group_name, $location)
     {
         // https://docs.microsoft.com/zh-cn/rest/api/resources/resource-groups/create-or-update
 
@@ -360,7 +359,6 @@ class AzureApi extends BaseController
             'location' => $location
         ];
 
-        $client = new Client();
         $url = 'https://management.azure.com/subscriptions/' . $account->az_sub_id . '/resourcegroups/' . $resource_group_name . '?api-version=2021-04-01';
         $result = $client->put($url, [
             'headers' => $headers,
@@ -368,7 +366,7 @@ class AzureApi extends BaseController
         ]);
     }
 
-    public static function createAzurePublicNetworkIpv4($account, $ip_name, $resource_group_name, $location)
+    public static function createAzurePublicNetworkIpv4($client, $account, $ip_name, $resource_group_name, $location)
     {
         // https://docs.microsoft.com/zh-cn/rest/api/virtualnetwork/public-ip-addresses
 
@@ -387,7 +385,6 @@ class AzureApi extends BaseController
             ]
         ];
 
-        $client = new Client();
         $url = 'https://management.azure.com/subscriptions/' . $account->az_sub_id . '/resourceGroups/' . $resource_group_name . '/providers/Microsoft.Network/publicIPAddresses/' . $ip_name . '?api-version=2021-03-01';
 
         $promise = $client->requestAsync('PUT', $url, [
@@ -405,7 +402,7 @@ class AzureApi extends BaseController
         return $resource_url->id;
     }
 
-    public static function createAzureVirtualNetwork($account, $virtual_network_name, $resource_group_name, $location)
+    public static function createAzureVirtualNetwork($client, $account, $virtual_network_name, $resource_group_name, $location)
     {
         // https://docs.microsoft.com/zh-cn/rest/api/virtualnetwork/virtual-networks/create-or-update
 
@@ -428,14 +425,13 @@ class AzureApi extends BaseController
 
         $url = 'https://management.azure.com/subscriptions/' . $account->az_sub_id . '/resourceGroups/' . $resource_group_name . '/providers/Microsoft.Network/virtualNetworks/' . $virtual_network_name . '?api-version=2021-03-01';
 
-        $client = new Client();
         $result = $client->put($url, [
             'headers' => $headers,
             'json' => $body
         ]);
     }
 
-    public static function createAzureVirtualNetworkSubnets($account, $virtual_network_name, $resource_group_name, $location)
+    public static function createAzureVirtualNetworkSubnets($client, $account, $virtual_network_name, $resource_group_name, $location)
     {
         // https://docs.microsoft.com/zh-cn/rest/api/virtualnetwork/subnets/create-or-update
 
@@ -454,7 +450,6 @@ class AzureApi extends BaseController
 
         $subnet_url = 'https://management.azure.com/subscriptions/' . $account->az_sub_id . '/resourceGroups/' . $resource_group_name . '/providers/Microsoft.Network/virtualNetworks/' . $virtual_network_name . '/subnets/default?api-version=2021-03-01';
 
-        $client = new Client();
         $result = $client->put($subnet_url, [
             'headers' => $headers,
             'json' => $body
@@ -465,7 +460,7 @@ class AzureApi extends BaseController
         return $subnet_object->id;
     }
 
-    public static function createAzureVirtualNetworkInterfaces($account, $vm_name, $ip_url, $subnets_url, $location, $vm_size) {
+    public static function createAzureVirtualNetworkInterfaces($client, $account, $vm_name, $ip_url, $subnets_url, $location, $vm_size) {
         // https://docs.microsoft.com/zh-cn/rest/api/virtualnetwork/network-interfaces/create-or-update
 
         $headers = [
@@ -501,7 +496,6 @@ class AzureApi extends BaseController
             $body['properties']['enableAcceleratedNetworking'] = true;
         }
 
-        $client = new Client();
         $url = 'https://management.azure.com/subscriptions/' . $account->az_sub_id . '/resourceGroups/' . $vm_name . '_group/providers/Microsoft.Network/networkInterfaces/' . $vm_name . '_vif?api-version=2021-03-01';
 
         $promise = $client->requestAsync('PUT', $url, [
@@ -520,7 +514,7 @@ class AzureApi extends BaseController
         return $result->id;
     }
 
-    public static function createAzureVm($account, $vm_name, $vm_config, $vm_image, $interfaces, $location) {
+    public static function createAzureVm($client, $account, $vm_name, $vm_config, $vm_image, $interfaces, $location) {
         // https://docs.microsoft.com/zh-cn/rest/api/compute/virtual-machines/create-or-update
 
         $headers = [
@@ -529,7 +523,6 @@ class AzureApi extends BaseController
             'Accept' => 'application/json'
         ];
 
-        $client = new Client();
         $images = AzureList::images();
 
         $body = [
