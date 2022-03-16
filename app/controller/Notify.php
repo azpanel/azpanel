@@ -21,7 +21,11 @@ class Notify
         $mail->Encoding   = 'base64';
         $mail->Username   = $smtp_configs['smtp_username'];         // SMTP username
         $mail->Password   = $smtp_configs['smtp_password'];         // SMTP password
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            // Enable implicit TLS encryption
+        if ($smtp_configs['smtp_port'] == 465) {
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            // Enable implicit TLS encryption
+        } else {
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        }
         $mail->CharSet    = PHPMailer::CHARSET_UTF8;
         $mail->Port       = $smtp_configs['smtp_port'];             // TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
 
