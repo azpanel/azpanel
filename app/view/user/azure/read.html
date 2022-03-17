@@ -109,7 +109,10 @@
             "</td><td>" + data.result[i].usage + "</td></tr>";
         }
         $("#table_content").html(str);
-      }
+      },
+      error: function (data) {
+        mdui.alert('获取失败', '首次获取可能会失败，一般重试即可解决问题');
+      },
     });
   }
 </script>
