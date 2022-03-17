@@ -65,7 +65,7 @@ class AzureApi extends BaseController
         return json_decode($result->getBody(), true);
     }
 
-    public static function registerMainAzureProviders($client, $account_id)
+    public static function registerMainAzureProviders($client, $provider, $account_id)
     {
         // https://docs.microsoft.com/zh-cn/rest/api/resources/providers/register
 
@@ -75,13 +75,8 @@ class AzureApi extends BaseController
             'Authorization' => 'Bearer ' . self::getAzureAccessToken($account_id)
         ];
 
-        // Microsoft.Network
-        $network_url = 'https://management.azure.com/subscriptions/'. $azure_sub->az_sub_id . '/providers/Microsoft.Network/register?api-version=2021-04-01';
-        $client->post($network_url, ['headers' => $headers]);
-
-        // Microsoft.Compute
-        $compute_url = 'https://management.azure.com/subscriptions/'. $azure_sub->az_sub_id . '/providers/Microsoft.Compute/register?api-version=2021-04-01';
-        $client->post($compute_url, ['headers' => $headers]);
+        $url = 'https://management.azure.com/subscriptions/'. $azure_sub->az_sub_id . '/providers/'.$provider.'/register?api-version=2021-04-01';
+        $client->post($url, ['headers' => $headers]);
 
         $azure_sub->providers_register = 1;
         $azure_sub->save();
@@ -673,8 +668,22 @@ class AzureApi extends BaseController
         ]);
     }
 
-    public static function getQuota()
+    public static function getQuota($account, $location)
     {
         // https://docs.microsoft.com/zh-cn/rest/api/reserved-vm-instances/quota/list
+
+        $headers = [
+            'Authorization' => 'Bearer ' . self::getAzureAccessToken($account->id),
+            'Content-Type' => 'application/json'
+        ];
+
+        $url = 'https://management.azure.com/subscriptions/'.$account->az_sub_id.'/providers/Microsoft.Capacity/resourceProviders/Microsoft.Compute/locations/'.$location.'/serviceLimits?api-version=2020-10-25';
+
+        $client = new Client();
+        $result = $client->get($url, [
+            'headers' => $headers
+        ]);
+
+        return json_decode($result->getBody(), true);
     }
 }

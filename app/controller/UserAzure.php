@@ -3,6 +3,7 @@ namespace app\controller;
 
 use think\facade\Env;
 use think\facade\View;
+use GuzzleHttp\Client;
 use app\controller\Tools;
 use app\controller\AzureApi;
 use app\controller\UserTask;
@@ -45,6 +46,7 @@ class UserAzure extends UserBase
 
         View::assign('az_sub', $az_sub);
         View::assign('account', $account);
+        View::assign('locations', AzureList::locations());
         return View::fetch('../app/view/user/azure/read.html');
     }
 
@@ -369,5 +371,31 @@ class UserAzure extends UserBase
 
         View::assign('groups', $groups);
         return View::fetch('../app/view/user/azure/groups.html');
+    }
+
+    public function QueryAccountQuota($id)
+    {
+        $account = Azure::find($id);
+        $location = input('location');
+
+        if ($account->reg_capacity == 0) {
+            $client = new Client();
+            AzureApi::registerMainAzureProviders($client, 'Microsoft.Capacity', $account->id);
+            $account->reg_capacity = 1;
+            $account->save();
+        }
+
+        $data = [];
+        $result = AzureApi::getQuota($account, $location);
+        foreach ($result['value'] as $item) {
+            $array['note']  = $item['properties']['name']['localizedValue'];
+            $array['name']  = $item['properties']['name']['value'];
+            $array['usage'] = $item['properties']['currentValue'];
+            $array['limit'] = $item['properties']['limit'];
+            array_push($data, $array);
+        }
+
+        array_multisort(array_column($data, 'limit'), SORT_DESC, $data);
+        return json(['result' => $data]);
     }
 }
