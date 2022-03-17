@@ -111,7 +111,8 @@
         <div class="mdui-col-md-4 mdui-col-sm-12">
           <div class="mdui-card" style="overflow: visible">
             <div class="mdui-card-content">
-              <p style="color: #3F51B5; font-size: 18px"><i class="mdui-icon material-icons">tune</i>&nbsp;调整配置
+              <p style="color: #3F51B5; font-size: 18px">
+                <i class="mdui-icon material-icons">tune</i>&nbsp;调整规格
               </p>
               <div class="mdui-typo">
                 <div class="mdui-m-t-2">
@@ -125,8 +126,33 @@
                   </select>
                 </div>
                 <div class="mdui-m-t-2">
-                  <button id="switch_size" onclick="resize(this)" data-id="{$server->vm_id}"
-                    class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-blue-grey">调整</button>
+                  <button onclick="resize(this)" data-id="{$server->vm_id}"
+                    class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-blue-grey">调整
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mdui-col-md-4 mdui-col-sm-12">
+          <div class="mdui-card" style="overflow: visible">
+            <div class="mdui-card-content">
+              <p style="color: #3F51B5; font-size: 18px">
+                <i class="mdui-icon material-icons">tune</i>&nbsp;调整硬盘
+              </p>
+              <div class="mdui-typo">
+                <div class="mdui-m-t-2">
+                  规格：<select id="new_disk" class="mdui-select" mdui-select>
+                    {volist name="disk_sizes" id="disk_size"}
+                    <option value="{$disk_size}">{$disk_size} GB</option>
+                    {/volist}
+                  </select>
+                </div>
+                <div class="mdui-m-t-2">
+                  <button onclick="redisk(this)" data-id="{$server->vm_id}"
+                    class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-blue-grey">调整
+                  </button>
                 </div>
               </div>
             </div>
@@ -201,6 +227,52 @@
 </body>
 
 <script>
+  function getProgress() {
+    $.ajax({
+      method: 'GET',
+      url: "/user/progress",
+      dataType: "json",
+      success: function (data) {
+        var width = data.schedule + '%';
+        $('.mdui-progress-determinate').css('width', width);
+        $('#hint').replaceWith("<p id=\"hint\">" + data.current + "</p>");
+      }
+    });
+  }
+
+  function redisk(that) {
+    mdui.confirm('硬盘大小变配过程中需要重新启动虚拟机，请注意保存重要数据。<span style="color: red">变配完成后，公网地址会发生变动，请在服务器列表获取新地址</span>', '变配确认',
+      function () {
+        var id = $(that).data('id');
+        var load = new mdui.alert('<p id=\"hint\">准备中</p><div class=\"mdui-progress\"><div class=\"mdui-progress-determinate\"></div></div>', '进行中');
+        var cycle = setInterval(getProgress, 500);
+        $.ajax({
+          method: 'PUT',
+          url: "/user/server/azure/redisk/" + id,
+          data: {
+            new_disk: $('#new_disk').val(),
+          },
+          dataType: "json",
+          success: function (data) {
+            load.close();
+            clearInterval(cycle);
+            if (data.status == '0') {
+              mdui.alert(data.content, data.title);
+            } else {
+              mdui.alert(data.content, data.title);
+              setTimeout("window.location = '/user/server/azure'", 1500);
+            }
+          }
+        });
+      },
+      function () { },
+      {
+        confirmText: "确定",
+        cancelText: "取消"
+      }
+    );
+  };
+
   function resize(that) {
     mdui.confirm('规格变配过程中需要重新启动虚拟机，请注意保存重要数据', '变配确认',
       function () {

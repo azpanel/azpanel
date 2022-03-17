@@ -317,7 +317,15 @@ class UserAzureServer extends UserBase
         }
 
         $vm_sizes = AzureList::sizes();
+        $disk_sizes = AzureList::diskSizes();
         unset($vm_sizes[$server->vm_size]);
+
+        foreach ($disk_sizes as $key => $value)
+        {
+            if ($server->disk_size >= $value) {
+                unset($disk_sizes[$key]);
+            }
+        }
 
         $vm_details = json_decode($server->vm_details, true);
         $network_details = json_decode($server->network_details, true);
@@ -325,6 +333,7 @@ class UserAzureServer extends UserBase
 
         View::assign('server', $server);
         View::assign('vm_sizes', $vm_sizes);
+        View::assign('disk_sizes', $disk_sizes);
         View::assign('vm_details', $vm_details);
         View::assign('network_details', $network_details);
         View::assign('instance_details', $instance_details);
@@ -392,6 +401,49 @@ class UserAzureServer extends UserBase
         return json(Tools::msg('1', '变配结果', '变配成功'));
     }
 
+    public function redisk($uuid)
+    {
+        $count    = 0;
+        $new_disk = (int) input('new_disk/s');
+        $server   = AzureServer::where('vm_id', $uuid)->find();
+        $task_id  = UserTask::create(session('user_id'), '更换硬盘大小');
+
+        UserTask::update($task_id, (++$count / 4), '正在等待计算资源释放完成');
+        AzureApi::virtualMachinesDeallocate($server->account_id, $server->request_url);
+
+        do {
+            sleep(1);
+            $vm_status = AzureApi::getAzureVirtualMachineStatus($server->account_id, $server->request_url);
+            $status = $vm_status['statuses']['1']['code'] ?? 'null';
+        } while ($status != 'PowerState/deallocated');
+
+        try {
+            AzureApi::virtualMachinesRedisk($new_disk, $server);
+        } catch (\Exception $e) {
+            $error = $e->getResponse()->getBody()->getContents();
+            UserTask::end($task_id, true, $error);
+            return json(Tools::msg('0', '变配失败', $error));
+        }
+
+        UserTask::update($task_id, (++$count / 4), '正在启动虚拟机');
+        AzureApi::manageVirtualMachine('start', $server->account_id, $server->request_url);
+
+        do {
+            sleep(1);
+            $vm_status = AzureApi::getAzureVirtualMachineStatus($server->account_id, $server->request_url);
+            $status = $vm_status['statuses']['1']['code'] ?? 'null';
+        } while ($status != 'PowerState/running');
+
+        UserTask::update($task_id, (++$count / 4), '正在获取新的公网地址');
+
+        $server->disk_size = $new_disk;
+        $server->ip_address = AzureApi::getAzureVirtualMachinePublicIpv4($server);
+        $server->save();
+
+        UserTask::end($task_id, false);
+        return json(Tools::msg('1', '变配结果', '变配成功'));
+    }
+
     public function status($action, $uuid)
     {
         $server = AzureServer::where('vm_id', $uuid)->find();
@@ -402,6 +454,7 @@ class UserAzureServer extends UserBase
             return json(Tools::msg('0', '操作失败', $e->getMessage()));
         }
 
+        sleep(1);
         self::refresh($server->vm_id);
 
         return json(Tools::msg('1', '执行结果', '成功'));

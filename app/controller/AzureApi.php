@@ -633,6 +633,42 @@ class AzureApi extends BaseController
         ]);
     }
 
+    public static function virtualMachinesRedisk($new_size, $server)
+    {
+        // https://docs.microsoft.com/zh-cn/rest/api/compute/disks/create-or-update
+
+        $headers = [
+            'Authorization' => 'Bearer ' . self::getAzureAccessToken($server->account_id),
+            'Content-Type' => 'application/json'
+        ];
+
+        $vm_details = json_decode($server->vm_details, true);
+        $vm_disk_name = $vm_details['properties']['storageProfile']['osDisk']['name'];
+        $vm_image_version = $vm_details['properties']['storageProfile']['imageReference']['exactVersion'];
+        $vm_image_publishers = $vm_details['properties']['storageProfile']['imageReference']['publisher'];
+
+        $body = [
+            'location' => $server->location,
+            'properties' => [
+                'creationData' => [
+                    'createOption' => 'FromImage',
+                    'imageReference' => [
+                        'id' => '/Subscriptions/'.$server->at_subscription_id.'/Providers/Microsoft.Compute/Locations/'.$server->location.'/Publishers/'.$vm_image_publishers.'/ArtifactTypes/VMImage/Offers/'.$server->os_offer.'/Skus/'.$server->os_sku.'/Versions/'.$vm_image_version
+                    ],
+                ],
+                'diskSizeGB' => $new_size
+            ]
+        ];
+
+        $url = 'https://management.azure.com/subscriptions/' . $server->at_subscription_id . '/resourceGroups/' . $server->resource_group . '/providers/Microsoft.Compute/disks/' . $vm_disk_name . '?api-version=2020-12-01';
+
+        $client = new Client();
+        $object = $client->put($url,[
+            'headers' => $headers,
+            'json' => $body
+        ]);
+    }
+
     public static function getQuota()
     {
         // https://docs.microsoft.com/zh-cn/rest/api/reserved-vm-instances/quota/list
