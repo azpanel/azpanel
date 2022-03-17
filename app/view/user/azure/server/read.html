@@ -143,11 +143,20 @@
               </p>
               <div class="mdui-typo">
                 <div class="mdui-m-t-2">
-                  规格：<select id="new_disk" class="mdui-select" mdui-select>
-                    {volist name="disk_sizes" id="disk_size"}
-                    <option value="{$disk_size}">{$disk_size} GB</option>
-                    {/volist}
-                  </select>
+                  <div class="mdui-m-t-2">
+                    规格：<select id="new_disk" class="mdui-select" mdui-select>
+                      {volist name="disk_sizes" id="disk_size"}
+                      <option value="{$disk_size}">{$disk_size} GB</option>
+                      {/volist}
+                    </select>
+                  </div>
+                  <div class="mdui-m-t-2">
+                    磁盘层：<select id="new_tier" class="mdui-select" mdui-select>
+                      {volist name="disk_tiers" id="disk_tier"}
+                      <option value="{$key}">{$key} ({$disk_tier.diskIOPSReadWrite} IOPS, {$disk_tier.diskMBpsReadWrite} Mbps)</option>
+                      {/volist}
+                    </select>
+                  </div>
                 </div>
                 <div class="mdui-m-t-2">
                   <button onclick="redisk(this)" data-id="{$server->vm_id}"
@@ -251,6 +260,7 @@
           url: "/user/server/azure/redisk/" + id,
           data: {
             new_disk: $('#new_disk').val(),
+            new_tier: $('#new_tier').val(),
           },
           dataType: "json",
           success: function (data) {

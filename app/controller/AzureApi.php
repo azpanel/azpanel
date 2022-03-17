@@ -633,7 +633,7 @@ class AzureApi extends BaseController
         ]);
     }
 
-    public static function virtualMachinesRedisk($new_size, $server)
+    public static function virtualMachinesRedisk($new_size, $new_tier, $server)
     {
         // https://docs.microsoft.com/zh-cn/rest/api/compute/disks/create-or-update
 
@@ -642,6 +642,7 @@ class AzureApi extends BaseController
             'Content-Type' => 'application/json'
         ];
 
+        $disk_tiers = AzureList::diskTiers();
         $vm_details = json_decode($server->vm_details, true);
         $vm_disk_name = $vm_details['properties']['storageProfile']['osDisk']['name'];
         $vm_image_version = $vm_details['properties']['storageProfile']['imageReference']['exactVersion'];
@@ -656,7 +657,10 @@ class AzureApi extends BaseController
                         'id' => '/Subscriptions/'.$server->at_subscription_id.'/Providers/Microsoft.Compute/Locations/'.$server->location.'/Publishers/'.$vm_image_publishers.'/ArtifactTypes/VMImage/Offers/'.$server->os_offer.'/Skus/'.$server->os_sku.'/Versions/'.$vm_image_version
                     ],
                 ],
-                'diskSizeGB' => $new_size
+                'diskSizeGB' => $new_size,
+                'diskMBpsReadWrite' => $disk_tiers[$new_tier]['diskMBpsReadWrite'],
+                'diskIOPSReadWrite' => $disk_tiers[$new_tier]['diskIOPSReadWrite'],
+                'tier' => $new_tier
             ]
         ];
 

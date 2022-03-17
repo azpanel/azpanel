@@ -318,6 +318,7 @@ class UserAzureServer extends UserBase
 
         $vm_sizes = AzureList::sizes();
         $disk_sizes = AzureList::diskSizes();
+        $disk_tiers = AzureList::diskTiers();
         unset($vm_sizes[$server->vm_size]);
 
         foreach ($disk_sizes as $key => $value)
@@ -334,6 +335,7 @@ class UserAzureServer extends UserBase
         View::assign('server', $server);
         View::assign('vm_sizes', $vm_sizes);
         View::assign('disk_sizes', $disk_sizes);
+        View::assign('disk_tiers', $disk_tiers);
         View::assign('vm_details', $vm_details);
         View::assign('network_details', $network_details);
         View::assign('instance_details', $instance_details);
@@ -405,6 +407,7 @@ class UserAzureServer extends UserBase
     {
         $count    = 0;
         $new_disk = (int) input('new_disk/s');
+        $new_tier = input('new_tier/s');
         $server   = AzureServer::where('vm_id', $uuid)->find();
         $task_id  = UserTask::create(session('user_id'), '更换硬盘大小');
 
@@ -418,7 +421,7 @@ class UserAzureServer extends UserBase
         } while ($status != 'PowerState/deallocated');
 
         try {
-            AzureApi::virtualMachinesRedisk($new_disk, $server);
+            AzureApi::virtualMachinesRedisk($new_disk, $new_tier, $server);
         } catch (\Exception $e) {
             $error = $e->getResponse()->getBody()->getContents();
             UserTask::end($task_id, true, $error);

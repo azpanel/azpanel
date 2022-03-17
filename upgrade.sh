@@ -52,7 +52,7 @@ modifyVersion()
 
     big_v='1'
     medium_v='0'
-    small_v=$(expr ${version} + 1)
+    small_v=${version}
     hash=$(git log -1 --format="%h")
 
     # tvl = tpl version line

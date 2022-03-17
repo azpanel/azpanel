@@ -292,4 +292,44 @@ class AzureList
 
         return $sizes;
     }
+
+    public static function diskTiers()
+    {
+        $lists = [
+            'P4' => [
+                'diskMBpsReadWrite' => 25,
+                'diskIOPSReadWrite' => 120,
+            ],
+            'P6' => [
+                'diskMBpsReadWrite' => 50,
+                'diskIOPSReadWrite' => 240,
+            ],
+            'P10' => [
+                'diskMBpsReadWrite' => 100,
+                'diskIOPSReadWrite' => 500,
+            ],
+            'P15' => [
+                'diskMBpsReadWrite' => 125,
+                'diskIOPSReadWrite' => 1100,
+            ],
+            'P20' => [
+                'diskMBpsReadWrite' => 250,
+                'diskIOPSReadWrite' => 2300,
+            ],
+            'P30' => [
+                'diskMBpsReadWrite' => 250,
+                'diskIOPSReadWrite' => 5000,
+            ],
+            'P40' => [
+                'diskMBpsReadWrite' => 250,
+                'diskIOPSReadWrite' => 7500,
+            ],
+            'P50' => [
+                'diskMBpsReadWrite' => 250,
+                'diskIOPSReadWrite' => 7500,
+            ],
+        ];
+
+        return $lists;
+    }
 }
