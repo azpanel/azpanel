@@ -88,6 +88,10 @@ class UserAzure extends UserBase
             return 'FreeTrial';
         }
 
+        if (strpos($quotaId, 'Sponsorship') !== false) {
+            return 'Azure 3500';
+        }
+
         return 'Unknown';
     }
 
