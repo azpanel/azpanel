@@ -565,7 +565,7 @@ class AzureApi extends BaseController
             ]
         ];
 
-        if ($vm_config['vm_script'] != 'null') {
+        if ($vm_config['vm_script'] != null) {
             $body['properties']['osProfile']['customData'] = $vm_config['vm_script'];
         }
 
@@ -706,6 +706,24 @@ class AzureApi extends BaseController
         $url = 'https://management.azure.com/subscriptions/'.$server->at_subscription_id.'/resourceGroups/'.$server->resource_group.'/Providers/Microsoft.Compute/disks/'.$disk_name.'?api-version=2020-12-01';
 
         $client = new Client();
+        $result = $client->get($url, [
+            'headers' => $headers
+        ]);
+
+        return json_decode($result->getBody(), true);
+    }
+
+    public static function getResourceSkusList($client, $account, $location)
+    {
+        // https://docs.microsoft.com/zh-cn/rest/api/compute/resource-skus/list
+
+        $headers = [
+            'Authorization' => 'Bearer ' . self::getAzureAccessToken($account->id),
+            'Content-Type' => 'application/json'
+        ];
+
+        $url = 'https://management.azure.com/subscriptions/'.$account->az_sub_id.'/Providers/Microsoft.Compute/skus/?api-version=2019-04-01&$filter=location eq '."'".$location."'";
+
         $result = $client->get($url, [
             'headers' => $headers
         ]);

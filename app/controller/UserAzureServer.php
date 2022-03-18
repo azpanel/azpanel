@@ -3,6 +3,7 @@ namespace app\controller;
 
 use think\helper\Str;
 use think\facade\Env;
+use think\facade\Log;
 use think\facade\View;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
@@ -173,7 +174,7 @@ class UserAzureServer extends UserBase
         }
 
         // 脚本检查
-        $vm_script = ($vm_script == '') ? 'null' : base64_encode($vm_script);
+        $vm_script = ($vm_script == '') ? null : base64_encode($vm_script);
 
         // 硬盘大小检查
         $images = AzureList::images();
@@ -181,37 +182,65 @@ class UserAzureServer extends UserBase
             return json(Tools::msg('0', '创建失败', '此 Windows 系统镜像要求硬盘大小不低于 127 GB'));
         }
 
-        // 资源组检测
+        // 记录创建参数
+        $params = [
+            'account' => [
+                'id'     => $account->id,
+                'status' => $account->az_sub_status,
+                'type'   => $account->az_sub_type,
+                'email'  => $account->az_email,
+            ],
+            'server' => [
+                'name'        => $vm_name,
+                'mark'        => $vm_remark,
+                'count'       => $vm_number,
+                'disk_size'   => $vm_disk_size,
+                'user'        => $vm_user,
+                'image'       => $vm_image,
+                'location'    => $vm_location,
+                'size'        => $vm_size,
+                'script'      => $vm_script,
+            ]
+        ];
+
+        // 初始化创建任务
+        $progress = 0;
+        $client   = new Client();
+        $steps    = ($vm_number * 6) + 3;
+        $task_id  = UserTask::create(session('user_id'), '创建虚拟机', json_encode($params));
+
+        // 限额检查
+        UserTask::update($task_id, (++$progress / $steps), '正在检查创建任务可行性');
+        $limits = AzureApi::getResourceSkusList($client, $account, $vm_location);
+        Log::write(json_encode($limits), 'limits');
+        foreach ($limits['value'] as $limit)
+        {
+            if ($limit['name'] == $vm_size) {
+                if (!empty($limit['restrictions']['0']['reasonCode'])) {
+                    if ($limit['restrictions']['0']['reasonCode'] == 'NotAvailableForSubscription') {
+                        UserTask::end($task_id, true, json_encode(
+                            ['msg' => 'This subscription cannot create VMs of this size in this region']
+                        ));
+                        return json(Tools::msg('0', '创建失败', '此订阅不能在此区域创建此规格虚拟机'));
+                    }
+                }
+            }
+        }
+
+        // 资源组检查
         $resource_groups = AzureApi::getAzureResourceGroupsList($account->id, $account->az_sub_id);
         foreach ($resource_groups['value'] as $resource_group)
         {
             foreach ($names as $name) {
                 $resource_group_name = $name . '_group';
                 if (Str::lower($resource_group['name']) == Str::lower($resource_group_name)) {
+                    UserTask::end($task_id, true, json_encode(['msg' => 'A resource group with the same name exists: ' . $name]));
                     return json(Tools::msg('0', '创建失败', '存在同名资源组，请修改虚拟机名称 ' . $name));
                 }
             }
         }
 
-        // return json(Tools::msg('0', '创建检查完成', '没有发现问题'));
-
-        $params = [
-            'vm_remark'    => $vm_remark,
-            'vm_name'      => $vm_name,
-            'vm_number'    => $vm_number,
-            'vm_user'      => $vm_user,
-            'vm_script'    => $vm_script,
-            'vm_location'  => $vm_location,
-            'vm_size'      => $vm_size,
-            'vm_account'   => $vm_account,
-            'vm_disk_size' => $vm_disk_size,
-            'vm_image'     => $vm_image,
-        ];
-
-        $progress = 0;
-        $client   = new Client();
-        $steps    = ($vm_number * 6) + 2;
-        $task_id  = UserTask::create(session('user_id'), '创建虚拟机', json_encode($params));
+        return json(Tools::msg('0', '检查结果', '检查完成'));
 
         foreach ($names as $vm_name)
         {

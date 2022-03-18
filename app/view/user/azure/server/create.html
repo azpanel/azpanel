@@ -205,7 +205,11 @@
               mdui.alert(data.content, data.title);
               setTimeout("window.location = '/user/server/azure'", 1500);
             }
-          }
+          },
+          error: function (data) {
+            load.close();
+            mdui.alert('<div class="mdui-typo">请在 <code>.env</code> 文件中开启 <code>debug</code> 模式，然后在浏览器控制台查看错误', '创建失败</div>');
+          },
         });
       },
       function () { },
