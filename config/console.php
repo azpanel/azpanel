@@ -6,6 +6,7 @@ return [
     'commands' => [
         'tools' => 'app\command\Tools',
         'createAdmin' => 'app\command\createAdmin',
+        'closeTimeoutTask' => 'app\command\closeTimeoutTask',
         'autoRefreshAccount' => 'app\command\autoRefreshAccount',
     ]
 ];
