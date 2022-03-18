@@ -35,6 +35,12 @@
                   查看错误
                 </button>
                 {/if}
+                {if !empty($params)}
+                <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple"
+                  mdui-dialog="{target: '#task-params'}">
+                  查看参数
+                </button>
+                {/if}
               </div>
             </div>
           </div>
@@ -77,6 +83,22 @@
           </div>
         </div>
       </div>
+
+      {if !empty($params)}
+      <div class="mdui-container">
+        <div class="mdui-dialog" id="task-params">
+          <div class="mdui-dialog-content">
+            <div class="mdui-dialog-title">任务参数</div>
+            <div class="mdui-dialog-content">
+              <pre><code class="language-php" style="white-space: pre-wrap; word-wrap: break-word;">{$params}</code></pre>
+            </div>
+          </div>
+          <div class="mdui-dialog-actions">
+            <button class="mdui-btn mdui-ripple" mdui-dialog-close>关闭</button>
+          </div>
+        </div>
+      </div>
+      {/if}
 
       <div class="mdui-m-t-2"></div>
 

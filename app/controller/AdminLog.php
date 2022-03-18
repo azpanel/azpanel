@@ -54,12 +54,15 @@ class AdminLog extends AdminBase
         $log = Task::find($id);
         $total = json_decode($log->total, true);
         $error = json_decode($log->error);
+        $params = json_decode($log->params);
         $error = json_encode($error, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+        $params = json_encode($params, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
 
         View::assign('log', $log);
         View::assign('count', '0');
         View::assign('total', $total);
         View::assign('error', $error);
+        View::assign('params', $params);
         return View::fetch('../app/view/admin/log/task_details.html');
     }
 }
