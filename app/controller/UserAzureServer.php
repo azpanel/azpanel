@@ -535,8 +535,9 @@ class UserAzureServer extends UserBase
         try {
             $vm_status = AzureApi::virtualMachinesDeallocate($server->account_id, $server->request_url);
         } catch (\Exception $e) {
-            UserTask::end($task_id, true);
-            return json(Tools::msg('0', '操作失败', $e->getMessage()));
+            $error = $e->getResponse()->getBody()->getContents();
+            UserTask::end($task_id, true, $error);
+            return json(Tools::msg('0', '操作失败', $error));
         }
 
         UserTask::update($task_id, (++$count / 5), '正在等待计算资源释放完成');

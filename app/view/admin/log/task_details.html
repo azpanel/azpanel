@@ -26,7 +26,9 @@
                 <p>任务状态：<code>{$log.status}</code></p>
                 <p>创建时间：<code>{:date('Y-m-d H:i:s', $log.created_at)}</code></p>
                 <p>更新时间：<code>{:date('Y-m-d H:i:s', $log.updated_at)}</code></p>
+                {if !empty($log.total_time)}
                 <p>累计耗时：<code>{$log.total_time}</code></p>
+                {/if}
                 {if $log.status != 'completed'}
                 <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple"
                   mdui-dialog="{target: '#task-error'}">
