@@ -220,7 +220,7 @@ class UserAzureServer extends UserBase
                     if ($limit['restrictions']['0']['reasonCode'] == 'NotAvailableForSubscription') {
                         UserTask::end($task_id, true, json_encode(
                             ['msg' => 'This subscription cannot create VMs of this size in this region']
-                        ));
+                        ), true);
                         return json(Tools::msg('0', '创建失败', '此订阅不能在此区域创建此规格虚拟机'));
                     }
                 }
@@ -234,7 +234,9 @@ class UserAzureServer extends UserBase
             foreach ($names as $name) {
                 $resource_group_name = $name . '_group';
                 if (Str::lower($resource_group['name']) == Str::lower($resource_group_name)) {
-                    UserTask::end($task_id, true, json_encode(['msg' => 'A resource group with the same name exists: ' . $name]));
+                    UserTask::end($task_id, true, json_encode(
+                        ['msg' => 'A resource group with the same name exists: ' . $name]
+                    ), true);
                     return json(Tools::msg('0', '创建失败', '存在同名资源组，请修改虚拟机名称 ' . $name));
                 }
             }
@@ -257,7 +259,7 @@ class UserAzureServer extends UserBase
             $available = $quota_limit - $quota_usage;
             UserTask::end($task_id, true, json_encode(
                 ['msg' => "The total number of virtual machine CPU cores created is $cores_total, which exceeds the available limit of $available for this subscription in this region."]
-            ));
+            ), true);
             return json(Tools::msg('0', '创建失败', "创建的虚拟机 CPU 核心数总计为 $cores_total 个，这超过了此订阅在此区域的可用限额 $available 个"));
         }
 
@@ -585,9 +587,10 @@ class UserAzureServer extends UserBase
         try {
             $vm_status = AzureApi::virtualMachinesDeallocate($server->account_id, $server->request_url);
         } catch (\Exception $e) {
-            $error = $e->getResponse()->getBody()->getContents();
+            // $error = $e->getResponse()->getBody()->getContents();
+            $error = $e->getMessage();
             UserTask::end($task_id, true, $error);
-            return json(Tools::msg('0', '操作失败', $error));
+            return json(Tools::msg('0', '更换失败', $error));
         }
 
         UserTask::update($task_id, (++$count / 5), '正在等待计算资源释放完成');

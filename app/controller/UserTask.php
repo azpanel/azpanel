@@ -68,14 +68,19 @@ class UserTask
         $task->save();
     }
 
-    public static function end($task_id, $crash, $error = null)
+    public static function end($task_id, $crash, $error = null, $cancel = false)
     {
         $task = Task::find($task_id);
         $total = json_decode($task->total, true);
 
         if ($crash == true) {
-            $task->status = 'terminated';
-            $task->current = '任务出错';
+            if ($cancel == false) {
+                $task->status = 'terminated';
+                $task->current = '任务出错';
+            } else {
+                $task->status = 'cancelled';
+                $task->current = '任务已取消';
+            }
         } else {
             $task->status = 'completed';
             $task->schedule = '100';
@@ -88,7 +93,7 @@ class UserTask
 
         $info = [
             'time' => time(),
-            'info' => ($crash == true) ? '任务出错' : '任务已完成'
+            'info' => $task->current
         ];
         array_push($total, $info);
 
