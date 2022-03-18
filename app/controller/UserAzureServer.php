@@ -187,7 +187,7 @@ class UserAzureServer extends UserBase
         {
             foreach ($names as $name) {
                 $resource_group_name = $name . '_group';
-                if ($resource_group['name'] == $resource_group_name) {
+                if (Str::lower($resource_group['name']) == Str::lower($resource_group_name)) {
                     return json(Tools::msg('0', '创建失败', '存在同名资源组，请修改虚拟机名称 ' . $name));
                 }
             }
