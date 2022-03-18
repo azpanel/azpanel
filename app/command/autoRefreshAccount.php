@@ -71,5 +71,7 @@ class autoRefreshAccount extends Command
                 }
             }
         }
+
+        $output->writeln("<info>All tasks completed.</info>");
     }
 }

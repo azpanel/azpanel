@@ -27,7 +27,10 @@ class Tools extends Command
 
     public static function statisticsTraffic()
     {
-        $servers = AzureServer::where('status', 'PowerState/running')->select();
+        $servers = AzureServer::where('status', '<>', 'PowerState/deallocated')
+        ->where('skip', '0')
+        ->select();
+
         $start_time = date('Y-m-d\T 16:00:00\Z', strtotime(Carbon::parse('+2 days ago')->toDateTimeString()));
         $stop_time = date('Y-m-d\T 16:00:00\Z', strtotime(Carbon::parse('+1 days ago')->toDateTimeString()));
 
@@ -54,6 +57,8 @@ class Tools extends Command
             } catch (\Exception $e) {
                 $text = 'The virtual machine '. $server->vm_id .' or its resource group does not exist.';
                 Log::write($text, 'error');
+                $server->skip = 1;
+                $server->save();
             }
         }
     }

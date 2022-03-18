@@ -329,16 +329,25 @@ class UserAzureServer extends UserBase
             }
         }
 
-        $vm_details = json_decode($server->vm_details, true);
-        $network_details = json_decode($server->network_details, true);
+        $vm_details       = json_decode($server->vm_details, true);
+        $network_details  = json_decode($server->network_details, true);
         $instance_details = json_decode($server->instance_details, true);
+        $vm_disk_created  = strtotime($instance_details['disks']['0']['statuses']['0']['time']);
+
+        $vm_dialog       = json_encode($vm_details, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+        $network_dialog  = json_encode($network_details, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+        $instance_dialog = json_encode($instance_details, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
 
         View::assign('server', $server);
         View::assign('vm_sizes', $vm_sizes);
         View::assign('disk_sizes', $disk_sizes);
         View::assign('disk_tiers', $disk_tiers);
+        View::assign('vm_dialog', $vm_dialog);
         View::assign('vm_details', $vm_details);
+        View::assign('network_dialog', $network_dialog);
+        View::assign('vm_disk_created', $vm_disk_created);
         View::assign('network_details', $network_details);
+        View::assign('instance_dialog', $instance_dialog);
         View::assign('instance_details', $instance_details);
         return View::fetch('../app/view/user/azure/server/read.html');
     }
@@ -440,6 +449,14 @@ class UserAzureServer extends UserBase
 
         UserTask::update($task_id, (++$count / 4), '正在获取新的公网地址');
 
+        $log = new AzureServerResize;
+        $log->user_id     = session('user_id');
+        $log->vm_id       = $server->vm_id;
+        $log->before_size = $server->disk_size;
+        $log->after_size  = $new_disk;
+        $log->created_at  = time();
+        $log->save();
+
         $server->disk_size = $new_disk;
         $server->ip_address = AzureApi::getAzureVirtualMachinePublicIpv4($server);
         $server->save();
@@ -527,7 +544,7 @@ class UserAzureServer extends UserBase
     public function check($ipv4)
     {
         // http://4563.org/?p=368746
-        
+
         try {
             $result = file_get_contents('https://api-v2.50network.com/modules/ipcheck/icmp?ipv4=' . $ipv4);
             $result = json_decode($result, true);

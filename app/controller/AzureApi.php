@@ -222,8 +222,12 @@ class AzureApi extends BaseController
                 $network_interfaces = explode('/', $virtual_machine['properties']['networkProfile']['networkInterfaces']['0']['id']);
                 $network_interfaces = end($network_interfaces);
                 $instance_details   = self::getAzureVirtualMachineStatus($account_id, $virtual_machine['id']);
-                
+
                 // Log::write($instance_details, 'notice');
+
+                if ($instance_details['statuses']['1']['code'] == null) {
+                    throw new \Exception('获取虚拟机运行状态失败。请稍后在账户列表选择虚拟机归属账户，点击更新资源尝试重新加载');
+                }
 
                 // 新建
                 $server = new AzureServer;
@@ -591,7 +595,7 @@ class AzureApi extends BaseController
             $start_time = date('Y-m-d\T H:00:00\Z', time() - 115200); // 24 + 8 h
             $end_time   = date('Y-m-d\T H:00:00\Z', time() - 25200);
         }
-        
+
         $client = new Client();
         $url = 'https://management.azure.com' . $server->request_url . '/providers/Microsoft.Insights/metrics?api-version=2018-01-01&timespan=' . $start_time . '/' . $end_time . '&interval=PT1H&aggregation=total%2Caverage&metricnames=Percentage%20CPU%2CCPU%20Credits%20Remaining%2CAvailable%20Memory%20Bytes%2CNetwork%20In%20Total%2CNetwork%20Out%20Total';
         $result = $client->get($url, [
