@@ -107,7 +107,7 @@
 
       <div class="mdui-typo">
         <p>
-          * 硬盘大小只能升级，不能降级
+          硬盘大小只能升级，不能降级。默认选中的磁盘层选项即为当前磁盘层等级
         </p>
       </div>
 
@@ -216,6 +216,20 @@
         </div>
       </div>
 
+      <div class="mdui-container">
+        <div class="mdui-dialog" id="vm-network-disk">
+          <div class="mdui-dialog-content">
+            <div class="mdui-dialog-title">硬盘</div>
+            <div class="mdui-dialog-content">
+              <pre><code class="language-json">{$disk_dialog}</code></pre>
+            </div>
+          </div>
+          <div class="mdui-dialog-actions">
+            <button class="mdui-btn mdui-ripple" mdui-dialog-close>关闭</button>
+          </div>
+        </div>
+      </div>
+
       <p style="color: #3F51B5; font-size: 20px">原始数据</p>
 
       <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple"
@@ -226,6 +240,11 @@
       <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple"
         mdui-dialog="{target: '#vm-instance-details'}">
         虚拟机状态
+      </button>
+
+      <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple"
+        mdui-dialog="{target: '#vm-network-disk'}">
+        虚拟机硬盘
       </button>
 
       <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple"
@@ -318,6 +337,8 @@
       }
     );
   };
+
+  $("#new_tier").prop('value', '{$disk_details.properties.tier}');
 </script>
 {include file="../app/view/user/footer.html" /}
 

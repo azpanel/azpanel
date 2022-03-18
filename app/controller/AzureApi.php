@@ -690,4 +690,26 @@ class AzureApi extends BaseController
 
         return json_decode($result->getBody(), true);
     }
+
+    public static function getDisks($server)
+    {
+        // https://docs.microsoft.com/zh-cn/rest/api/compute/disks/get
+
+        $headers = [
+            'Authorization' => 'Bearer ' . self::getAzureAccessToken($server->account_id),
+            'Content-Type' => 'application/json'
+        ];
+
+        $instance_details = json_decode($server->instance_details, true);
+        $disk_name = $instance_details['disks']['0']['name'];
+
+        $url = 'https://management.azure.com/subscriptions/'.$server->at_subscription_id.'/resourceGroups/'.$server->resource_group.'/Providers/Microsoft.Compute/disks/'.$disk_name.'?api-version=2020-12-01';
+
+        $client = new Client();
+        $result = $client->get($url, [
+            'headers' => $headers
+        ]);
+
+        return json_decode($result->getBody(), true);
+    }
 }

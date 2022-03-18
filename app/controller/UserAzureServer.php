@@ -329,12 +329,20 @@ class UserAzureServer extends UserBase
             }
         }
 
+        if ($server->disk_details == null) {
+            $disk_details = json_encode(AzureApi::getDisks($server));
+            $server->disk_details = $disk_details;
+            $server->save();
+        }
+
         $vm_details       = json_decode($server->vm_details, true);
+        $disk_details     = ($server->disk_details == null) ? $disk_details : json_decode($server->disk_details, true);
         $network_details  = json_decode($server->network_details, true);
         $instance_details = json_decode($server->instance_details, true);
         $vm_disk_created  = strtotime($instance_details['disks']['0']['statuses']['0']['time']);
 
         $vm_dialog       = json_encode($vm_details, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+        $disk_dialog     = json_encode($disk_details, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
         $network_dialog  = json_encode($network_details, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
         $instance_dialog = json_encode($instance_details, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
 
@@ -344,6 +352,8 @@ class UserAzureServer extends UserBase
         View::assign('disk_tiers', $disk_tiers);
         View::assign('vm_dialog', $vm_dialog);
         View::assign('vm_details', $vm_details);
+        View::assign('disk_dialog', $disk_dialog);
+        View::assign('disk_details', $disk_details);
         View::assign('network_dialog', $network_dialog);
         View::assign('vm_disk_created', $vm_disk_created);
         View::assign('network_details', $network_details);
@@ -458,6 +468,7 @@ class UserAzureServer extends UserBase
         $log->save();
 
         $server->disk_size = $new_disk;
+        $server->disk_details = AzureApi::getDisks($server);
         $server->ip_address = AzureApi::getAzureVirtualMachinePublicIpv4($server);
         $server->save();
 
