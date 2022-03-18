@@ -5,12 +5,13 @@ use app\model\Task;
 
 class UserTask
 {
-    public static function create($user_id, $name)
+    public static function create($user_id, $name, $params = null)
     {
         $task = new Task;
         $msg = [];
         $task->user_id     = $user_id;
         $task->name        = $name;
+        $task->params      = $params;
         $task->schedule    = '0';
         $task->status      = 'created';
         $task->current     = '任务已创建';

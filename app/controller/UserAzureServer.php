@@ -195,10 +195,23 @@ class UserAzureServer extends UserBase
 
         // return json(Tools::msg('0', '创建检查完成', '没有发现问题'));
 
+        $params = [
+            'vm_remark'    => $vm_remark,
+            'vm_name'      => $vm_name,
+            'vm_number'    => $vm_number,
+            'vm_user'      => $vm_user,
+            'vm_script'    => $vm_script,
+            'vm_location'  => $vm_location,
+            'vm_size'      => $vm_size,
+            'vm_account'   => $vm_account,
+            'vm_disk_size' => $vm_disk_size,
+            'vm_image'     => $vm_image,
+        ];
+
         $progress = 0;
         $client   = new Client();
         $steps    = ($vm_number * 6) + 2;
-        $task_id  = UserTask::create(session('user_id'), '创建虚拟机');
+        $task_id  = UserTask::create(session('user_id'), '创建虚拟机', json_encode($params));
 
         foreach ($names as $vm_name)
         {
