@@ -340,6 +340,7 @@ class UserAzureServer extends UserBase
         $network_details  = json_decode($server->network_details, true);
         $instance_details = json_decode($server->instance_details, true);
         $vm_disk_created  = strtotime($instance_details['disks']['0']['statuses']['0']['time']);
+        $vm_disk_tier     = $disk_details['properties']['tier'] ?? 'P4';
 
         $vm_dialog       = json_encode($vm_details, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
         $disk_dialog     = json_encode($disk_details, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
@@ -353,6 +354,7 @@ class UserAzureServer extends UserBase
         View::assign('vm_dialog', $vm_dialog);
         View::assign('vm_details', $vm_details);
         View::assign('disk_dialog', $disk_dialog);
+        View::assign('vm_disk_tier', $vm_disk_tier);
         View::assign('disk_details', $disk_details);
         View::assign('network_dialog', $network_dialog);
         View::assign('vm_disk_created', $vm_disk_created);
