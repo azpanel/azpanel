@@ -240,7 +240,28 @@ class UserAzureServer extends UserBase
             }
         }
 
-        return json(Tools::msg('0', '检查结果', '检查完成'));
+        // 核心数检查
+        $sizes = AzureList::sizes();
+        $quotas = AzureApi::getQuota($account, $vm_location);
+        $cores_total = $sizes[$vm_size]['cpu'] * $vm_number;
+
+        foreach ($quotas['value'] as $quota)
+        {
+            if ($quota['properties']['name']['value'] == 'cores') {
+                $quota_limit = $quota['properties']['limit'];
+                $quota_usage = $quota['properties']['currentValue'];
+            }
+        }
+
+        if ($cores_total + $quota_usage > $quota_limit) {
+            $available = $quota_limit - $quota_usage;
+            UserTask::end($task_id, true, json_encode(
+                ['msg' => "The total number of virtual machine CPU cores created is $cores_total, which exceeds the available limit of $available for this subscription in this region."]
+            ));
+            return json(Tools::msg('0', '创建失败', "创建的虚拟机 CPU 核心数总计为 $cores_total 个，这超过了此订阅在此区域的可用限额 $available 个"));
+        }
+
+        // return json(Tools::msg('0', '检查结果', '检查完成'));
 
         foreach ($names as $vm_name)
         {
@@ -302,7 +323,7 @@ class UserAzureServer extends UserBase
                 );
 
                 // 创建虚拟机
-                sleep(2);
+                sleep(3);
                 UserTask::update($task_id, (++$progress / $steps), '在资源组 ' . $vm_resource_group_name . ' 中创建虚拟机');
                 $vm_url = AzureApi::createAzureVm(
                     $client, $account, $vm_name, $vm_config, $vm_image, $interfaces, $vm_location
