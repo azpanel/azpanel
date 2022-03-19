@@ -211,13 +211,14 @@ class UserAzureServer extends UserBase
 
         // 注册供应商
         if ($account->reg_capacity == 0) {
+            ++$steps;
             $client = new Client();
             AzureApi::registerMainAzureProviders($client, 'Microsoft.Capacity', $account->id);
             $account->reg_capacity = 1;
             $account->save();
 
             UserTask::update($task_id, (++$progress / $steps), '正在注册 Microsoft.Capacity 时间较久请稍等片刻');
-            sleep(10);
+            sleep(5);
         }
 
         // 限额检查
