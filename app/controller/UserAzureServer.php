@@ -266,7 +266,7 @@ class UserAzureServer extends UserBase
             }
         }
 
-        if ($quota_usage != null && $cores_total + $quota_usage > $quota_limit) {
+        if (!empty(quota_usage) && $cores_total + $quota_usage > $quota_limit) {
             $available = $quota_limit - $quota_usage;
             UserTask::end($task_id, true, json_encode(
                 ['msg' => "The total number of virtual machine CPU cores created is $cores_total, which exceeds the available limit of $available for this subscription in this region."]
