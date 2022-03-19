@@ -223,7 +223,6 @@ class UserAzureServer extends UserBase
         // 限额检查
         UserTask::update($task_id, (++$progress / $steps), '正在检查创建任务可行性');
         $limits = AzureApi::getResourceSkusList($client, $account, $vm_location);
-        Log::write(json_encode($limits), 'limits');
         foreach ($limits['value'] as $limit)
         {
             if ($limit['name'] == $vm_size) {

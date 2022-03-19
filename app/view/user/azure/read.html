@@ -112,7 +112,6 @@
       },
       error: function (data) {
         load.close();
-        clearInterval(cycle);
         mdui.alert('首次获取可能会失败，一般重试即可解决问题', '获取失败');
       },
     });
