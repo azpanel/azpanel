@@ -209,6 +209,17 @@ class UserAzureServer extends UserBase
         $steps    = ($vm_number * 6) + 3;
         $task_id  = UserTask::create(session('user_id'), '创建虚拟机', json_encode($params));
 
+        // 注册供应商
+        if ($account->reg_capacity == 0) {
+            $client = new Client();
+            AzureApi::registerMainAzureProviders($client, 'Microsoft.Capacity', $account->id);
+            $account->reg_capacity = 1;
+            $account->save();
+
+            UserTask::update($task_id, (++$progress / $steps), '正在注册 Microsoft.Capacity 时间较久请稍等片刻');
+            sleep(10);
+        }
+
         // 限额检查
         UserTask::update($task_id, (++$progress / $steps), '正在检查创建任务可行性');
         $limits = AzureApi::getResourceSkusList($client, $account, $vm_location);
