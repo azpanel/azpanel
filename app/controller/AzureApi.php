@@ -77,9 +77,6 @@ class AzureApi extends BaseController
 
         $url = 'https://management.azure.com/subscriptions/'. $azure_sub->az_sub_id . '/providers/'.$provider.'/register?api-version=2021-04-01';
         $client->post($url, ['headers' => $headers]);
-
-        $azure_sub->providers_register = 1;
-        $azure_sub->save();
     }
 
     public static function getAzureResourceGroupsList($account_id, $az_sub_id)
