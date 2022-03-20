@@ -181,7 +181,7 @@ class UserAzure extends UserBase
         }
 
         $client = new Client();
-        AzureApi::registerMainAzureProviders($client, 'Microsoft.Capacity', $account->id);
+        AzureApi::registerMainAzureProviders($client, $account, 'Microsoft.Capacity');
         $account->reg_capacity = 1;
         $account->save();
 
@@ -389,7 +389,7 @@ class UserAzure extends UserBase
 
         if ($account->reg_capacity == 0) {
             $client = new Client();
-            AzureApi::registerMainAzureProviders($client, 'Microsoft.Capacity', $account->id);
+            AzureApi::registerMainAzureProviders($client, $account, 'Microsoft.Capacity');
             $account->reg_capacity = 1;
             $account->save();
         }

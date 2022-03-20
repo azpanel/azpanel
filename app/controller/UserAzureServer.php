@@ -213,7 +213,7 @@ class UserAzureServer extends UserBase
         if ($account->reg_capacity == 0) {
             ++$steps;
             $client = new Client();
-            AzureApi::registerMainAzureProviders($client, 'Microsoft.Capacity', $account->id);
+            AzureApi::registerMainAzureProviders($client, $account, 'Microsoft.Capacity');
             $account->reg_capacity = 1;
             $account->save();
 
@@ -294,8 +294,8 @@ class UserAzureServer extends UserBase
                 // 向资源提供程序注册订阅
                 if ($account->providers_register == '0') {
                     UserTask::update($task_id, (++$progress / $steps), '向资源提供程序注册订阅');
-                    AzureApi::registerMainAzureProviders($client, 'Microsoft.Compute', $account->id);
-                    AzureApi::registerMainAzureProviders($client, 'Microsoft.Network', $account->id);
+                    AzureApi::registerMainAzureProviders($client, $account, 'Microsoft.Compute');
+                    AzureApi::registerMainAzureProviders($client, $account, 'Microsoft.Network');
 
                     $account->providers_register = 1;
                     $account->save();

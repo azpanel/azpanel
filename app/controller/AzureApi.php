@@ -65,17 +65,15 @@ class AzureApi extends BaseController
         return json_decode($result->getBody(), true);
     }
 
-    public static function registerMainAzureProviders($client, $provider, $account_id)
+    public static function registerMainAzureProviders($client, $account, $provider)
     {
         // https://docs.microsoft.com/zh-cn/rest/api/resources/providers/register
 
-        $azure_sub = Azure::find($account_id);
-
         $headers = [
-            'Authorization' => 'Bearer ' . self::getAzureAccessToken($account_id)
+            'Authorization' => 'Bearer ' . self::getAzureAccessToken($account->id)
         ];
 
-        $url = 'https://management.azure.com/subscriptions/'. $azure_sub->az_sub_id . '/providers/'.$provider.'/register?api-version=2021-04-01';
+        $url = 'https://management.azure.com/subscriptions/'. $account->az_sub_id . '/providers/' . $provider . '/register?api-version=2021-04-01';
         $client->post($url, ['headers' => $headers]);
     }
 
