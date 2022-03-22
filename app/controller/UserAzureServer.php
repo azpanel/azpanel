@@ -11,6 +11,7 @@ use app\model\Azure;
 use app\model\User;
 use app\model\Config;
 use app\model\Traffic;
+use app\model\ControlRule;
 use app\model\AzureServer;
 use app\model\AzureServerResize;
 use app\controller\Tools;
@@ -54,6 +55,9 @@ class UserAzureServer extends UserBase
         ->order('id', 'desc')
         ->select();
 
+        $traffic_rules = ControlRule::where('user_id', session('user_id'))
+        ->select();
+
         $designated_id = (int) input('id');
         if ($designated_id != '') {
             $designated_account = Azure::where('user_id', session('user_id'))->where('id', $designated_id)->find();
@@ -83,24 +87,37 @@ class UserAzureServer extends UserBase
         View::assign('disk_sizes',  AzureList::diskSizes());
         View::assign('images',      AzureList::images());
         View::assign('sizes',       AzureList::sizes());
+        View::assign('traffic_rules', $traffic_rules);
         View::assign('personalise', $personalise);
         View::assign('accounts',    $accounts);
         return View::fetch('../app/view/user/azure/server/create.html');
     }
 
+    public function update($uuid)
+    {
+        $server = AzureServer::where('user_id', session('user_id'))
+        ->where('vm_id', $uuid)
+        ->find();
+
+        $server->rule = input('traffic_rule/s');
+        $server->save();
+        return json(Tools::msg('1', '保存结果', '保存成功'));
+    }
+
     public function save()
     {
-        $vm_remark    = input('vm_remark/s');
-        $vm_name      = input('vm_name/s');
-        $vm_number    = (int) input('vm_number/s');
-        $vm_user      = input('vm_user/s');
-        $vm_passwd    = input('vm_passwd/s');
-        $vm_script    = input('vm_script/s');
-        $vm_location  = input('vm_location/s');
-        $vm_size      = input('vm_size/s');
-        $vm_account   = (int) input('vm_account/s');
-        $vm_disk_size = (int) input('vm_disk_size/s');
-        $vm_image     = input('vm_image/s');
+        $vm_remark       = input('vm_remark/s');
+        $vm_name         = input('vm_name/s');
+        $vm_number       = (int) input('vm_number/s');
+        $vm_user         = input('vm_user/s');
+        $vm_passwd       = input('vm_passwd/s');
+        $vm_script       = input('vm_script/s');
+        $vm_location     = input('vm_location/s');
+        $vm_size         = input('vm_size/s');
+        $vm_account      = (int) input('vm_account/s');
+        $vm_disk_size    = (int) input('vm_disk_size/s');
+        $vm_image        = input('vm_image/s');
+        $vm_traffic_rule = input('vm_traffic_rule/s');
 
         // 空账户检查
         if ($vm_account == '') {
@@ -390,6 +407,7 @@ class UserAzureServer extends UserBase
         foreach($names as $name) {
             $server = AzureServer::where('name', $name)->order('id', 'desc')->limit(1)->find();
             $server->user_remark = $remarks[$pointer];
+            $server->rule = $vm_traffic_rule;
             $server->save();
             $pointer += 1;
         }
@@ -405,9 +423,10 @@ class UserAzureServer extends UserBase
             return View::fetch('../app/view/user/reject.html');
         }
 
-        $vm_sizes = AzureList::sizes();
-        $disk_sizes = AzureList::diskSizes();
-        $disk_tiers = AzureList::diskTiers();
+        $vm_sizes      = AzureList::sizes();
+        $disk_sizes    = AzureList::diskSizes();
+        $disk_tiers    = AzureList::diskTiers();
+        $traffic_rules = ControlRule::where('user_id', session('user_id'))->select();
         unset($vm_sizes[$server->vm_size]);
 
         foreach ($disk_sizes as $key => $value)
@@ -444,6 +463,7 @@ class UserAzureServer extends UserBase
         View::assign('disk_dialog', $disk_dialog);
         View::assign('vm_disk_tier', $vm_disk_tier);
         View::assign('disk_details', $disk_details);
+        View::assign('traffic_rules', $traffic_rules);
         View::assign('network_dialog', $network_dialog);
         View::assign('vm_disk_created', $vm_disk_created);
         View::assign('network_details', $network_details);

@@ -4,6 +4,7 @@ namespace app\controller;
 use app\model\Task;
 use app\model\Verify;
 use app\model\LoginLog;
+use app\model\ControlLog;
 use app\model\AzureServerResize;
 use think\facade\View;
 
@@ -37,6 +38,16 @@ class AdminLog extends AdminBase
         View::assign('page', $page);
         View::assign('logs', $logs);
         return View::fetch('../app/view/admin/log/resize.html');
+    }
+
+    public function traffic()
+    {
+        $logs = ControlLog::order('id', 'desc')->paginate(30);
+        $page = $logs->render();
+
+        View::assign('page', $page);
+        View::assign('logs', $logs);
+        return View::fetch('../app/view/admin/log/traffic.html');
     }
 
     public function task()

@@ -63,10 +63,12 @@ class autoRefreshAccount extends Command
 
                 if ($telegram_notify == true && $count != '0' && $task->push_swicth == '1') {
                     $user = User::where('id', $task->user_id)->find();
-                    try {
-                        Notify::telegram($user->notify_tgid, $text);
-                    } catch (\Exception $e) {
-                        Log::write($e->getMessage(), 'push_error');
+                    if (!empty($user->notify_tgid)) {
+                        try {
+                            Notify::telegram($user->notify_tgid, $text);
+                        } catch (\Exception $e) {
+                            Log::write($e->getMessage(), 'push_error');
+                        }
                     }
                 }
             }

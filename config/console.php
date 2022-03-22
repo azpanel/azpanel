@@ -6,8 +6,9 @@ return [
     'commands' => [
         'tools' => 'app\command\Tools',
         'createAdmin' => 'app\command\createAdmin',
-        'trafficControl' => 'app\command\trafficControl',
         'closeTimeoutTask' => 'app\command\closeTimeoutTask',
+        'trafficControlStop' => 'app\command\trafficControlStop',
+        'trafficControlStart' => 'app\command\trafficControlStart',
         'autoRefreshAccount' => 'app\command\autoRefreshAccount',
     ]
 ];

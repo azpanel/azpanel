@@ -57,6 +57,7 @@ Route::resource('/user/server/azure',             'UserAzureServer');
 Route::patch('/user/server/azure/:action/:uuid',  'UserAzureServer/status');
 Route::put('/user/server/azure/resize/:uuid',     'UserAzureServer/resize');
 Route::put('/user/server/azure/redisk/:uuid',     'UserAzureServer/redisk');
+Route::put('/user/server/azure/rule/:uuid',       'UserAzureServer/update');
 Route::post('/user/server/azure/remark/:uuid',    'UserAzureServer/remark');
 Route::post('/user/server/azure/refresh/:uuid',   'UserAzureServer/refresh');
 Route::post('/user/server/azure/change/:uuid',    'UserAzureServer/change');
@@ -93,6 +94,7 @@ Route::post('/admin/setting/telegram/test',       'AdminSetting/telegramPushTest
 Route::get('/admin/log/login',                    'AdminLog/login');
 Route::get('/admin/log/verify',                   'AdminLog/verify');
 Route::get('/admin/log/resize',                   'AdminLog/resize');
+Route::get('/admin/log/traffic',                  'AdminLog/traffic');
 Route::get('/admin/log/task',                     'AdminLog/task');
 Route::get('/admin/log/task/:id',                 'AdminLog/taskDetails');
 

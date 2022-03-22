@@ -141,6 +141,15 @@
                 </div>
               </div>
             </div>
+            <div class="mdui-m-t-2">
+              流量控制规则：
+              <select id="vm_traffic_rule" class="mdui-select" mdui-select>
+                <option value="0">不使用</option>
+                {volist name="traffic_rules" id="traffic_rule"}
+                <option value="{$traffic_rule->id}">{$traffic_rule->name}</option>
+                {/volist}
+              </select>
+            </div>
           </div>
         </div>
       </div>
@@ -193,7 +202,8 @@
             vm_size: $('#vm_size').val(),
             vm_account: $('#vm_account').val(),
             vm_disk_size: $('#vm_disk_size').val(),
-            vm_image: $('#vm_image').val()
+            vm_image: $('#vm_image').val(),
+            vm_traffic_rule: $('#vm_traffic_rule').val()
           },
           dataType: "json",
           success: function (data) {
