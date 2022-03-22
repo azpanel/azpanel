@@ -12,15 +12,27 @@ class UserAzureServerRule extends UserBase
 {
     public function index()
     {
-        $rules = ControlRule::where('user_id', session('user_id'))->select();
+        $rules = ControlRule::where('user_id', session('user_id'))
+        ->order('id', 'desc')
+        ->select();
 
         View::assign('rules', $rules);
+        View::assign('count', $rules->count());
         return View::fetch('../app/view/user/azure/rule/index.html');
     }
 
     public function create()
     {
         return View::fetch('../app/view/user/azure/rule/create.html');
+    }
+
+    public function read($id)
+    {
+        $servers = AzureServer::where('rule', $id)->select();
+
+        View::assign('count', $servers->count());
+        View::assign('servers', $servers);
+        return View::fetch('../app/view/user/azure/rule/read.html');
     }
 
     public function save()
@@ -113,5 +125,18 @@ class UserAzureServerRule extends UserBase
         }
 
         return json(Tools::msg('1', '删除结果', '删除成功'));
+    }
+
+    public function log()
+    {
+        $logs = ControlLog::where('user_id', session('user_id'))
+        ->order('id', 'desc')
+        ->paginate(30);
+
+        $page = $logs->render();
+
+        View::assign('page', $page);
+        View::assign('logs', $logs);
+        return View::fetch('../app/view/user/azure/rule/traffic.html');
     }
 }

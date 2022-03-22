@@ -28,19 +28,19 @@ class trafficControlStop extends Command
     protected function execute(Input $input, Output $output)
     {
         $servers = AzureServer::where('rule', '<>', '0')
+        ->where('status', 'PowerState/running')
         ->where('skip', '<>', '1')
         ->select();
 
         foreach ($servers as $server)
         {
             $rule = ControlRule::find($server->rule);
-            var_dump($server->name);
 
-            if ($rule->switch == 1)
+            if ($rule->switch == '1')
             {
                 $stop_time  = time() - 28800;
                 $start_time = time() - ($rule->interval * 3600) - 28800;
-                $stop_time = date('Y-m-d\T H:i:s\Z', $stop_time);
+                $stop_time  = date('Y-m-d\T H:i:s\Z', $stop_time);
                 $start_time = date('Y-m-d\T H:i:s\Z', $start_time);
 
                 try {
@@ -51,6 +51,9 @@ class trafficControlStop extends Command
 
                     if ($indicator_usage > $rule->limit) {
                         AzureApi::manageVirtualMachine('stop', $server->account_id, $server->request_url);
+                        // set vm status
+                        $server->status = 'PowerState/stopped';
+                        $server->save();
 
                         if ($rule->execute_push == '1') {
                             $user = User::where('id', $rule->user_id)->find();
@@ -67,7 +70,9 @@ class trafficControlStop extends Command
                         $log = new ControlLog;
                         $log->user_id    = $server->user_id;
                         $log->rule_id    = $server->rule;
+                        $log->rule_name  = $rule->name;
                         $log->vm_id      = $server->vm_id;
+                        $log->vm_name    = $server->name;
                         $log->action     = 'stop';
                         $log->created_at = time();
                         $log->save();
@@ -91,5 +96,7 @@ class trafficControlStop extends Command
                 }
             }
         }
+
+        $output->writeln("<info>All tasks have been completed.");
     }
 }

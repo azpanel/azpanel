@@ -7,6 +7,7 @@ use think\facade\Log;
 use app\model\User;
 use app\model\AzureServer;
 use app\model\ControlLog;
+use app\model\ControlRule;
 use app\model\ControlTask;
 use app\controller\Notify;
 use app\controller\AzureApi;
@@ -31,15 +32,22 @@ class trafficControlStart extends Command
 
         foreach ($tasks as $task)
         {
+            $rule = ControlRule::find($server->rule);
             $server = AzureServer::where('vm_id', $task->vm_id)->find();
             AzureApi::manageVirtualMachine('start', $server->account_id, $server->request_url);
+            // set task status
             $task->status = 'done';
             $task->save();
+            // set vm status
+            $server->status = 'PowerState/running';
+            $server->save();
 
             $log = new ControlLog;
             $log->user_id    = $server->user_id;
             $log->rule_id    = $server->rule;
+            $log->rule_name  = $rule->name;
             $log->vm_id      = $server->vm_id;
+            $log->vm_name    = $server->name;
             $log->action     = 'start';
             $log->created_at = time();
             $log->save();
@@ -56,5 +64,7 @@ class trafficControlStart extends Command
                 }
             }
         }
+
+        $output->writeln("<info>All tasks have been completed.");
     }
 }

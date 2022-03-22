@@ -52,6 +52,10 @@ Route::delete('/user/azure/resources',            'UserAzure/deleteResourceGroup
 Route::get('/user/azure/resources/:id',           'UserAzure/readResourceGroupsList');
 Route::get('/user/azure/resources/:id/:name',     'UserAzure/readResourceGroup');
 
+// Azure 服务器规则
+Route::resource('/user/server/azure/rule',        'UserAzureServerRule');
+Route::get('/user/server/azure/rule/log',         'UserAzureServerRule/log');
+
 // Azure 服务器
 Route::resource('/user/server/azure',             'UserAzureServer');
 Route::patch('/user/server/azure/:action/:uuid',  'UserAzureServer/status');
@@ -65,9 +69,6 @@ Route::post('/user/server/azure/check/:ipv4',     'UserAzureServer/check');
 Route::delete('/user/server/azure/remove/:uuid',  'UserAzureServer/delete');
 Route::delete('/user/server/azure/destroy/:uuid', 'UserAzureServer/destroy');
 Route::get('/user/server/azure/:id/chart/[:gap]', 'UserAzureServer/chart');
-
-// Azure 服务器规则
-Route::resource('/user/server/azure/rule',        'UserAzureServerRule');
 
 // 管理员
 Route::get('/admin',                              'AdminDashboard/index');

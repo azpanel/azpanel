@@ -1,0 +1,74 @@
+{include file="../app/view/user/header.html" title="管理列表" /}
+
+<div class="mdui-container-fluid">
+  <div class="mdui-row">
+    <div
+      class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+      <div class="mdui-container-fluid">
+        <p style="color: #3F51B5; font-size: 34px">管理列表</p>
+      </div>
+
+      <div class="mdui-typo">
+        <p>此规则管理的所有虚拟机</p>
+      </div>
+
+      <div class="mdui-table-fluid mdui-m-t-2">
+        <table class="mdui-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>名称</th>
+              <th>备注</th>
+              <th>状态</th>
+              <th>地域</th>
+              <th>规格</th>
+              <th>IP</th>
+              <th>系统版本</th>
+              <th>资源组</th>
+              <th>归属账户</th>
+              <th>硬盘大小</th>
+              <th>添加时间</th>
+            </tr>
+          </thead>
+          <tbody>
+            {volist name="servers" id="server"}
+            <tr>
+              <td>{$count--}</td>
+              <td>{$server.name}</td>
+              <td>{$server.user_remark ?? 'null'}</td>
+              <td>
+                {:str_replace('PowerState/', '', $server.status)}
+              </td>
+              <td>{$server.location}</td>
+              <td>{:str_replace('Standard_', '', $server.vm_size)}</td>
+              <td id="ip-{$server.id}">{$server.ip_address}</td>
+              <td class="disable-replication" mdui-tooltip="{content: '{$server.os_sku}', position: 'top'}">
+                {$server.os_offer}
+              </td>
+              <td>{$server.resource_group}</td>
+              <td>{$server.account_email}</td>
+              <td>{$server.disk_size}</td>
+              <td>{:date('Y-m-d H:i:s', $server.updated_at)}</td>
+            </tr>
+            {/volist}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  </br />
+</div>
+
+<script>
+  $("td:contains('running')").css("color", "green");
+  $("td:contains('starting')").css("color", "orange");
+  $("td:contains('stopping')").css("color", "orange");
+  $("td:contains('stopped')").css("color", "red");
+  $("td:contains('deallocated')").css("color", "red");
+  $("td:contains('null')").css("font-style", "italic");
+</script>
+
+</body>
+{include file="../app/view/user/footer.html" /}
+
+</html>

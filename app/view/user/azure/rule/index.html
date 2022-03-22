@@ -1,15 +1,15 @@
-{include file="../app/view/user/header.html" title="Azure 规则列表" /}
+{include file="../app/view/user/header.html" title="规则列表" /}
 
 <div class="mdui-container-fluid">
   <div class="mdui-row">
     <div
       class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
       <div class="mdui-container-fluid">
-        <p style="color: #3F51B5; font-size: 34px">Azure 规则列表</p>
+        <p style="color: #3F51B5; font-size: 34px">规则列表</p>
       </div>
 
       <div class="mdui-typo">
-        <p>你可以在这里查看所有 Azure 规则</p>
+        <p>你可以在这里管理流量控制规则</p>
       </div>
 
       <div class="card-body mdui-table-fluid-fixed mdui-m-t-2">
@@ -17,9 +17,11 @@
           <thead>
             <tr>
               <th>操作</th>
+              <th>#</th>
               <th>名称</th>
+              <th>指标</th>
+              <th>管理数</th>
               <th>开关</th>
-              <th>影响</th>
               <th>创建时间</th>
               <th>更新时间</th>
             </tr>
@@ -33,6 +35,11 @@
                 </button>
                 <ul class="mdui-menu" id="action-{$rule.id}">
                   <li class="mdui-menu-item">
+                    <a target="_blank" class="mdui-ripple" href="/user/server/azure/rule/{$rule.id}">
+                      <i class="mdui-menu-item-icon mdui-icon material-icons">subject</i>管理列表
+                    </a>
+                  </li>
+                  <li class="mdui-menu-item">
                     <a class="mdui-ripple" href="/user/server/azure/rule/{$rule.id}/edit" target="view_window">
                       <i class="mdui-menu-item-icon mdui-icon material-icons">edit</i>编辑
                     </a>
@@ -44,9 +51,11 @@
                   </li>
                 </ul>
               </td>
+              <td>{$count--}</td>
               <td>{$rule.name}</td>
-              <td>{$rule.switch == 1 ? '启用' : '停用'}</td>
+              <td>{$rule.index}</td>
               <td>{:app\\model\\AzureServer::where('rule', $rule.id)->count()}</td>
+              <td>{$rule.switch == 1 ? '启用' : '停用'}</td>
               <td>{:date('Y-m-d H:i:s', $rule.created_at)}</td>
               <td>{:date('Y-m-d H:i:s', $rule.updated_at)}</td>
             </tr>

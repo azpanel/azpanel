@@ -182,8 +182,8 @@
               <div class="mdui-typo">
                 <div class="mdui-m-t-2">
                   规格：<select id="traffic_rule" class="mdui-select" mdui-select>
-                    {volist name="traffic_rules" id="traffic_rule"}
                     <option value="0">不使用</option>
+                    {volist name="traffic_rules" id="traffic_rule"}
                     <option value="{$traffic_rule->id}">{$traffic_rule->name}</option>
                     {/volist}
                   </select>

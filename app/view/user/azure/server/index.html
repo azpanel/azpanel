@@ -107,12 +107,14 @@
               <td>{$server.name}</td>
               <td>{$server.user_remark ?? 'null'}</td>
               <td>
-                {:str_replace('PowerState/', '', $server.status)}</td>
+                {:str_replace('PowerState/', '', $server.status)}
+              </td>
               <td>{$server.location}</td>
               <td>{:str_replace('Standard_', '', $server.vm_size)}</td>
               <td id="ip-{$server.id}">{$server.ip_address}</td>
               <td class="disable-replication" mdui-tooltip="{content: '{$server.os_sku}', position: 'top'}">
-                {$server.os_offer}</td>
+                {$server.os_offer}
+              </td>
               <td>{$server.resource_group}</td>
               <td>{$server.account_email}</td>
               <td>{$server.disk_size}</td>
