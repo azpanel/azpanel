@@ -35,24 +35,23 @@ class trafficControlStop extends Command
         {
             $rule = ControlRule::find($server->rule);
             var_dump($server->name);
-            
+
             if ($rule->switch == 1)
             {
                 $stop_time  = time() - 28800;
                 $start_time = time() - ($rule->interval * 3600) - 28800;
                 $stop_time = date('Y-m-d\T H:i:s\Z', $stop_time);
                 $start_time = date('Y-m-d\T H:i:s\Z', $start_time);
-                
+
                 try {
                     $pointer = ($rule->index == 'traffic_in') ? '3' : '4';
                     $statistics = AzureApi::getVirtualMachineStatistics($server, $start_time, $stop_time);
                     $indicator_usage_raw = $statistics['value'][$pointer]['timeseries']['0']['data'];
                     $indicator_usage = UserAzureServer::processNetworkData($indicator_usage_raw, true);
-                    
+
                     if ($indicator_usage > $rule->limit) {
-                        //AzureApi::manageVirtualMachine('stop', $server->account_id, $server->request_url);
-                        $output->writeln("<info>stop $server->name</info>");
-                        
+                        AzureApi::manageVirtualMachine('stop', $server->account_id, $server->request_url);
+
                         if ($rule->execute_push == '1') {
                             $user = User::where('id', $rule->user_id)->find();
                             if (!empty($user->notify_tgid)) {
@@ -64,7 +63,7 @@ class trafficControlStop extends Command
                                 }
                             }
                         }
-                        
+
                         $log = new ControlLog;
                         $log->user_id    = $server->user_id;
                         $log->rule_id    = $server->rule;

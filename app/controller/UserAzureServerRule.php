@@ -103,7 +103,8 @@ class UserAzureServerRule extends UserBase
         ->delete();
 
         $servers = AzureServer::where('user_id', session('user_id'))
-        ->where('rule', $id)->select();
+        ->where('rule', $id)
+        ->select();
 
         foreach ($servers as $server)
         {

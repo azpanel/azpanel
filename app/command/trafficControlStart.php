@@ -32,8 +32,7 @@ class trafficControlStart extends Command
         foreach ($tasks as $task)
         {
             $server = AzureServer::where('vm_id', $task->vm_id)->find();
-            //AzureApi::manageVirtualMachine('start', $server->account_id, $server->request_url);
-            $output->writeln("<info>start $server->name</info>");
+            AzureApi::manageVirtualMachine('start', $server->account_id, $server->request_url);
             $task->status = 'done';
             $task->save();
 

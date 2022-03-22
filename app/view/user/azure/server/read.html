@@ -299,7 +299,7 @@
   }
 
   function redisk(that) {
-    mdui.confirm('硬盘大小变配过程中需要重新启动虚拟机，请注意保存重要数据。<span style="color: red">变配完成后，公网地址会发生变动，请在服务器列表获取新地址</span>', '变配确认',
+    mdui.confirm('硬盘大小调整过程中需要重新启动虚拟机，请注意保存重要数据。<span style="color: red">调整完成后，公网地址会发生变动，请在服务器列表获取新地址</span>', '调整确认',
       function () {
         var id = $(that).data('id');
         var load = new mdui.alert('<p id=\"hint\">准备中</p><div class=\"mdui-progress\"><div class=\"mdui-progress-determinate\"></div></div>', '进行中');
@@ -331,7 +331,7 @@
   };
 
   function resize(that) {
-    mdui.confirm('规格变配过程中需要重新启动虚拟机，请注意保存重要数据', '变配确认',
+    mdui.confirm('规格调整过程中需要重新启动虚拟机，请注意保存重要数据', '调整确认',
       function () {
         var id = $(that).data('id');
         var load = new mdui.alert('<div class=\"mdui-progress\"><div class=\"mdui-progress-indeterminate\"></div></div>', '进行中');
@@ -360,7 +360,7 @@
   };
 
   function apply(that) {
-    mdui.confirm('虚拟机会受流量控制规则设置关机，请谨慎使用', '设置确认',
+    mdui.confirm('确认使用此流量控制规则么', '应用确认',
       function () {
         var uuid = $(that).data('id');
         $.ajax({

@@ -106,18 +106,18 @@ class UserAzureServer extends UserBase
 
     public function save()
     {
-        $vm_remark       = input('vm_remark/s');
         $vm_name         = input('vm_name/s');
-        $vm_number       = (int) input('vm_number/s');
+        $vm_remark       = input('vm_remark/s');
         $vm_user         = input('vm_user/s');
         $vm_passwd       = input('vm_passwd/s');
         $vm_script       = input('vm_script/s');
         $vm_location     = input('vm_location/s');
         $vm_size         = input('vm_size/s');
+        $vm_image        = input('vm_image/s');
+        $vm_number       = (int) input('vm_number/s');
         $vm_account      = (int) input('vm_account/s');
         $vm_disk_size    = (int) input('vm_disk_size/s');
-        $vm_image        = input('vm_image/s');
-        $vm_traffic_rule = input('vm_traffic_rule/s');
+        $vm_traffic_rule = (int) input('vm_traffic_rule/s');
 
         // 空账户检查
         if ($vm_account == '') {
