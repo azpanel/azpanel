@@ -88,11 +88,7 @@ class trafficControlStop extends Command
                         $task->save();
                     }
                 } catch (\Exception $e) {
-                    $text = 'The virtual machine '. $server->vm_id .' or its resource group does not exist.';
-                    Log::write($text, 'error');
-                    var_dump($e->getMessage());
-                    //$server->skip = 1;
-                    //$server->save();
+                    Log::write($e->getMessage(), 'traffic_control_error');
                 }
             }
         }

@@ -28,7 +28,9 @@ class UserAzureServerRule extends UserBase
 
     public function read($id)
     {
-        $servers = AzureServer::where('rule', $id)->select();
+        $servers = AzureServer::where('user_id', session('user_id'))
+        ->where('rule', $id)
+        ->select();
 
         View::assign('count', $servers->count());
         View::assign('servers', $servers);
