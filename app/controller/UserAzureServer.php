@@ -206,23 +206,26 @@ class UserAzureServer extends UserBase
         // 初始化创建任务
         $progress = 0;
         $client   = new Client();
-        $steps    = ($vm_number * 6) + 3;
+        $steps    = ($vm_number * 6) + 5;
         $task_id  = UserTask::create(session('user_id'), '创建虚拟机', json_encode($params));
 
-        // 注册供应商
-        if ($account->reg_capacity == 0) {
+        if ($account->reg_capacity == '0') {
             ++$steps;
-            $client = new Client();
+            UserTask::update($task_id, (++$progress / $steps), '正在注册 Microsoft.Capacity');
             AzureApi::registerMainAzureProviders($client, $account, 'Microsoft.Capacity');
-            $account->reg_capacity = 1;
-            $account->save();
-
-            UserTask::update($task_id, (++$progress / $steps), '正在注册 Microsoft.Capacity 时间较久请稍等片刻');
-            sleep(5);
         }
 
-        // 限额检查
-        UserTask::update($task_id, (++$progress / $steps), '正在检查创建任务可行性');
+        if ($account->providers_register == '0') {
+            ++$steps;
+            UserTask::update($task_id, (++$progress / $steps), '正在注册 Microsoft.Compute 与 Microsoft.Network');
+            AzureApi::registerMainAzureProviders($client, $account, 'Microsoft.Compute');
+            AzureApi::registerMainAzureProviders($client, $account, 'Microsoft.Network');
+
+            $account->providers_register = 1;
+            $account->save();
+        }
+
+        UserTask::update($task_id, (++$progress / $steps), '正在检查订阅');
         $limits = AzureApi::getResourceSkusList($client, $account, $vm_location);
         foreach ($limits['value'] as $limit)
         {
@@ -230,15 +233,17 @@ class UserAzureServer extends UserBase
                 if (!empty($limit['restrictions']['0']['reasonCode'])) {
                     if ($limit['restrictions']['0']['reasonCode'] == 'NotAvailableForSubscription') {
                         UserTask::end($task_id, true, json_encode(
-                            ['msg' => 'This subscription cannot create VMs of this size in this region']
+                            ['msg' => 'This subscription cannot create VMs of this size in this region.']
                         ), true);
                         return json(Tools::msg('0', '创建失败', '此订阅不能在此区域创建此规格虚拟机'));
                     }
                 }
+                $size_family = $limit['family'];
             }
         }
 
         // 资源组检查
+        UserTask::update($task_id, (++$progress / $steps), '正在检查资源组');
         $resource_groups = AzureApi::getAzureResourceGroupsList($account->id, $account->az_sub_id);
         foreach ($resource_groups['value'] as $resource_group)
         {
@@ -254,24 +259,42 @@ class UserAzureServer extends UserBase
         }
 
         // 核心数检查
-        $sizes = AzureList::sizes();
-        $quotas = AzureApi::getQuota($account, $vm_location);
-        $cores_total = $sizes[$vm_size]['cpu'] * $vm_number;
+        UserTask::update($task_id, (++$progress / $steps), '正在检查配额');
+        try {
+            $sizes = AzureList::sizes();
+            $quotas = AzureApi::getQuota($account, $vm_location);
+            $cores_total = $sizes[$vm_size]['cpu'] * $vm_number;
 
-        foreach ($quotas['value'] as $quota)
-        {
-            if ($quota['properties']['name']['value'] == 'cores') {
-                $quota_limit = $quota['properties']['limit'];
-                $quota_usage = $quota['properties']['currentValue'];
+            foreach ($quotas['value'] as $quota)
+            {
+                if ($quota['properties']['name']['value'] == 'cores') {
+                    $quota_usage = $quota['properties']['currentValue'];
+                    $quota_limit = $quota['properties']['limit'];
+                    $account->reg_capacity = 1;
+                    $account->save();
+                }
+                if ($quota['properties']['name']['value'] == $size_family) {
+                    $size_quota_usage = $quota['properties']['currentValue'];
+                    $size_quota_limit = $quota['properties']['limit'];
+                }
             }
-        }
 
-        if (!empty($quota_usage) && $cores_total + $quota_usage > $quota_limit) {
-            $available = $quota_limit - $quota_usage;
-            UserTask::end($task_id, true, json_encode(
-                ['msg' => "The total number of virtual machine CPU cores created is $cores_total, which exceeds the available limit of $available for this subscription in this region."]
-            ), true);
-            return json(Tools::msg('0', '创建失败', "创建的虚拟机 CPU 核心数总计为 $cores_total 个，这超过了此订阅在此区域的可用限额 $available 个"));
+            if (!empty($quota_usage) && $cores_total + $quota_usage > $quota_limit) {
+                $available = $quota_limit - $quota_usage;
+                UserTask::end($task_id, true, json_encode(
+                    ['msg' => "The required number of cpu cores is $cores_total, but the subscription only has $available quota."]
+                ), true);
+                return json(Tools::msg('0', '创建失败', "所需 CPU 核心数为 $cores_total 个，但订阅仅有 $available 个配额"));
+            }
+            if (!empty($size_quota_usage) && $cores_total + $size_quota_usage > $size_quota_limit) {
+                $available = $size_quota_limit - $size_quota_usage;
+                UserTask::end($task_id, true, json_encode(
+                    ['msg' => "The required number of cpu cores is $cores_total, but the size only has $available quota."]
+                ), true);
+                return json(Tools::msg('0', '创建失败', "所需 CPU 核心数为 $cores_total 个，但此规格仅有 $available 个配额"));
+            }
+        } catch (\Exception $e) {
+
         }
 
         // return json(Tools::msg('0', '检查结果', '检查完成'));
@@ -291,17 +314,6 @@ class UserAzureServer extends UserBase
             ];
 
             try {
-                // 向资源提供程序注册订阅
-                if ($account->providers_register == '0') {
-                    UserTask::update($task_id, (++$progress / $steps), '向资源提供程序注册订阅');
-                    AzureApi::registerMainAzureProviders($client, $account, 'Microsoft.Compute');
-                    AzureApi::registerMainAzureProviders($client, $account, 'Microsoft.Network');
-
-                    $account->providers_register = 1;
-                    $account->save();
-                    $steps += 1;
-                }
-
                 // 创建资源组
                 sleep(1);
                 UserTask::update($task_id, (++$progress / $steps), '创建资源组 ' . $vm_resource_group_name);

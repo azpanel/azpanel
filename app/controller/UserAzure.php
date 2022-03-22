@@ -182,8 +182,6 @@ class UserAzure extends UserBase
 
         $client = new Client();
         AzureApi::registerMainAzureProviders($client, $account, 'Microsoft.Capacity');
-        $account->reg_capacity = 1;
-        $account->save();
 
         return json(Tools::msg('1', '添加结果', $content));
     }

@@ -194,7 +194,7 @@ class Auth extends BaseController
             ->order('id', 'desc')
             ->find();
 
-            if ($verify->code != $verify_code) {
+            if ($verify == null || $verify->code != $verify_code) {
                 return json(Tools::msg('0', '注册失败', '验证码不相符'));
             }
 
