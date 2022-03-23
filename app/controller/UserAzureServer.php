@@ -634,7 +634,9 @@ class UserAzureServer extends UserBase
         UserTask::update($task_id, (++$count / 5), '正在获取新的公网地址');
 
         sleep(1);
-        $server->ip_address = AzureApi::getAzureVirtualMachinePublicIpv4($server);
+        $network_details = AzureApi::getAzureNetworkInterfacesDetails($server->account_id, $server->network_interfaces, $server->resource_group, $server->at_subscription_id);
+        $server->network_details    = json_encode($network_details);
+        $server->ip_address         = $network_details['properties']['ipConfigurations']['0']['properties']['publicIPAddress']['properties']['ipAddress'] ?? 'null';
         $server->save();
 
         UserTask::end($task_id, false);
