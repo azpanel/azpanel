@@ -63,9 +63,6 @@
                       类型：<code>{$network_details.properties.ipConfigurations.0.properties.publicIPAddress.properties.publicIPAllocationMethod ?? 'null'}</code>
                     </p>
                     <p>
-                      SKU：<code>{$network_details.properties.ipConfigurations.0.properties.publicIPAddress.sku.name ?? 'null'} - {$network_details.properties.ipConfigurations.0.properties.publicIPAddress.sku.tier ?? 'null'}</code>
-                    </p>
-                    <p>
                       DDNS：<code>{$network_details.properties.ipConfigurations.0.properties.publicIPAddress.properties.dnsSettings.fqdn ?? 'null'}</code>
                     </p>
                   </div>
@@ -86,7 +83,6 @@
                     <p>发布者：<code>{$vm_details.properties.storageProfile.imageReference.publisher}</code></p>
                     <p>产品：<code>{$vm_details.properties.storageProfile.imageReference.sku}</code></p>
                     <p>类型：<code>{$vm_details.properties.storageProfile.imageReference.offer}</code></p>
-                    <p>版本：<code>{$vm_details.properties.storageProfile.imageReference.version}</code></p>
                   </div>
                 </div>
                 <!-- 虚拟机 -->

@@ -93,7 +93,7 @@ class UserAzure extends UserBase
         }
 
         if (strpos($quotaId, 'Visual Studio Enterprise') !== false) {
-            return 'Visual Studio Enterprise';
+            return 'VS Enterprise';
         }
 
         return 'Unknown';
