@@ -92,6 +92,10 @@ class UserAzure extends UserBase
             return 'Azure 3500';
         }
 
+        if (strpos($quotaId, 'Visual Studio Enterprise') !== false) {
+            return 'Visual Studio Enterprise';
+        }
+
         return 'Unknown';
     }
 
