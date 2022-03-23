@@ -33,8 +33,8 @@ class trafficControlStart extends Command
         foreach ($tasks as $task)
         {
             try {
-                $rule = ControlRule::find($server->rule);
                 $server = AzureServer::where('vm_id', $task->vm_id)->find();
+                $rule = ControlRule::find($server->rule);
                 AzureApi::manageVirtualMachine('start', $server->account_id, $server->request_url);
                 // set task status
                 $task->status = 'done';
