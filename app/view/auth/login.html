@@ -1,49 +1,51 @@
 {include file="../app/view/auth/header.html" title="登录" /}
 
-  <div class="mdui-container-fluid">
-    <div class="mdui-row">
-      <div class="mdui-col-xs-12 mdui-col-md-4 mdui-col-offset-md-4">
-        <div class="mdui-card" style="transform: translateY(35%)">
-          <div class="mdui-card-content">
-            <div class="mdui-textfield mdui-textfield-floating-label"><i class="mdui-icon material-icons">account_circle</i>
-              <label class="mdui-textfield-label">注册邮箱</label>
-              <input class="mdui-textfield-input" type="text" id="email" required/>
-            </div>
-            <div class="mdui-textfield mdui-textfield-floating-label"><i class="mdui-icon material-icons">lock</i>
-              <label class="mdui-textfield-label">登录密码</label>
-              <input class="mdui-textfield-input" type="password" id="password" required/>
-            </div>
-            <div class="mdui-card-actions">
-              <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised" id="login">登录</button>
-              <a href="/forget" class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-ripple mdui-color-indigo">重置密码</a>
-              <a href="/register" class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-ripple mdui-color-indigo mdui-float-right">注册账户</a>
+<div class="mdui-container-fluid">
+  <div class="mdui-row">
+    <div class="mdui-col-xs-12 mdui-col-md-4 mdui-col-offset-md-4">
+      <div class="mdui-card" style="transform: translateY(35%)">
+        <div class="mdui-card-content">
+          <div class="mdui-textfield mdui-textfield-floating-label"><i
+              class="mdui-icon material-icons">account_circle</i>
+            <label class="mdui-textfield-label">注册邮箱</label>
+            <input class="mdui-textfield-input" type="text" id="email" required />
           </div>
+          <div class="mdui-textfield mdui-textfield-floating-label"><i class="mdui-icon material-icons">lock</i>
+            <label class="mdui-textfield-label">登录密码</label>
+            <input class="mdui-textfield-input" type="password" id="password" required />
+          </div>
+          <div class="mdui-card-actions">
+            <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised" id="login">登录</button>
+            <a href="/forget" class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-ripple mdui-color-indigo">重置密码</a>
+            <a href="/register"
+              class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-ripple mdui-color-indigo mdui-float-right">注册账户</a>
           </div>
         </div>
       </div>
     </div>
   </div>
+</div>
 </body>
-  <script>
-    var $ = mdui.$;
-    $('#login').on('click',function() {
-      $.ajax({
-        method: 'POST',
-        url: "/login",
-        data: {
-          email: $('#email').val(),
-          password: $('#password').val()
-        },
-        dataType: "json",
-        success: function(data) {
-          if (data.status == '0') {
-            mdui.alert(data.content, data.title);
-          } else {
-            mdui.alert(data.content, data.title);
-            setTimeout("window.location.href = '/user'", 1500);
-          }
+<script>
+  var $ = mdui.$;
+  $('#login').on('click', function () {
+    $.ajax({
+      method: 'POST',
+      url: "/login",
+      data: {
+        email: $('#email').val(),
+        password: $('#password').val()
+      },
+      dataType: "json",
+      success: function (data) {
+        mdui.alert(data.content, data.title);
+        if (data.status == '1') {
+          setTimeout("window.location.href = '/user'", 1500);
         }
-      });
+      }
     });
-  </script>
+  });
+</script>
+
+{include file="../app/view/auth/footer.html" /}
 </html>

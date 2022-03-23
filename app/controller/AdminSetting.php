@@ -24,7 +24,7 @@ class AdminSetting extends AdminBase
         } elseif ($class == 'register') {
             $list = ['allow_public_reg', 'reg_email_veriy'];
         }
-        
+
         foreach ($list as $item)
         {
             $setting = Config::where('item', $item)->find();
@@ -34,7 +34,7 @@ class AdminSetting extends AdminBase
 
         return json(Tools::msg('1', '保存结果', '保存成功'));
     }
-    
+
     public function emailIndex()
     {
         View::assign('smtp', Config::class('smtp'));
@@ -66,7 +66,7 @@ class AdminSetting extends AdminBase
         if ($recipient == '') {
             return json(Tools::msg('0', '发送失败', '请填写收件人'));
         }
-        
+
         if (!filter_var($recipient, FILTER_VALIDATE_EMAIL)) {
             return json(Tools::msg('0', '发送失败', '邮箱格式不规范'));
         }
@@ -113,6 +113,26 @@ class AdminSetting extends AdminBase
                 return json(Tools::msg('0', '保存失败', '请填写所有项目'));
             }
 
+            $setting = Config::where('item', $item)->find();
+            $setting->value = input($item);
+            $setting->save();
+        }
+
+        return json(Tools::msg('1', '保存结果', '保存成功'));
+    }
+
+    public function customIndex()
+    {
+        View::assign('custom', Config::class('custom'));
+        return View::fetch('../app/view/admin/setting/custom.html');
+    }
+
+    public function customSave()
+    {
+        $list = ['custom_text', 'custom_script'];
+
+        foreach ($list as $item)
+        {
             $setting = Config::where('item', $item)->find();
             $setting->value = input($item);
             $setting->save();

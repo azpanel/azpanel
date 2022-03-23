@@ -91,6 +91,10 @@ Route::get('/admin/setting/telegram',             'AdminSetting/telegramIndex');
 Route::put('/admin/setting/telegram',             'AdminSetting/telegramSave');
 Route::post('/admin/setting/telegram/test',       'AdminSetting/telegramPushTest');
 
+// 网站
+Route::get('/admin/setting/custom',               'AdminSetting/customIndex');
+Route::put('/admin/setting/custom',               'AdminSetting/customSave');
+
 // 日志
 Route::get('/admin/log/login',                    'AdminLog/login');
 Route::get('/admin/log/verify',                   'AdminLog/verify');

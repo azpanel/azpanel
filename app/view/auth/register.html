@@ -11,19 +11,19 @@
             <label class="mdui-textfield-label">注册邮箱</label>
             <input class="mdui-textfield-input" type="text" id="email" />
           </div>
-          
+
           <div class="mdui-textfield mdui-textfield-floating-label">
             <i class="mdui-icon material-icons">vpn_key</i>
             <label class="mdui-textfield-label">设置登录密码</label>
             <input class="mdui-textfield-input" type="password" id="passwd" />
           </div>
-          
+
           <div class="mdui-textfield mdui-textfield-floating-label">
             <i class="mdui-icon material-icons">vpn_key</i>
             <label class="mdui-textfield-label">再次输入密码</label>
             <input class="mdui-textfield-input" type="password" id="repeat_passwd" />
           </div>
-          
+
           {if $register.reg_email_veriy == true}
           <div class="mdui-textfield mdui-textfield-floating-label">
             <i class="mdui-icon material-icons">code</i>
@@ -31,7 +31,7 @@
             <input class="mdui-textfield-input" id="verify_code" />
           </div>
           {/if}
-          
+
           <div class="mdui-card-actions">
             {if $register.reg_email_veriy == true}
             <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-indigo" id="request_code">获取</button>
@@ -39,7 +39,7 @@
             <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-indigo mdui-float-right"
               id="register_user">注册</button>
           </div>
-          
+
           {else /}
           <p style="text-align: center">管理员未开放公共注册。如有需要，请联系管理员</p>
           {/if}
@@ -89,4 +89,5 @@
   });
 </script>
 
+{include file="../app/view/auth/footer.html" /}
 </html>

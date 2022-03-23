@@ -10,25 +10,25 @@
             <label class="mdui-textfield-label">注册邮箱</label>
             <input class="mdui-textfield-input" type="text" id="email" />
           </div>
-                    
+
           <div class="mdui-textfield mdui-textfield-floating-label">
             <i class="mdui-icon material-icons">vpn_key</i>
             <label class="mdui-textfield-label">设置新密码</label>
             <input class="mdui-textfield-input" type="password" id="passwd" />
           </div>
-          
+
           <div class="mdui-textfield mdui-textfield-floating-label">
             <i class="mdui-icon material-icons">vpn_key</i>
             <label class="mdui-textfield-label">再次输入新密码</label>
             <input class="mdui-textfield-input" type="password" id="repeat_passwd" />
           </div>
-          
+
           <div class="mdui-textfield mdui-textfield-floating-label">
             <i class="mdui-icon material-icons">code</i>
             <label class="mdui-textfield-label">请输入邮箱验证码</label>
             <input class="mdui-textfield-input" id="verify_code" />
           </div>
-          
+
           <div class="mdui-card-actions">
             <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-indigo" id="request_code">获取</button>
             <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-indigo mdui-float-right"
@@ -55,10 +55,8 @@
       },
       dataType: "json",
       success: function (data) {
-        if (data.status == '0') {
-          mdui.alert(data.content, data.title);
-        } else {
-          mdui.alert(data.content, data.title);
+        mdui.alert(data.content, data.title);
+        if (data.status == '1') {
           setTimeout("window.location.href = '/login'", 1500);
         }
       }
@@ -80,4 +78,5 @@
   });
 </script>
 
+{include file="../app/view/auth/footer.html" /}
 </html>
