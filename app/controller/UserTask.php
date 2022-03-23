@@ -33,7 +33,7 @@ class UserTask
         $task = Task::find($task_id);
         return $task;
     }
-    
+
     public static function ajaxQuery()
     {
         $task = Task::where('user_id', session('user_id'))

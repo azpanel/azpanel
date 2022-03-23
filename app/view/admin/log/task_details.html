@@ -29,7 +29,7 @@
                 {if !empty($log.total_time)}
                 <p>累计耗时：<code>{$log.total_time}</code></p>
                 {/if}
-                {if $log.status != 'completed'}
+                {if $log.status != 'completed' && $error != 'null'}
                 <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-pink mdui-ripple"
                   mdui-dialog="{target: '#task-error'}">
                   查看错误

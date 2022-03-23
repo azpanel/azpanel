@@ -195,10 +195,10 @@ class AzureApi extends BaseController
 
         // 移除已在 portal.azure.com 删除但仍存在与列表中的虚拟机
         $servers = AzureServer::where('account_id', $account_id)->select();
-        $decode_data = json_encode($virtual_machines);
+        $encode_data = json_encode($virtual_machines);
         foreach ($servers as $server)
         {
-            if (!strpos($decode_data, $server->vm_id)) {
+            if (!strpos($encode_data, $server->vm_id)) {
                 AzureServer::where('vm_id', $server->vm_id)->delete();
             }
         }
@@ -212,35 +212,28 @@ class AzureApi extends BaseController
             if ($exist == null) {
                 // 数据处理
                 $count += 1;
-                $resource_group     = explode('/', $virtual_machine['id']);
-                $at_subscription_id = explode('/', $virtual_machine['id']);
+                $params             = explode('/', $virtual_machine['id']);
                 $network_interfaces = explode('/', $virtual_machine['properties']['networkProfile']['networkInterfaces']['0']['id']);
                 $network_interfaces = end($network_interfaces);
                 $instance_details   = self::getAzureVirtualMachineStatus($account_id, $virtual_machine['id']);
 
-                // Log::write($instance_details, 'notice');
-
-                if ($instance_details['statuses']['1']['code'] == null) {
-                    throw new \Exception('获取虚拟机运行状态失败。请稍后在账户列表选择虚拟机归属账户，点击更新资源尝试重新加载');
-                }
-
-                // 新建
+                // 添加到列表
                 $server = new AzureServer;
                 $server->account_id         = $account_id;
                 $server->user_id            = $azure_sub->user_id;
                 $server->account_email      = $azure_sub->az_email;
                 $server->name               = $virtual_machine['name'];
-                $server->resource_group     = $resource_group['4'];
-                $server->status             = $instance_details['statuses']['1']['code'];
+                $server->resource_group     = $params['4'];
+                $server->status             = $instance_details['statuses']['1']['code'] ?? 'PowerState/running';
                 $server->location           = $virtual_machine['location'];
                 $server->vm_size            = $virtual_machine['properties']['hardwareProfile']['vmSize'];
                 $server->os_offer           = $virtual_machine['properties']['storageProfile']['imageReference']['offer'];
                 $server->os_sku             = $virtual_machine['properties']['storageProfile']['imageReference']['sku'];$server->disk_size          = $virtual_machine['properties']['storageProfile']['osDisk']['diskSizeGB'] ?? 'null';
-                $server->at_subscription_id = $at_subscription_id['2'];
+                $server->at_subscription_id = $params['2'];
                 $server->vm_id              = $virtual_machine['properties']['vmId'];
                 $server->network_interfaces = $network_interfaces;
 
-                $network_details = self::getAzureNetworkInterfacesDetails($account_id, $network_interfaces, $resource_group['4'], $at_subscription_id['2']);
+                $network_details = self::getAzureNetworkInterfacesDetails($account_id, $network_interfaces, $params['4'], $params['2']);
                 $server->network_details    = json_encode($network_details);
                 $server->ip_address         = $network_details['properties']['ipConfigurations']['0']['properties']['publicIPAddress']['properties']['ipAddress'] ?? 'null';
 

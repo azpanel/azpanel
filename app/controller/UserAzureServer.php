@@ -119,28 +119,22 @@ class UserAzureServer extends UserBase
         $vm_disk_size    = (int) input('vm_disk_size/s');
         $vm_traffic_rule = (int) input('vm_traffic_rule/s');
 
-        // 空账户检查
+        // 创建账户检查
         if ($vm_account == '') {
             return json(Tools::msg('0', '创建失败', '你还没有添加账户'));
         }
 
-        // 账户所属关系检查
         $account = Azure::find($vm_account);
         if ($account->user_id != session('user_id')) {
             return json(Tools::msg('0', '创建失败', '你不是此账户的持有者'));
         }
 
-        // 用户名检查
+        // 虚拟机用户名与密码检查
         $prohibit_user = ['root', 'admin', 'centos', 'debian', 'ubuntu'];
-        if (in_array($vm_user, $prohibit_user)) {
-            return json(Tools::msg('0', '创建失败', '不能使用常见用户名'));
+        if (!preg_match('/^[a-zA-Z0-9]+$/', $vm_user) || in_array($vm_user, $prohibit_user)) {
+            return json(Tools::msg('0', '创建失败', '用户名只允许使用大小写字母与数字的组合，且不能使用常见用户名'));
         }
 
-        if (!preg_match('/^[a-zA-Z0-9]+$/', $vm_user)) {
-            return json(Tools::msg('0', '创建失败', '用户名只允许使用大小写字母与数字的组合'));
-        }
-
-        // 密码检查
         $uppercase = preg_match('@[A-Z]@', $vm_passwd);
         $lowercase = preg_match('@[a-z]@', $vm_passwd);
         $number    = preg_match('@[0-9]@', $vm_passwd);
@@ -150,7 +144,7 @@ class UserAzureServer extends UserBase
             return json(Tools::msg('0', '创建失败', '密码不符合要求，请阅读使用说明'));
         }
 
-        // 虚拟机名称设置检查
+        // 虚拟机名称与备注检查
         $names   = explode(',', $vm_name);
         $remarks = explode(',', $vm_remark);
 
@@ -170,19 +164,14 @@ class UserAzureServer extends UserBase
             }
 
             if (strlen($name) > 64) {
-                return json(Tools::msg('0', '创建失败', '虚拟机名称长度不能超过 64 个字符串'));
+                return json(Tools::msg('0', '创建失败', 'Linux 虚拟机名称长度不能超过 64 个字符'));
             }
 
-            $name_exist = AzureServer::where('account_id', $account->id)
-            ->where('name', $name)
-            ->find();
-
-            if ($name_exist != null) {
-                return json(Tools::msg('0', '创建失败', '此账户下存在同名虚拟机，请修改虚拟机名称 ' . $name));
+            if (Str::contains($vm_image, 'Win') && strlen($name) > 15) {
+                return json(Tools::msg('0', '创建失败', 'Windows 虚拟机名称长度不能超过 15 个字符'));
             }
         }
 
-        // 虚拟机备注检查
         foreach ($remarks as $remark)
         {
             if ($remark == '') {
@@ -190,10 +179,9 @@ class UserAzureServer extends UserBase
             }
         }
 
-        // 脚本检查
+        // 其他项目检查
         $vm_script = ($vm_script == '') ? null : base64_encode($vm_script);
 
-        // 硬盘大小检查
         $images = AzureList::images();
         if (Str::contains($vm_image, 'Win') && !Str::contains($images[$vm_image]['sku'], 'smalldisk') && $vm_disk_size < '127') {
             return json(Tools::msg('0', '创建失败', '此 Windows 系统镜像要求硬盘大小不低于 127 GB'));
@@ -224,7 +212,7 @@ class UserAzureServer extends UserBase
         $progress = 0;
         $client   = new Client();
         $steps    = ($vm_number * 6) + 5;
-        $task_id  = UserTask::create(session('user_id'), '创建虚拟机', json_encode($params));
+        $task_id  = UserTask::create(session('user_id'), '创建虚拟机', json_encode($params, JSON_UNESCAPED_UNICODE));
 
         if ($account->reg_capacity == '0') {
             ++$steps;
@@ -358,14 +346,14 @@ class UserAzureServer extends UserBase
                 );
 
                 // 创建网络接口
-                sleep(2);
+                sleep(3);
                 UserTask::update($task_id, (++$progress / $steps), '在资源组 ' . $vm_resource_group_name . ' 中创建网络接口');
                 $interfaces = AzureApi::createAzureVirtualNetworkInterfaces(
                     $client, $account, $vm_name, $ip, $subnets, $vm_location, $vm_size
                 );
 
                 // 创建虚拟机
-                sleep(3);
+                sleep(2);
                 UserTask::update($task_id, (++$progress / $steps), '在资源组 ' . $vm_resource_group_name . ' 中创建虚拟机');
                 $vm_url = AzureApi::createAzureVm(
                     $client, $account, $vm_name, $vm_config, $vm_image, $interfaces, $vm_location
@@ -388,19 +376,8 @@ class UserAzureServer extends UserBase
             $status = $vm_status['statuses']['1']['code'] ?? 'null';
         } while ($status != 'PowerState/running' && $count < 120);
 
-        if ($count >= 120) {
-            UserTask::end($task_id, true);
-            return json(Tools::msg('0', '创建失败', '原因未知。建议前往账户列表，进入创建账户的资源组列表中，将创建失败的资源组删除，在删除完成后重试。重新创建时，建议设定与之前不同的虚拟机名称。如若仍然失败，可记录创建参数，在 github issue 区寻求帮助'));
-        }
-
         // 加载到虚拟机列表
-        try {
-            AzureApi::getAzureVirtualMachines($account->id);
-        } catch (\Exception $e) {
-            $error = $e->getMessage();
-            UserTask::end($task_id, true, $error);
-            return json(Tools::msg('0', '创建失败', $error));
-        }
+        AzureApi::getAzureVirtualMachines($account->id);
 
         // 将设置的备注应用
         $pointer = 0;
