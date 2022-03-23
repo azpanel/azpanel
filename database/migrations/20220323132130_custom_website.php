@@ -32,7 +32,7 @@ class CustomWebsite extends Migrator
             [
               'id'            => null,
               'item'          => 'custom_text',
-              'value'         => 'azpanel',
+              'value'         => '<a href="https://github.com/azpanel/azpanel">staff</a>',
               'class'         => 'custom',
               'default_value' => '<a href="https://github.com/azpanel/azpanel">staff</a>',
               'type'          => 'string',
@@ -42,7 +42,7 @@ class CustomWebsite extends Migrator
                 'item'          => 'custom_script',
                 'value'         => '<script></script>',
                 'class'         => 'custom',
-                'default_value' => '',
+                'default_value' => '<script></script>',
                 'type'          => 'string',
             ],
         ];
