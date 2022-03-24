@@ -138,7 +138,7 @@
             <div class="mdui-textfield mdui-textfield-floating-label">
               <i class="mdui-icon material-icons">bookmark</i>
               <label class="mdui-textfield-label">备注</label>
-              <input class="mdui-textfield-input" id="s_mark" value="等待开发" disabled>
+              <input class="mdui-textfield-input" id="s_mark">
             </div>
           </div>
           <div class="mdui-col-sm-12 mdui-col-md-4">
@@ -218,9 +218,9 @@
       },
       dataType: "json",
       success: function (data) {
-        $("tr").show();
+        $("tr").hide();
         for (var i = 0; i < data.result.length; i++) {
-          $("tr[id='"+data.result[i].vm_id+"']").hide();
+          $("tr[id='"+data.result[i].vm_id+"']").show();
         }
         // console.log(data.sql);
       }

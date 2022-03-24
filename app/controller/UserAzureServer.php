@@ -744,20 +744,20 @@ class UserAzureServer extends UserBase
         $s_status   = input('s_status/s');
         $s_location = input('s_location/s');
 
-        $where[] = ['user_id', '=', $user_id];
-        ($s_name != '')        && $where[] = ['name',        'NOT REGEXP', $s_name];
-        ($s_public != '')      && $where[] = ['ip_address',  'NOT REGEXP', $s_public];
-        ($s_size != 'all')     && $where[] = ['vm_size',     'NOT REGEXP', $s_size];
-        ($s_status != 'all')   && $where[] = ['status',      'NOT REGEXP', $s_status];
-        ($s_location != 'all') && $where[] = ['location',    'NOT REGEXP', $s_location];
+        ($s_name != '')        && $where[] = ['name',        'like', '%'.$s_name.'%'];
+        ($s_mark != '')        && $where[] = ['user_remark', 'like', '%'.$s_mark.'%'];
+        ($s_public != '')      && $where[] = ['ip_address',  'like', '%'.$s_public.'%'];
+        ($s_size != 'all')     && $where[] = ['vm_size',     '=', $s_size];
+        ($s_status != 'all')   && $where[] = ['status',      '=', $s_status];
+        ($s_location != 'all') && $where[] = ['location',    '=', $s_location];
 
         $data = Db::table('azure_server')
+        ->where('user_id', $user_id)
         ->where($where)
         ->field('vm_id')
-        ->select()
-        ->toArray();
+        ->select();
 
-        //$sql = Db::getLastSql();
+        // $sql = Db::getLastSql();
 
         return json(['result' => $data]);
     }
