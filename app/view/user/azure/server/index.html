@@ -33,7 +33,7 @@
           </thead>
           <tbody>
             {volist name="servers" id="server"}
-            <tr>
+            <tr id="{$server.vm_id}">
               <td>
                 <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-ripple mdui-color-blue-grey"
                   mdui-menu="{target: '#action-{$server.id}', fixed: true}">操作</button>
@@ -125,10 +125,67 @@
         </table>
       </div>
 
-      {$page | raw}
+      <div class="mdui-dialog" id="search" style="overflow: visible">
+        <div class="mdui-dialog-content" style="overflow: visible">
+          <div class="mdui-col-sm-12 mdui-col-md-4">
+            <div class="mdui-textfield mdui-textfield-floating-label">
+              <i class="mdui-icon material-icons">flag</i>
+              <label class="mdui-textfield-label">名称</label>
+              <input class="mdui-textfield-input" id="s_name">
+            </div>
+          </div>
+          <div class="mdui-col-sm-12 mdui-col-md-4">
+            <div class="mdui-textfield mdui-textfield-floating-label">
+              <i class="mdui-icon material-icons">bookmark</i>
+              <label class="mdui-textfield-label">备注</label>
+              <input class="mdui-textfield-input" id="s_mark" value="等待开发" disabled>
+            </div>
+          </div>
+          <div class="mdui-col-sm-12 mdui-col-md-4">
+            <div class="mdui-textfield mdui-textfield-floating-label">
+              <i class="mdui-icon material-icons">public</i>
+              <label class="mdui-textfield-label">公网地址</label>
+              <input class="mdui-textfield-input" id="s_public">
+            </div>
+          </div>
+          <div class="mdui-col-sm-12 mdui-col-md-12">
+            <div class="mdui-col-md-6 mdui-m-t-2">
+              地区：<select id="s_location" class="mdui-select" mdui-select>
+                <option value="all">不限</option>
+                {volist name="locations" id="location"}
+                <option value="{$key}">{$location}</option>
+                {/volist}
+              </select>
+            </div>
+            <div class="mdui-col-md-3 mdui-m-t-2">
+              规格：<select id="s_size" class="mdui-select" mdui-select>
+                <option value="all">不限</option>
+                {volist name="sizes" id="size"}
+                <option value="{$key}">{:str_replace('Standard_', '', $key)}</option>
+                {/volist}
+              </select>
+            </div>
+            <div class="mdui-col-md-3 mdui-m-t-2">
+              状态：<select id="s_status" class="mdui-select" mdui-select>
+                <option value="all">不限</option>
+                <option value="PowerState/running">运行中</option>
+                <option value="PowerState/stopped">已停止</option>
+                <option value="PowerState/deallocated">已分离</option>
+              </select>
+            </div>
+          </div>
+          <div class="mdui-col-sm-12 mdui-col-md-12">
+            <p></p>
+          </div>
+        </div>
+        <div class="mdui-dialog-actions">
+          <button id="cancel-search" class="mdui-btn mdui-ripple" mdui-dialog-close>取消</button>
+          <button id="submit-search" class="mdui-btn mdui-ripple" mdui-dialog-confirm>搜索</button>
+        </div>
+      </div>
 
-      <a class="mdui-fab mdui-color-theme-accent mdui-ripple mdui-fab-fixed" href="/user/server/azure/create">
-        <i class="mdui-icon material-icons">add</i>
+      <a id="search-button" class="mdui-fab mdui-color-theme-accent mdui-ripple mdui-fab-fixed" mdui-dialog="{target: '#search'}">
+        <i class="mdui-icon material-icons">search</i>
       </a>
 
       <div class="mdui-m-t-2"></div>
@@ -145,6 +202,29 @@
     mdui.snackbar({
       message: "复制成功"
     })
+  });
+
+  $('#submit-search').click(function () {
+    $.ajax({
+      method: 'POST',
+      url: "/user/server/azure/search",
+      data: {
+        s_name: $('#s_name').val(),
+        s_mark: $('#s_mark').val(),
+        s_public: $('#s_public').val(),
+        s_location: $('#s_location').val(),
+        s_size: $('#s_size').val(),
+        s_status: $('#s_status').val(),
+      },
+      dataType: "json",
+      success: function (data) {
+        $("tr").show();
+        for (var i = 0; i < data.result.length; i++) {
+          $("tr[id='"+data.result[i].vm_id+"']").hide();
+        }
+        // console.log(data.sql);
+      }
+    });
   });
 
   function getProgress() {

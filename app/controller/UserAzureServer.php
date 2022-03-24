@@ -1,6 +1,7 @@
 <?php
 namespace app\controller;
 
+use think\facade\Db;
 use think\helper\Str;
 use think\facade\Env;
 use think\facade\Log;
@@ -22,12 +23,9 @@ class UserAzureServer extends UserBase
 {
     public function index()
     {
-        $limit = Env::get('APP.paginate') ?? '15';
-        $pages_num = (input('page') == '') ? '1' : input('page');
-        $servers_num = AzureServer::where('user_id', session('user_id'))->count();
         $servers = AzureServer::where('user_id', session('user_id'))
         ->order('id', 'desc')
-        ->paginate($limit);
+        ->select();
 
         foreach($servers as $server)
         {
@@ -39,12 +37,10 @@ class UserAzureServer extends UserBase
             }
         }
 
-        $page = $servers->render();
-        $count = $servers_num - (($pages_num - 1) * $limit);
-
-        View::assign('page', $page);
         View::assign('servers', $servers);
-        View::assign('count', $count);
+        View::assign('count', $servers->count());
+        View::assign('sizes', AzureList::sizes());
+        View::assign('locations', AzureList::locations());
         return View::fetch('../app/view/user/azure/server/index.html');
     }
 
@@ -736,5 +732,33 @@ class UserAzureServer extends UserBase
         View::assign('network_out_traffic', self::processNetworkData($network_out_total, true));
         View::assign('available_memory_text', self::processGeneralData($available_memory, true));
         return View::fetch('../app/view/user/azure/server/chart.html');
+    }
+
+    public function search()
+    {
+        $user_id    = session('user_id');
+        $s_name     = input('s_name/s');
+        $s_mark     = input('s_mark/s');
+        $s_size     = input('s_size/s');
+        $s_public   = input('s_public/s');
+        $s_status   = input('s_status/s');
+        $s_location = input('s_location/s');
+
+        $where[] = ['user_id', '=', $user_id];
+        ($s_name != '')        && $where[] = ['name',        'NOT REGEXP', $s_name];
+        ($s_public != '')      && $where[] = ['ip_address',  'NOT REGEXP', $s_public];
+        ($s_size != 'all')     && $where[] = ['vm_size',     'NOT REGEXP', $s_size];
+        ($s_status != 'all')   && $where[] = ['status',      'NOT REGEXP', $s_status];
+        ($s_location != 'all') && $where[] = ['location',    'NOT REGEXP', $s_location];
+
+        $data = Db::table('azure_server')
+        ->where($where)
+        ->field('vm_id')
+        ->select()
+        ->toArray();
+
+        //$sql = Db::getLastSql();
+
+        return json(['result' => $data]);
     }
 }
