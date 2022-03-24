@@ -33,7 +33,7 @@
           </thead>
           <tbody>
             {volist name="servers" id="server"}
-            <tr id="{$server.vm_id}">
+            <tr id="{$server.vm_id}" class="hid">
               <td>
                 <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-ripple mdui-color-blue-grey"
                   mdui-menu="{target: '#action-{$server.id}', fixed: true}">操作</button>
@@ -218,7 +218,7 @@
       },
       dataType: "json",
       success: function (data) {
-        $("tr").hide();
+        $("tr[class='hid']").hide();
         for (var i = 0; i < data.result.length; i++) {
           $("tr[id='"+data.result[i].vm_id+"']").show();
         }
