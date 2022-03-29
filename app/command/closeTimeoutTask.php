@@ -36,6 +36,7 @@ class closeTimeoutTask extends Command
             $total = json_decode($task->total, true);
             array_push($total, $info);
             $task->total = json_encode($total, JSON_UNESCAPED_UNICODE);
+            $task->total_time = $task->updated_at - $task->created_at;
             $task->save();
         }
 

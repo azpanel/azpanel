@@ -17,12 +17,12 @@
           <thead>
             <tr>
               <th>操作</th>
-              <th>#</th>
-              <th>提交人</th>
-              <th>名称</th>
+              <!-- <th>#</th> -->
+              <th>任务名</th>
               <th>状态</th>
+              <th>提交用户</th>
+              <!-- <th>进程</th> -->
               <th>进度</th>
-              <th>进展</th>
               <th>创建于</th>
               <th>更新于</th>
               <th>耗时</th>
@@ -37,12 +37,12 @@
                   详情
                 </a>
               </td>
-              <td>{$log.id}</td>
-              <td>{$log.user_id}</td>
+              <!-- <td>{$log.id}</td> -->
               <td>{$log.name}</td>
               <td>{$log.status}</td>
+              <td>{$log.user_id}</td>
               <td>{$log.schedule}</td>
-              <td>{$log.current}</td>
+              <!-- <td>{$log.current}</td> -->
               <td>{:date('Y-m-d H:i:s', $log.created_at)}</td>
               <td>{:date('Y-m-d H:i:s', $log.updated_at)}</td>
               <td>{$log.total_time}</td>

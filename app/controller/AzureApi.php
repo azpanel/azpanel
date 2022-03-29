@@ -48,18 +48,28 @@ class AzureApi extends BaseController
         }
     }
 
-    public static function getAzureSubscription($account_id)
+    public static function getToken($account_id, $more = false)
     {
-        // https://docs.microsoft.com/zh-cn/rest/api/resources/subscriptions/list
-
         $headers = [
             'Authorization' => 'Bearer ' . self::getAzureAccessToken($account_id)
         ];
 
+        if ($more) {
+            $headers['Content-Type'] = 'application/json';
+            $headers['Accept'] = 'application/json';
+        }
+
+        return $headers;
+    }
+
+    public static function getAzureSubscription($account_id)
+    {
+        // https://docs.microsoft.com/zh-cn/rest/api/resources/subscriptions/list
+
         $client = new Client();
         $url = 'https://management.azure.com/subscriptions?api-version=2020-01-01';
         $result = $client->get($url, [
-            'headers' => $headers
+            'headers' => self::getToken($account_id)
         ]);
 
         return json_decode($result->getBody(), true);
@@ -69,45 +79,33 @@ class AzureApi extends BaseController
     {
         // https://docs.microsoft.com/zh-cn/rest/api/resources/providers/register
 
-        $headers = [
-            'Authorization' => 'Bearer ' . self::getAzureAccessToken($account->id)
-        ];
-
         $url = 'https://management.azure.com/subscriptions/'. $account->az_sub_id . '/providers/' . $provider . '/register?api-version=2021-04-01';
-        $client->post($url, ['headers' => $headers]);
+        $client->post($url, [
+            'headers' => self::getToken($account->id)
+        ]);
     }
 
     public static function getAzureResourceGroupsList($account_id, $az_sub_id)
     {
         // https://docs.microsoft.com/zh-cn/rest/api/resources/resource-groups/list
 
-        $headers = [
-            'Authorization' => 'Bearer ' . self::getAzureAccessToken($account_id)
-        ];
-
         $client = new Client();
         $url = 'https://management.azure.com/subscriptions/'. $az_sub_id . '/resourcegroups?api-version=2021-04-01';
         $result = $client->get($url, [
-            'headers' => $headers
+            'headers' => self::getToken($account_id)
         ]);
 
         return json_decode($result->getBody(), true);
     }
 
-    public static function getAzureResourceGroup($account_id, $group_name)
+    public static function getAzureResourceGroup($account, $group_name)
     {
         // https://docs.microsoft.com/zh-cn/rest/api/resources/resources/list-by-resource-group
 
-        $azure_sub = Azure::find($account_id);
-
-        $headers = [
-            'Authorization' => 'Bearer ' . self::getAzureAccessToken($account_id)
-        ];
-
         $client = new Client();
-        $url = 'https://management.azure.com/subscriptions/'. $azure_sub->az_sub_id . '/resourcegroups/' . $group_name . '/resources?api-version=2021-04-01';
+        $url = 'https://management.azure.com/subscriptions/'. $account->az_sub_id . '/resourcegroups/' . $group_name . '/resources?api-version=2021-04-01';
         $result = $client->get($url, [
-            'headers' => $headers
+            'headers' => self::getToken($account->id)
         ]);
 
         return json_decode($result->getBody(), true);
@@ -136,14 +134,10 @@ class AzureApi extends BaseController
         // https://docs.microsoft.com/zh-cn/rest/api/virtualnetwork/network-interfaces/get
         // https://www.jianshu.com/p/0cf79f4973f7
 
-        $headers = [
-            'Authorization' => 'Bearer ' . self::getAzureAccessToken($account_id)
-        ];
-
         $client = new Client();
         $url = 'https://management.azure.com/subscriptions/' . $subscription_id . '/resourceGroups/' . $resource_group_name . '/providers/Microsoft.Network/networkInterfaces/' . $network_interface_name . '?api-version=2021-02-01&%24expand=ipConfigurations%2FpublicIPAddress%2CnetworkSecurityGroup';
         $result = $client->get($url, [
-            'headers' => $headers
+            'headers' => self::getToken($account_id)
         ]);
 
         return json_decode($result->getBody(), true); // array
@@ -161,14 +155,10 @@ class AzureApi extends BaseController
     {
         // https://docs.microsoft.com/zh-cn/rest/api/compute/virtual-machines/instance-view
 
-        $headers = [
-            'Authorization' => 'Bearer ' . self::getAzureAccessToken($account_id)
-        ];
-
         $client = new Client();
         $url = 'https://management.azure.com' . $request_url . '/instanceView?api-version=2021-03-01';
         $result = $client->get($url, [
-            'headers' => $headers
+            'headers' => self::getToken($account_id)
         ]);
 
         return json_decode($result->getBody(), true); // array
@@ -178,17 +168,13 @@ class AzureApi extends BaseController
     {
         // https://docs.microsoft.com/zh-cn/rest/api/compute/virtual-machines/list-all
 
-        $headers = [
-            'Authorization' => 'Bearer ' . self::getAzureAccessToken($account_id)
-        ];
-
         $count     = 0;
         $azure_sub = Azure::find($account_id);
 
         $client = new Client();
         $url = 'https://management.azure.com/subscriptions/' . $azure_sub->az_sub_id . '/providers/Microsoft.Compute/virtualMachines?api-version=2021-07-01';
         $result = $client->get($url, [
-            'headers' => $headers
+            'headers' => self::getToken($account_id)
         ]);
 
         $virtual_machines = json_decode($result->getBody(), true);
@@ -249,18 +235,14 @@ class AzureApi extends BaseController
         return $count;
     }
 
-    public static function getAzureVirtualMachinesList($account_id, $az_sub_id)
+    public static function readAzureVirtualMachinesList($account_id, $az_sub_id)
     {
         // https://docs.microsoft.com/zh-cn/rest/api/compute/virtual-machines/list-all
-
-        $headers = [
-            'Authorization' => 'Bearer ' . self::getAzureAccessToken($account_id)
-        ];
 
         $client = new Client();
         $url = 'https://management.azure.com/subscriptions/' . $az_sub_id . '/providers/Microsoft.Compute/virtualMachines?api-version=2021-07-01';
         $result = $client->get($url, [
-            'headers' => $headers
+            'headers' => self::getToken($account_id)
         ]);
 
         $virtual_machines = json_decode($result->getBody(), true);
@@ -277,14 +259,10 @@ class AzureApi extends BaseController
             $action = 'powerOff';
         }
 
-        $headers = [
-            'Authorization' => 'Bearer ' . self::getAzureAccessToken($account_id)
-        ];
-
         $client = new Client();
         $url = 'https://management.azure.com' . $request_url . '/' . $action . '?api-version=2021-03-01';
         $result = $client->post($url, [
-            'headers' => $headers
+            'headers' => self::getToken($account_id)
         ]);
     }
 
@@ -292,27 +270,19 @@ class AzureApi extends BaseController
     {
         // https://docs.microsoft.com/zh-cn/rest/api/compute/virtual-machines/deallocate
 
-        $headers = [
-            'Authorization' => 'Bearer ' . self::getAzureAccessToken($account_id)
-        ];
-
         $client = new Client();
         $url = 'https://management.azure.com' . $request_url . '/deallocate?api-version=2021-03-01';
         $result = $client->post($url, [
-            'headers' => $headers
+            'headers' => self::getToken($account_id)
         ]);
     }
 
     public static function deleteAzureResourcesGroup($account_id, $subscription_id, $resource_group_name)
     {
-        $headers = [
-            'Authorization' => 'Bearer ' . self::getAzureAccessToken($account_id)
-        ];
-
         $client = new Client();
         $url = 'https://management.azure.com/subscriptions/' . $subscription_id . '/resourcegroups/' . $resource_group_name .'?api-version=2021-04-01';
         $result = $client->delete($url, [
-            'headers' => $headers
+            'headers' => self::getToken($account_id)
         ]);
     }
 
@@ -321,14 +291,10 @@ class AzureApi extends BaseController
         $group_url = explode('/', $url);
         $account = Azure::where('az_sub_id', $group_url['2'])->find();
 
-        $headers = [
-            'Authorization' => 'Bearer ' . self::getAzureAccessToken($account->id)
-        ];
-
         $client = new Client();
         $url = 'https://management.azure.com' . $url . '?api-version=2021-04-01';
         $result = $client->delete($url, [
-            'headers' => $headers
+            'headers' => self::getToken($account->id)
         ]);
     }
 
@@ -336,19 +302,13 @@ class AzureApi extends BaseController
     {
         // https://docs.microsoft.com/zh-cn/rest/api/resources/resource-groups/create-or-update
 
-        $headers = [
-            'Authorization' => 'Bearer ' . self::getAzureAccessToken($account->id),
-            'Content-Type' => 'application/json',
-            'Accept' => 'application/json'
-        ];
-
         $body = [
             'location' => $location
         ];
 
         $url = 'https://management.azure.com/subscriptions/' . $account->az_sub_id . '/resourcegroups/' . $resource_group_name . '?api-version=2021-04-01';
         $result = $client->put($url, [
-            'headers' => $headers,
+            'headers' => self::getToken($account->id, true),
             'json' => $body
         ]);
     }
@@ -356,12 +316,6 @@ class AzureApi extends BaseController
     public static function createAzurePublicNetworkIpv4($client, $account, $ip_name, $resource_group_name, $location)
     {
         // https://docs.microsoft.com/zh-cn/rest/api/virtualnetwork/public-ip-addresses
-
-        $headers = [
-            'Authorization' => 'Bearer ' . self::getAzureAccessToken($account->id),
-            'Content-Type' => 'application/json',
-            'Accept' => 'application/json'
-        ];
 
         $label = Str::random($length = 10);
         $label = Str::lower($label);
@@ -378,7 +332,7 @@ class AzureApi extends BaseController
         $url = 'https://management.azure.com/subscriptions/' . $account->az_sub_id . '/resourceGroups/' . $resource_group_name . '/providers/Microsoft.Network/publicIPAddresses/' . $ip_name . '?api-version=2021-03-01';
 
         $promise = $client->requestAsync('PUT', $url, [
-            'headers' => $headers,
+            'headers' => self::getToken($account->id, true),
             'json' => $body
         ]);
 
@@ -392,15 +346,32 @@ class AzureApi extends BaseController
         return $resource_url->id;
     }
 
+    public static function countAzurePublicNetworkIpv4($client, $account, $location)
+    {
+        // https://docs.microsoft.com/zh-cn/rest/api/virtualnetwork/public-ip-addresses/list-all
+
+        $url = 'https://management.azure.com/subscriptions/' . $account->az_sub_id . '/providers/Microsoft.Network/publicIPAddresses?api-version=2021-05-01';
+        $result = $client->get($url, [
+            'headers' => self::getToken($account->id, true)
+        ]);
+
+        $count = 0;
+        $lists = json_decode($result->getBody(), true);
+
+        foreach ($lists['value'] as $list)
+        {
+            if ($list['location'] == $location)
+            {
+                $count += 1;
+            }
+        }
+
+        return $count;
+    }
+
     public static function createAzureVirtualNetwork($client, $account, $virtual_network_name, $resource_group_name, $location)
     {
         // https://docs.microsoft.com/zh-cn/rest/api/virtualnetwork/virtual-networks/create-or-update
-
-        $headers = [
-            'Authorization' => 'Bearer ' . self::getAzureAccessToken($account->id),
-            'Content-Type' => 'application/json',
-            'Accept' => 'application/json'
-        ];
 
         $body = [
             'location' => $location,
@@ -416,7 +387,7 @@ class AzureApi extends BaseController
         $url = 'https://management.azure.com/subscriptions/' . $account->az_sub_id . '/resourceGroups/' . $resource_group_name . '/providers/Microsoft.Network/virtualNetworks/' . $virtual_network_name . '?api-version=2021-03-01';
 
         $result = $client->put($url, [
-            'headers' => $headers,
+            'headers' => self::getToken($account->id, true),
             'json' => $body
         ]);
     }
@@ -424,12 +395,6 @@ class AzureApi extends BaseController
     public static function createAzureVirtualNetworkSubnets($client, $account, $virtual_network_name, $resource_group_name, $location)
     {
         // https://docs.microsoft.com/zh-cn/rest/api/virtualnetwork/subnets/create-or-update
-
-        $headers = [
-            'Authorization' => 'Bearer ' . self::getAzureAccessToken($account->id),
-            'Content-Type' => 'application/json',
-            'Accept' => 'application/json'
-        ];
 
         $body = [
             'location' => $location,
@@ -441,7 +406,7 @@ class AzureApi extends BaseController
         $subnet_url = 'https://management.azure.com/subscriptions/' . $account->az_sub_id . '/resourceGroups/' . $resource_group_name . '/providers/Microsoft.Network/virtualNetworks/' . $virtual_network_name . '/subnets/default?api-version=2021-03-01';
 
         $result = $client->put($subnet_url, [
-            'headers' => $headers,
+            'headers' => self::getToken($account->id, true),
             'json' => $body
         ]);
 
@@ -452,12 +417,6 @@ class AzureApi extends BaseController
 
     public static function createAzureVirtualNetworkInterfaces($client, $account, $vm_name, $ip_url, $subnets_url, $location, $vm_size) {
         // https://docs.microsoft.com/zh-cn/rest/api/virtualnetwork/network-interfaces/create-or-update
-
-        $headers = [
-            'Authorization' => 'Bearer ' . self::getAzureAccessToken($account->id),
-            'Content-Type' => 'application/json',
-            'Accept' => 'application/json'
-        ];
 
         $body = [
             'location' => $location,
@@ -489,7 +448,7 @@ class AzureApi extends BaseController
         $url = 'https://management.azure.com/subscriptions/' . $account->az_sub_id . '/resourceGroups/' . $vm_name . '_group/providers/Microsoft.Network/networkInterfaces/' . $vm_name . '_vif?api-version=2021-03-01';
 
         $promise = $client->requestAsync('PUT', $url, [
-            'headers' => $headers,
+            'headers' => self::getToken($account->id, true),
             'json' => $body
         ]);
 
@@ -506,12 +465,6 @@ class AzureApi extends BaseController
 
     public static function createAzureVm($client, $account, $vm_name, $vm_config, $vm_image, $interfaces, $location) {
         // https://docs.microsoft.com/zh-cn/rest/api/compute/virtual-machines/create-or-update
-
-        $headers = [
-            'Authorization' => 'Bearer ' . self::getAzureAccessToken($account->id),
-            'Content-Type' => 'application/json',
-            'Accept' => 'application/json'
-        ];
 
         $images = AzureList::images();
 
@@ -560,7 +513,7 @@ class AzureApi extends BaseController
         $url = 'https://management.azure.com/subscriptions/' . $account->az_sub_id . '/resourceGroups/' . $vm_name . '_group/providers/Microsoft.Compute/virtualMachines/' . $vm_name . '?api-version=2021-07-01';
 
         $object = $client->put($url,[
-            'headers' => $headers,
+            'headers' => self::getToken($account->id, true),
             'json' => $body
         ]);
 
@@ -574,11 +527,6 @@ class AzureApi extends BaseController
         // https://docs.microsoft.com/zh-cn/rest/api/monitor/metric-definitions/list
         // https://docs.microsoft.com/zh-cn/rest/api/monitor/metrics/list
 
-        $headers = [
-            'Authorization' => 'Bearer ' . self::getAzureAccessToken($server->account_id),
-            'Content-Type' => 'application/json'
-        ];
-
         if ($start_time == null || $end_time == null) {
             $start_time = date('Y-m-d\T H:00:00\Z', time() - 115200); // 24 + 8 h
             $end_time   = date('Y-m-d\T H:00:00\Z', time() - 25200);
@@ -587,7 +535,7 @@ class AzureApi extends BaseController
         $client = new Client();
         $url = 'https://management.azure.com' . $server->request_url . '/providers/Microsoft.Insights/metrics?api-version=2018-01-01&timespan=' . $start_time . '/' . $end_time . '&interval=PT1H&aggregation=total%2Caverage&metricnames=Percentage%20CPU%2CCPU%20Credits%20Remaining%2CAvailable%20Memory%20Bytes%2CNetwork%20In%20Total%2CNetwork%20Out%20Total';
         $result = $client->get($url, [
-            'headers' => $headers
+            'headers' => self::getToken($server->account_id, true),
         ]);
 
         return json_decode($result->getBody(), true); // array
@@ -596,11 +544,6 @@ class AzureApi extends BaseController
     public static function virtualMachinesResize($new_size, $location, $account_id, $request_url)
     {
         // https://stackoverflow.com/questions/65444722/how-to-downgrade-and-upgrade-azure-virtual-machine-programmatically
-
-        $headers = [
-            'Authorization' => 'Bearer ' . self::getAzureAccessToken($account_id),
-            'Content-Type' => 'application/json'
-        ];
 
         $body = [
             'location' => $location,
@@ -615,7 +558,7 @@ class AzureApi extends BaseController
 
         $client = new Client();
         $object = $client->put($url,[
-            'headers' => $headers,
+            'headers' => self::getToken($account_id, true),
             'json' => $body
         ]);
     }
@@ -623,11 +566,6 @@ class AzureApi extends BaseController
     public static function virtualMachinesRedisk($new_size, $new_tier, $server)
     {
         // https://docs.microsoft.com/zh-cn/rest/api/compute/disks/create-or-update
-
-        $headers = [
-            'Authorization' => 'Bearer ' . self::getAzureAccessToken($server->account_id),
-            'Content-Type' => 'application/json'
-        ];
 
         $disk_tiers = AzureList::diskTiers();
         $vm_details = json_decode($server->vm_details, true);
@@ -655,7 +593,7 @@ class AzureApi extends BaseController
 
         $client = new Client();
         $object = $client->put($url,[
-            'headers' => $headers,
+            'headers' => self::getToken($server->account_id, true),
             'json' => $body
         ]);
     }
@@ -664,16 +602,11 @@ class AzureApi extends BaseController
     {
         // https://docs.microsoft.com/zh-cn/rest/api/reserved-vm-instances/quota/list
 
-        $headers = [
-            'Authorization' => 'Bearer ' . self::getAzureAccessToken($account->id),
-            'Content-Type' => 'application/json'
-        ];
-
         $url = 'https://management.azure.com/subscriptions/'.$account->az_sub_id.'/providers/Microsoft.Capacity/resourceProviders/Microsoft.Compute/locations/'.$location.'/serviceLimits?api-version=2020-10-25';
 
         $client = new Client();
         $result = $client->get($url, [
-            'headers' => $headers
+            'headers' => self::getToken($account->id, true),
         ]);
 
         return json_decode($result->getBody(), true);
@@ -683,11 +616,6 @@ class AzureApi extends BaseController
     {
         // https://docs.microsoft.com/zh-cn/rest/api/compute/disks/get
 
-        $headers = [
-            'Authorization' => 'Bearer ' . self::getAzureAccessToken($server->account_id),
-            'Content-Type' => 'application/json'
-        ];
-
         $instance_details = json_decode($server->instance_details, true);
         $disk_name = $instance_details['disks']['0']['name'];
 
@@ -695,7 +623,7 @@ class AzureApi extends BaseController
 
         $client = new Client();
         $result = $client->get($url, [
-            'headers' => $headers
+            'headers' => self::getToken($server->account_id, true),
         ]);
 
         return json_decode($result->getBody(), true);
@@ -705,15 +633,10 @@ class AzureApi extends BaseController
     {
         // https://docs.microsoft.com/zh-cn/rest/api/compute/resource-skus/list
 
-        $headers = [
-            'Authorization' => 'Bearer ' . self::getAzureAccessToken($account->id),
-            'Content-Type' => 'application/json'
-        ];
-
         $url = 'https://management.azure.com/subscriptions/'.$account->az_sub_id.'/Providers/Microsoft.Compute/skus/?api-version=2019-04-01&$filter=location eq '."'".$location."'";
 
         $result = $client->get($url, [
-            'headers' => $headers
+            'headers' => self::getToken($account->id, true),
         ]);
 
         return json_decode($result->getBody(), true);

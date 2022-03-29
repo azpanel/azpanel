@@ -363,7 +363,7 @@ class UserAzure extends UserBase
 
         $count = 0;
         $resources = AzureApi::getAzureResourceGroupsList($id, $account->az_sub_id);
-        $virtual_machines = AzureApi::getAzureVirtualMachinesList($id, $account->az_sub_id);
+        $virtual_machines = AzureApi::readAzureVirtualMachinesList($id, $account->az_sub_id);
 
         View::assign('count', $count);
         View::assign('resources', $resources);
@@ -378,7 +378,7 @@ class UserAzure extends UserBase
             return View::fetch('../app/view/user/reject.html');
         }
 
-        $groups = AzureApi::getAzureResourceGroup($id, $name);
+        $groups = AzureApi::getAzureResourceGroup($account, $name);
 
         View::assign('groups', $groups);
         return View::fetch('../app/view/user/azure/groups.html');

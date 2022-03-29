@@ -1,16 +1,13 @@
 <?php
 namespace app\controller;
 
-use think\facade\Db;
 use think\helper\Str;
-use think\facade\Env;
 use think\facade\Log;
 use think\facade\View;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use app\model\Azure;
 use app\model\User;
-use app\model\Config;
 use app\model\Traffic;
 use app\model\ControlRule;
 use app\model\AzureServer;
@@ -597,46 +594,38 @@ class UserAzureServer extends UserBase
         $server = AzureServer::where('vm_id', $uuid)->find();
         $task_id = UserTask::create(session('user_id'), '更换公网地址');
 
-        UserTask::update($task_id, (++$count / 5), '正在关闭虚拟机并释放计算资源');
-        sleep(1);
-
         try {
-            $vm_status = AzureApi::virtualMachinesDeallocate($server->account_id, $server->request_url);
+            UserTask::update($task_id, (++$count / 4), '正在分离计算资源');
+            AzureApi::virtualMachinesDeallocate($server->account_id, $server->request_url);
+
+            do {
+                sleep(1);
+                $vm_status = AzureApi::getAzureVirtualMachineStatus($server->account_id, $server->request_url);
+                $status = $vm_status['statuses']['1']['code'] ?? 'null';
+            } while ($status != 'PowerState/deallocated');
+
+            UserTask::update($task_id, (++$count / 4), '正在启动虚拟机');
+            AzureApi::manageVirtualMachine('start', $server->account_id, $server->request_url);
+
+            do {
+                sleep(1);
+                $vm_status = AzureApi::getAzureVirtualMachineStatus($server->account_id, $server->request_url);
+                $status = $vm_status['statuses']['1']['code'] ?? 'null';
+            } while ($status != 'PowerState/running');
+
+            UserTask::update($task_id, (++$count / 4), '正在获取新地址');
+            $network_details = AzureApi::getAzureNetworkInterfacesDetails($server->account_id, $server->network_interfaces, $server->resource_group, $server->at_subscription_id);
+            $server->network_details    = json_encode($network_details);
+            $server->ip_address         = $network_details['properties']['ipConfigurations']['0']['properties']['publicIPAddress']['properties']['ipAddress'] ?? 'null';
+            $server->save();
         } catch (\Exception $e) {
-            // $error = $e->getResponse()->getBody()->getContents();
             $error = $e->getMessage();
             UserTask::end($task_id, true, $error);
             return json(Tools::msg('0', '更换失败', $error));
         }
 
-        UserTask::update($task_id, (++$count / 5), '正在等待计算资源释放完成');
-
-        do {
-            sleep(1);
-            $vm_status = AzureApi::getAzureVirtualMachineStatus($server->account_id, $server->request_url);
-            $status = $vm_status['statuses']['1']['code'] ?? 'null';
-        } while ($status != 'PowerState/deallocated');
-
-        UserTask::update($task_id, (++$count / 5), '正在启动虚拟机');
-
-        AzureApi::manageVirtualMachine('start', $server->account_id, $server->request_url);
-
-        do {
-            sleep(1);
-            $vm_status = AzureApi::getAzureVirtualMachineStatus($server->account_id, $server->request_url);
-            $status = $vm_status['statuses']['1']['code'] ?? 'null';
-        } while ($status != 'PowerState/running');
-
-        UserTask::update($task_id, (++$count / 5), '正在获取新的公网地址');
-
-        sleep(1);
-        $network_details = AzureApi::getAzureNetworkInterfacesDetails($server->account_id, $server->network_interfaces, $server->resource_group, $server->at_subscription_id);
-        $server->network_details    = json_encode($network_details);
-        $server->ip_address         = $network_details['properties']['ipConfigurations']['0']['properties']['publicIPAddress']['properties']['ipAddress'] ?? 'null';
-        $server->save();
-
         UserTask::end($task_id, false);
-        return json(Tools::msg('1', '执行结果', '成功'));
+        return json(Tools::msg('1', '更换结果', '更换成功'));
     }
 
     public function check($ipv4)
@@ -751,8 +740,7 @@ class UserAzureServer extends UserBase
         ($s_status != 'all')   && $where[] = ['status',      '=', $s_status];
         ($s_location != 'all') && $where[] = ['location',    '=', $s_location];
 
-        $data = Db::table('azure_server')
-        ->where('user_id', $user_id)
+        $data = AzureServer::where('user_id', $user_id)
         ->where($where)
         ->field('vm_id')
         ->select();
