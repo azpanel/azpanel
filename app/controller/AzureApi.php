@@ -143,14 +143,6 @@ class AzureApi extends BaseController
         return json_decode($result->getBody(), true); // array
     }
 
-    public static function getAzureVirtualMachinePublicIpv4($server)
-    {
-        $network_details = self::getAzureNetworkInterfacesDetails($server->account_id, $server->network_interfaces, $server->resource_group, $server->at_subscription_id);
-        $ip_address = $network_details['properties']['ipConfigurations']['0']['properties']['publicIPAddress']['properties']['ipAddress'] ?? 'null';
-
-        return $ip_address;
-    }
-
     public static function getAzureVirtualMachineStatus($account_id, $request_url)
     {
         // https://docs.microsoft.com/zh-cn/rest/api/compute/virtual-machines/instance-view
@@ -616,8 +608,8 @@ class AzureApi extends BaseController
     {
         // https://docs.microsoft.com/zh-cn/rest/api/compute/disks/get
 
-        $instance_details = json_decode($server->instance_details, true);
-        $disk_name = $instance_details['disks']['0']['name'];
+        $vm_details = json_decode($server->vm_details, true);
+        $disk_name = $vm_details['properties']['storageProfile']['osDisk']['name'];
 
         $url = 'https://management.azure.com/subscriptions/'.$server->at_subscription_id.'/resourceGroups/'.$server->resource_group.'/Providers/Microsoft.Compute/disks/'.$disk_name.'?api-version=2020-12-01';
 

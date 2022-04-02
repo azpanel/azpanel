@@ -119,7 +119,7 @@
                   <div class="mdui-m-t-2">
                     大小：<select id="new_disk" class="mdui-select" mdui-select>
                       {volist name="disk_sizes" id="disk_size"}
-                      <option value="{$disk_size}">{$disk_size} GB</option>
+                      <option value="{$disk_size}" {if $server->disk_size >= $disk_size}disabled{/if}>{$disk_size} GB</option>
                       {/volist}
                     </select>
                   </div>
@@ -299,7 +299,7 @@
       function () {
         var id = $(that).data('id');
         var load = new mdui.alert('<p id=\"hint\">准备中</p><div class=\"mdui-progress\"><div class=\"mdui-progress-determinate\"></div></div>', '进行中');
-        var cycle = setInterval(getProgress, 500);
+        var cycle = setInterval(getProgress, 1000);
         $.ajax({
           method: 'PUT',
           url: "/user/server/azure/redisk/" + id,
@@ -315,6 +315,9 @@
             if (data.status == '1') {
               setTimeout("window.location = '/user/server/azure'", 1500);
             }
+          },
+          error: function () {
+            clearInterval(cycle);
           }
         });
       },
@@ -384,6 +387,7 @@
 
   $("#new_tier").prop('value', '{$vm_disk_tier}');
   $("#traffic_rule").prop('value', '{$server->rule}');
+  $("#new_size option[value='{$server->vm_size}']").attr('disabled', 'disabled');
 </script>
 {include file="../app/view/user/footer.html" /}
 
