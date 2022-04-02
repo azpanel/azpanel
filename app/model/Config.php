@@ -28,6 +28,8 @@ class Config extends Model
 
     public static function class($name)
     {
+        // 此报错需导入 database/config.sql 修复
+
         $items = self::where('class', $name)->select();
         
         foreach ($items as $item)
