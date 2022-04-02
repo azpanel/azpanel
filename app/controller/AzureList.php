@@ -295,6 +295,8 @@ class AzureList
 
     public static function diskTiers()
     {
+        // https://azure.microsoft.com/en-us/pricing/details/managed-disks/
+
         $lists = [
             'P4' => [
                 'diskMBpsReadWrite' => 25,
