@@ -1,3 +1,7 @@
+## 关于
+简单做点垃圾功能
+源仓库: [https://github.com/azpanel/azpanel](https://github.com/azpanel/azpanel)
+
 ## azpanel
 演示站点：[https://azpanel.net](https://azpanel.net)
 
