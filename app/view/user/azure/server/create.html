@@ -170,8 +170,8 @@
 <div class="mdui-dialog" id="toolcard">
   <div class="mdui-dialog-title">工具</div>
   <div class="mdui-dialog-content">
-      <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised" onclick="genUsername()" mdui-dialog-confirm>虚拟机随机用户名</button><br/>
-      <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised" onclick="genPassword()" mdui-dialog-confirm>虚拟机随机密码</button>
+      <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised" onclick="genUsername()" mdui-dialog-confirm>虚拟机生成随机用户名</button><br/>
+      <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised" onclick="genPassword()" mdui-dialog-confirm>虚拟机生成随机密码并复制</button>
   </div>
   <div class="mdui-dialog-actions">
     <button class="mdui-btn mdui-ripple" mdui-dialog-confirm>关闭</button>
@@ -261,8 +261,14 @@
       password += chars.substring(randomNumber, randomNumber +1);
     }
     document.getElementById("vm_passwd").value = password;
+
+    var copyText = document.getElementById("vm_passwd");
+	  copyText.select();
+	  copyText.setSelectionRange(0, 999);
+	  document.execCommand("copy");
+
     mdui.snackbar({
-      message: '虚拟机密码已生成',
+      message: '虚拟机密码已生成并已复制到剪切版',
       position: 'left-bottom',
     });
   }
