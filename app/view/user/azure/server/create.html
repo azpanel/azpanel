@@ -156,7 +156,8 @@
 
       <div class="mdui-card mdui-m-t-2">
         <div class="mdui-card-actions">
-          <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised" id="create">创建</button>
+          <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised" id="create">创建</button><br/>
+          <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised" mdui-dialog="{target: '#toolcard'}">工具</button>
         </div>
       </div>
 
@@ -165,6 +166,18 @@
     </div>
   </div>
 </div>
+
+<div class="mdui-dialog" id="toolcard">
+  <div class="mdui-dialog-title">工具</div>
+  <div class="mdui-dialog-content">
+      <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised" onclick="genUsername()" mdui-dialog-confirm>虚拟机随机用户名</button><br/>
+      <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised" onclick="genPassword()" mdui-dialog-confirm>虚拟机随机密码</button>
+  </div>
+  <div class="mdui-dialog-actions">
+    <button class="mdui-btn mdui-ripple" mdui-dialog-confirm>关闭</button>
+  </div>
+</div>
+
 </body>
 
 <script>
@@ -237,6 +250,40 @@
   $("#vm_disk_size").prop('value', '{$personalise.vm_disk_size}');
   $("#vm_default_identity").prop('value', '{$personalise.vm_default_identity}');
   $("#vm_default_credentials").prop('value', '{$personalise.vm_default_credentials}');
+  
+  var password=document.getElementById("vm_passwd");
+  function genPassword() {
+    var chars = "0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    var passwordLength = 12;
+    var password = "";
+    for (var i = 0; i <= passwordLength; i++) {
+      var randomNumber = Math.floor(Math.random() * chars.length);
+      password += chars.substring(randomNumber, randomNumber +1);
+    }
+    document.getElementById("vm_passwd").value = password;
+    mdui.snackbar({
+      message: '虚拟机密码已生成',
+      position: 'left-bottom',
+    });
+  }
+    
+  var uname=document.getElementById("vm_user");
+  function genUsername() {
+    var uchars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    var unameLength = 8;
+    var uname = "";
+    for (var i = 0; i <= unameLength; i++) {
+      var urandomNumber = Math.floor(Math.random() * uchars.length);
+      uname += uchars.substring(urandomNumber, urandomNumber +1);
+    }
+    document.getElementById("vm_user").value = uname;
+    mdui.snackbar({
+      message: '虚拟机用户名已生成',
+      position: 'left-bottom',
+    });
+  }
+    
+
 </script>
 {include file="../app/view/user/footer.html" /}
 
