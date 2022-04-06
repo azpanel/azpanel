@@ -32,6 +32,10 @@
               <i class="mdui-icon material-icons">lock</i>
               <label>密码修改</label>
             </a>
+            <a href="#ssh-key" class="mdui-ripple">
+              <i class="mdui-icon material-icons">vpn_key</i>
+              <label>连接密钥</label>
+            </a>
           </div>
           <!-- 推送接收 -->
           <div id="push-receive">
@@ -179,6 +183,22 @@
               class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">保存
             </button>
           </div>
+          <!-- 连接密钥 -->
+          <div id="ssh-key">
+            {if empty($ssh_key)}
+            <p>此账户没有已生成的 SSH 密钥对，可点击下方按钮生成，然后刷新此页面</p>
+            <p style="color: red;">注意：私钥仅提供一次下载，遗失后可重置密钥，但不可找回旧密钥</p>
+            <a id="create_sshkey" href="/user/profile/sshkey"
+              class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">创建
+            </a>
+            {else /}
+            <p>此为公钥，请使用创建时下载的私钥登录</p>
+            <pre><code class="language-bash" style="white-space: pre-wrap; word-wrap: break-word;">{$ssh_key->public_key}</code></pre>
+            <button id="reset_sshkey"
+              class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">重置
+            </button>
+            {/if}
+          </div>
         </div>
       </div>
 
@@ -302,6 +322,27 @@
               mdui.alert(data.content, data.title);
               setTimeout("window.location = '/user/profile'", 1500);
             }
+          }
+        });
+      },
+      function () { },
+      {
+        confirmText: "确定",
+        cancelText: "取消"
+      }
+    );
+  });
+
+  $('#reset_sshkey').on('click', function () {
+    mdui.confirm('若遗失初次创建时下载的私钥，可使用此功能重置。使用旧密钥创建的虚拟机，仍可使用旧密钥登录', '重置密钥',
+      function () {
+        $.ajax({
+          method: 'PUT',
+          url: "/user/profile/sshkey",
+          dataType: "json",
+          success: function (data) {
+            mdui.alert(data.content, data.title);
+            setTimeout("window.location = '/user/profile'", 1500);
           }
         });
       },

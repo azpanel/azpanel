@@ -141,14 +141,29 @@
                 </div>
               </div>
             </div>
-            <div class="mdui-m-t-2">
-              流量控制规则：
-              <select id="vm_traffic_rule" class="mdui-select" mdui-select>
-                <option value="0">不使用</option>
-                {volist name="traffic_rules" id="traffic_rule"}
-                <option value="{$traffic_rule->id}">{$traffic_rule->name}</option>
-                {/volist}
-              </select>
+            <div class="mdui-row">
+              <div class="mdui-col-sm-12 mdui-col-md-7">
+                <div class="mdui-m-t-2">
+                  流量控制规则：
+                  <select id="vm_traffic_rule" class="mdui-select" mdui-select>
+                    <option value="0">不使用</option>
+                    {volist name="traffic_rules" id="traffic_rule"}
+                    <option value="{$traffic_rule->id}">{$traffic_rule->name}</option>
+                    {/volist}
+                  </select>
+                </div>
+              </div>
+              <div class="mdui-col-sm-12 mdui-col-md-5">
+                <div class="mdui-m-t-2">
+                  密钥：
+                  <select id="vm_ssh_key" class="mdui-select" mdui-select>
+                    <option value="0">不使用</option>
+                    {if !empty($ssh_key)}
+                    <option value="{$ssh_key->id}">{$ssh_key->name}</option>
+                    {/if}
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -203,7 +218,8 @@
             vm_account: $('#vm_account').val(),
             vm_disk_size: $('#vm_disk_size').val(),
             vm_image: $('#vm_image').val(),
-            vm_traffic_rule: $('#vm_traffic_rule').val()
+            vm_traffic_rule: $('#vm_traffic_rule').val(),
+            vm_ssh_key: $('#vm_ssh_key').val(),
           },
           dataType: "json",
           success: function (data) {

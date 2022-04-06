@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use GuzzleHttp\Client;
 use app\model\Azure;
 use app\model\User;
+use app\model\SshKey;
 use app\model\Traffic;
 use app\model\ControlRule;
 use app\model\AzureServer;
@@ -51,6 +52,8 @@ class UserAzureServer extends UserBase
         $traffic_rules = ControlRule::where('user_id', session('user_id'))
         ->select();
 
+        $ssh_key = SshKey::where('user_id', session('user_id'))->find();
+
         $designated_id = (int) input('id');
         if ($designated_id != '') {
             $designated_account = Azure::where('user_id', session('user_id'))->where('id', $designated_id)->find();
@@ -76,13 +79,16 @@ class UserAzureServer extends UserBase
             View::assign('has_vm_num', $has_vm_num);
         }
 
-        View::assign('locations',   AzureList::locations());
-        View::assign('disk_sizes',  AzureList::diskSizes());
-        View::assign('images',      AzureList::images());
-        View::assign('sizes',       AzureList::sizes());
-        View::assign('traffic_rules', $traffic_rules);
-        View::assign('personalise', $personalise);
-        View::assign('accounts',    $accounts);
+        View::assign([
+            'ssh_key'       => $ssh_key,
+            'accounts'      => $accounts,
+            'personalise'   => $personalise,
+            'traffic_rules' => $traffic_rules,
+            'sizes'         => AzureList::sizes(),
+            'images'        => AzureList::images(),
+            'disk_sizes'    => AzureList::diskSizes(),
+            'locations'     => AzureList::locations(),
+        ]);
         return View::fetch('../app/view/user/azure/server/create.html');
     }
 
@@ -110,6 +116,7 @@ class UserAzureServer extends UserBase
         $vm_number       = (int) input('vm_number/s');
         $vm_account      = (int) input('vm_account/s');
         $vm_disk_size    = (int) input('vm_disk_size/s');
+        $vm_ssh_key      = (int) input('vm_ssh_key/s');
         $vm_traffic_rule = (int) input('vm_traffic_rule/s');
 
         // 创建账户检查
@@ -308,7 +315,8 @@ class UserAzureServer extends UserBase
                 'vm_disk_size' => $vm_disk_size,
                 'vm_user'      => $vm_user,
                 'vm_passwd'    => $vm_passwd,
-                'vm_script'    => $vm_script
+                'vm_script'    => $vm_script,
+                'vm_ssh_key'   => $vm_ssh_key,
             ];
 
             try {

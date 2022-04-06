@@ -5,6 +5,7 @@ use think\helper\Str;
 use think\facade\Log;
 use app\BaseController;
 use app\model\Azure;
+use app\model\SshKey;
 use app\model\AzureServer;
 use app\controller\AzureList;
 use GuzzleHttp\Client;
@@ -486,7 +487,6 @@ class AzureApi extends BaseController
                 'osProfile' => [
                     'computerName'  => $vm_name,
                     'adminUsername' => $vm_config['vm_user'],
-                    'adminPassword' => $vm_config['vm_passwd'],
                 ],
                 'networkProfile' => [
                     'networkInterfaces' => [
@@ -501,6 +501,23 @@ class AzureApi extends BaseController
 
         if ($vm_config['vm_script'] != null) {
             $body['properties']['osProfile']['customData'] = $vm_config['vm_script'];
+        }
+
+        if ($vm_config['vm_ssh_key'] == '0') {
+            $body['properties']['osProfile']['adminPassword'] = $vm_config['vm_passwd'];
+        } else {
+            $ssh_key = SshKey::find($vm_config['vm_ssh_key']);
+            $body['properties']['osProfile']['linuxConfiguration'] = [
+                'disablePasswordAuthentication' => true,
+                'ssh' => [
+                    'publicKeys' => [
+                        [
+                            'path' => '/home/'.$vm_config['vm_user'].'/.ssh/authorized_keys',
+                            'keyData' => $ssh_key->public_key,
+                        ]
+                    ]
+                ]
+            ];
         }
 
         $url = 'https://management.azure.com/subscriptions/' . $account->az_sub_id . '/resourceGroups/' . $vm_name . '_group/providers/Microsoft.Compute/virtualMachines/' . $vm_name . '?api-version=2021-07-01';

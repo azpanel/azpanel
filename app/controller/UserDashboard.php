@@ -4,8 +4,11 @@ namespace app\controller;
 use app\model\User;
 use app\model\Ann;
 use app\model\Config;
+use app\model\SshKey;
 use app\model\LoginLog;
 use app\model\AutoRefresh;
+use think\facade\Log;
+use phpseclib3\Crypt\RSA;
 use app\controller\Tools;
 use think\facade\View;
 
@@ -59,8 +62,11 @@ class UserDashboard extends UserBase
             $refresh_setting = AutoRefresh::where('user_id', $user_id)->find();
         }
 
+        $ssh_key = SshKey::where('user_id', session('user_id'))->order('id', 'desc')->find();
+
         View::assign('switch', $switch);
         View::assign('profile', $profile);
+        View::assign('ssh_key', $ssh_key);
         View::assign('telegram', $telegram);
         View::assign('personalise', $personalise);
         View::assign('refresh_setting', $refresh_setting);
@@ -175,6 +181,29 @@ class UserDashboard extends UserBase
         $refresh_setting->save();
 
         return json(Tools::msg('1', '保存结果', '保存成功'));
+    }
+
+    public function createSshKey()
+    {
+        $ssh_key = RSA::createKey();
+        $name = date('Ymd') . '.pem';
+        $public = $ssh_key->getPublicKey()->toString('OpenSSH');
+        $private = $ssh_key->toString('OpenSSH');
+
+        $key = new SshKey;
+        $key->name = $name;
+        $key->user_id = session('user_id');
+        $key->public_key = $public;
+        $key->created_at = time();
+        $key->save();
+
+        return download($private, $name, true);
+    }
+
+    public function resetSshKey()
+    {
+        $keys = SshKey::where('user_id', session('user_id'))->delete();
+        return json(Tools::msg('1', '重置成功', '请点击按钮重新生成'));
     }
 
     public function license()
