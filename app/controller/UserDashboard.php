@@ -8,9 +8,9 @@ use app\model\SshKey;
 use app\model\LoginLog;
 use app\model\AutoRefresh;
 use think\facade\Log;
+use think\facade\View;
 use phpseclib3\Crypt\RSA;
 use app\controller\Tools;
-use think\facade\View;
 
 class UserDashboard extends UserBase
 {
@@ -62,7 +62,7 @@ class UserDashboard extends UserBase
             $refresh_setting = AutoRefresh::where('user_id', $user_id)->find();
         }
 
-        $ssh_key = SshKey::where('user_id', session('user_id'))->order('id', 'desc')->find();
+        $ssh_key = SshKey::where('user_id', session('user_id'))->find();
 
         View::assign('switch', $switch);
         View::assign('profile', $profile);
@@ -202,7 +202,7 @@ class UserDashboard extends UserBase
 
     public function resetSshKey()
     {
-        $keys = SshKey::where('user_id', session('user_id'))->delete();
+        SshKey::where('user_id', session('user_id'))->delete();
         return json(Tools::msg('1', '重置成功', '请点击按钮重新生成'));
     }
 
