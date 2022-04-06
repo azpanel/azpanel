@@ -21,7 +21,7 @@
   "tenant": "7e0a6485-5a39-4e2f-a12b-13e6c4a5b053"
 }</code></pre>
             <p>你可以执行以下命令获取上述信息</p>
-            <pre><code class="language-php">az ad sp create-for-rbac --role contributor</code></pre>
+            <pre><code class="language-php">az ad sp create-for-rbac --role contributor --scopes /subscriptions/$(az account list --query [].id -o tsv)</code></pre>
           </div>
         </div>
       </div>
