@@ -623,8 +623,8 @@ class UserAzureServer extends UserBase
             $server->ip_address         = $network_details['properties']['ipConfigurations']['0']['properties']['publicIPAddress']['properties']['ipAddress'] ?? 'null';
             $server->save();
         } catch (\Exception $e) {
-            $error = $e->getMessage();
-            UserTask::end($task_id, true, json_encode(['msg' => $error]));
+            $error = $e->getResponse()->getBody()->getContents();
+            UserTask::end($task_id, true, $error);
             return json(Tools::msg('0', '更换失败', $error));
         }
 

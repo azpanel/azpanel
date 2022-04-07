@@ -294,7 +294,7 @@ class AzureList
             '512',
             '1024',
             '2048',
-            '4096',
+            '4095',
         ];
 
         return $sizes;
