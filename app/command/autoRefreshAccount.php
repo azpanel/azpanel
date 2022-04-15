@@ -7,6 +7,7 @@ use app\controller\AzureApi;
 use app\controller\Notify;
 use app\controller\UserAzure;
 use app\model\AutoRefresh;
+use app\model\AzureServer;
 use app\model\Azure;
 use app\model\Config;
 use app\model\User;
@@ -54,6 +55,16 @@ class autoRefreshAccount extends Command
                         if ($sub_info['value']['0']['state'] != 'Enabled') {
                             $count += 1;
                             $text .= PHP_EOL . $account->az_email . ' (' . $account->az_sub_type . ') ' . ' [' . $account->az_sub_status . ']';
+                            $text .= PHP_EOL . '归属在此账户下的虚拟机名称列表：';
+
+                            $servers = AzureServer::where('account_id', $account->id)->select();
+                            foreach ($servers as $server)
+                            {
+                                $text .= $server->name . ',';
+                            }
+
+                            $text .= '合计' . $servers->count() . '台虚拟机';
+
                             UserAzure::refreshTheResourceStatusUnderTheAccount($account);
                         }
                     } catch (\Exception $e) {
