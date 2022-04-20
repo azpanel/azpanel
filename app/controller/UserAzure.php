@@ -92,11 +92,11 @@ class UserAzure extends UserBase
             return 'Azure 3500';
         }
 
-        if (strpos($quotaId, 'Visual Studio Enterprise：BizSpark') !== false) {
+        if (strpos($quotaId, 'BizSpark') !== false) {
             return 'VS Enterprise：BizSpark';
         }
 
-        if (strpos($quotaId, 'MSDN Platforms Subscription') !== false) {
+        if (strpos($quotaId, 'MSDN') !== false) {
             return 'MSDN Platforms Subscription';
         }
 
