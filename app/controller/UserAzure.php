@@ -7,6 +7,7 @@ use GuzzleHttp\Client;
 use app\controller\Tools;
 use app\controller\AzureApi;
 use app\controller\UserTask;
+use app\controller\UserAzureServer;
 use app\model\Azure;
 use app\model\AzureServer;
 
@@ -221,6 +222,47 @@ class UserAzure extends UserBase
         ->delete();
 
         return json(Tools::msg('1', '删除成功', '将返回账户列表'));
+    }
+
+    public function estimatedCost($id)
+    {
+        try {
+            $vm_charges = 0;
+            $traffic_charges = 0;
+            $cumulative_traffic_usage = 0;
+            $cumulative_startup_time = 0;
+            $sizes = AzureList::sizes();
+            $servers = AzureServer::where('user_id', session('user_id'))
+            ->where('account_id', $id)
+            ->select();
+            foreach ($servers as $server)
+            {
+                $start_time = date('Y-m-d\T H:i:00\Z', $server->created_at - 28800);
+                $stop_time = date('Y-m-d\T H:i:00\Z', time() - 28800);
+                $cumulative_running_time = (time() - $server->created_at) / 2592000;
+                $statistics = AzureApi::getVirtualMachineStatistics($server, $start_time, $stop_time);
+                $network_in_total = $statistics['value']['3']['timeseries']['0']['data'];
+                $network_in_traffic = UserAzureServer::processNetworkData($network_in_total, true);
+                $traffic_charges += 0.08 * $network_in_traffic;
+                $cumulative_traffic_usage += $network_in_traffic;
+                $cumulative_startup_time += $cumulative_running_time;
+                if (!empty($sizes[$server->vm_size])) {
+                    $vm_charges += $sizes[$server->vm_size]['cost'] * $cumulative_running_time;
+                }
+            }
+        } catch (\Exception $e) {
+            return json(Tools::msg('0', '统计失败', $e->getMessage()));
+        }
+
+        $text = '总虚拟机数：<span style="float: right">' . $servers->count() . '</span>' . '<br/>'
+        . '累计出向流量：<span style="float: right">' . round($cumulative_traffic_usage, 2) . ' GB</span>' . '<br/>'
+        . '累计开机时长：<span style="float: right">' . round($cumulative_running_time, 2) . ' M</span>' . '<br/>'
+        . '<div class="mdui-typo"><hr/></div>' . '<br/>'
+        . '预估虚拟机费用：<span style="float: right">' . round($vm_charges, 2) . ' USD</span>' . '<br/>'
+        . '预估流量费用：<span style="float: right">' . round($traffic_charges, 2) . ' USD</span>' . '<br/>'
+        . '累计费用：<span style="float: right">' . round($vm_charges + $traffic_charges, 2) . ' USD</span>';
+
+        return json(Tools::msg('0', '统计结果', $text));
     }
 
     public static function refreshTheResourceStatusUnderTheAccount($account)

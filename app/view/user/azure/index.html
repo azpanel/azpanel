@@ -60,6 +60,11 @@
                     </a>
                   </li>
                   <li class="mdui-menu-item">
+                    <a class="mdui-ripple" onclick="estimatedCost(this)" data-id="{$account.id}">
+                      <i class="mdui-menu-item-icon mdui-icon material-icons">attach_money</i>预估费用
+                    </a>
+                  </li>
+                  <li class="mdui-menu-item">
                     <a class="mdui-ripple" onclick="update(this)" data-id="{$account.id}">
                       <i class="mdui-menu-item-icon mdui-icon material-icons">update</i>更新资源
                     </a>
@@ -110,7 +115,7 @@
 
     </div>
   </div>
-  </br/>
+  </br />
 </div>
 </body>
 
@@ -175,6 +180,34 @@
           url: "/user/azure/refresh/" + id,
           dataType: "json",
           success: function (data) {
+            if (data.status == '0') {
+              mdui.alert(data.content, data.title);
+            } else {
+              mdui.alert(data.content, data.title);
+              setTimeout("window.location = '/user/azure'", 1500);
+            }
+          }
+        });
+      },
+      function () { },
+      {
+        confirmText: "确定",
+        cancelText: "取消"
+      }
+    );
+  };
+
+  function estimatedCost(that) {
+    let id = $(that).data('id');
+    mdui.confirm('此功能会先筛选出在虚拟机列表中归属于此账户的虚拟机，然后获取自虚拟机创建以来的所有入向流量数据，再通过对照虚拟机规格价目表，预估此账户的累计账单金额（仅包含虚拟机规格费和流量费）。请注意：<ul><li>如果你曾使用官方面板或其他面板创建了本面板没有收录的虚拟机规格，统计数据将缺少虚拟机费用的数据</li><li>由于不统计其他可能收费项目，预估的数据与真实数据将存在偏差，因此仅供参考</li><li>不能统计曾创建过，但现在已经删除的虚拟机产生的相关费用</li><li>流量费用按照 $0.08/GB 计算，预估费用货币为 USD</li><li>教育账户的两个免费虚拟机将参与统计</li><li>若虚拟机数目多，统计花费时间较长</li><ul>', '预估费用',
+      function () {
+        var load = new mdui.alert('<div class=\"mdui-progress\"><div class=\"mdui-progress-indeterminate\"></div></div>', '进行中');
+        $.ajax({
+          method: 'POST',
+          url: "/user/azure/cost/" + id,
+          dataType: "json",
+          success: function (data) {
+            load.close();
             if (data.status == '0') {
               mdui.alert(data.content, data.title);
             } else {
