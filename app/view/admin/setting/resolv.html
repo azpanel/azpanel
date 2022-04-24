@@ -1,0 +1,100 @@
+{include file="../app/view/admin/header.html" title="解析设置" /}
+
+<div class="mdui-container-fluid">
+  <div class="mdui-row">
+    <div
+      class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+      <div class="mdui-container-fluid">
+        <p style="color: #3F51B5; font-size: 34px">解析设置</p>
+      </div>
+
+      <div class="mdui-typo">
+        <p>目前仅支持在阿里云 alibabacloud.com 和 aliyun.cn
+          注册的域名。功能开启后，在虚拟机列表中，更多选项中会多一个“同步解析”选项。点击后，会以此虚拟机的名称（非备注）为关键词搜索A记录，若不存在则会创建新纪录；若存在，且解析值不是当前虚拟机地址，则会更新解析</p>
+      </div>
+
+      <div class="mdui-card mdui-m-t-2" style="overflow: visible">
+        <div class="mdui-card-content mdui-container">
+          <div class="mdui-m-t-2">
+            功能开关：<select id="resolv" class="mdui-select" mdui-select>
+              <option value="0">关闭</option>
+              <option value="1" {if $config.resolv_sync==true}selected{/if}>开启</option>
+            </select>
+          </div>
+          <div class="mdui-textfield mdui-textfield-floating-label">
+            <i class="mdui-icon material-icons">accessibility</i>
+            <label class="mdui-textfield-label">用户ID白名单</label>
+            <textarea class="mdui-textfield-input" id="ali_whitelist">{$config.ali_whitelist}</textarea>
+          </div>
+          <div class="mdui-textfield mdui-textfield-floating-label">
+            <i class="mdui-icon material-icons">domain</i>
+            <label class="mdui-textfield-label">域名</label>
+            <textarea class="mdui-textfield-input" id="ali_domain">{$config.ali_domain}</textarea>
+          </div>
+          <div class="mdui-textfield mdui-textfield-floating-label">
+            <i class="mdui-icon material-icons">text_fields</i>
+            <label class="mdui-textfield-label">accessKeyId</label>
+            <textarea class="mdui-textfield-input" id="ali_ak">{$config.ali_ak}</textarea>
+          </div>
+          <div class="mdui-textfield mdui-textfield-floating-label">
+            <i class="mdui-icon material-icons">code</i>
+            <label class="mdui-textfield-label">accessKeySecret</label>
+            <textarea class="mdui-textfield-input" id="ali_sk">{$config.ali_sk}</textarea>
+          </div>
+          <div class="mdui-textfield mdui-textfield-floating-label">
+            <i class="mdui-icon material-icons">timer</i>
+            <label class="mdui-textfield-label">默认TTL</label>
+            <textarea class="mdui-textfield-input" id="ali_ttl">{$config.ali_ttl}</textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="mdui-card mdui-m-t-2">
+        <div class="mdui-card-actions">
+          <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised" id="modify">修改</button>
+        </div>
+      </div>
+
+      <div class="mdui-m-t-2"></div>
+
+    </div>
+  </div>
+</div>
+</body>
+
+<script>
+  var $ = mdui.$;
+  $('#modify').on('click', function () {
+    mdui.confirm('确认应用这些设置么', '修改确认',
+      function () {
+        $.ajax({
+          method: 'PUT',
+          url: "/admin/setting/resolv",
+          data: {
+            resolv_sync: $('#resolv').val(),
+            ali_ak: $('#ali_ak').val(),
+            ali_sk: $('#ali_sk').val(),
+            ali_whitelist: $('#ali_whitelist').val(),
+            ali_ttl: $('#ali_ttl').val(),
+            ali_domain: $('#ali_domain').val(),
+          },
+          dataType: "json",
+          success: function (data) {
+            mdui.alert(data.content, data.title);
+            if (data.status == '1') {
+              setTimeout("window.location = '/admin/setting/resolv'", 1500);
+            }
+          }
+        });
+      },
+      function () { },
+      {
+        confirmText: "确定",
+        cancelText: "取消"
+      }
+    );
+  });
+</script>
+{include file="../app/view/admin/footer.html" /}
+
+</html>

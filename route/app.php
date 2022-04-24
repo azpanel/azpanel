@@ -69,6 +69,7 @@ Route::post('/user/server/azure/remark/:uuid',    'UserAzureServer/remark');
 Route::post('/user/server/azure/refresh/:uuid',   'UserAzureServer/refresh');
 Route::post('/user/server/azure/change/:uuid',    'UserAzureServer/change');
 Route::post('/user/server/azure/check/:ipv4',     'UserAzureServer/check');
+Route::post('/user/server/azure/sync/:uuid',      'UserAzureServer/sync');
 Route::delete('/user/server/azure/remove/:uuid',  'UserAzureServer/delete');
 Route::delete('/user/server/azure/destroy/:uuid', 'UserAzureServer/destroy');
 Route::get('/user/server/azure/:id/chart/[:gap]', 'UserAzureServer/chart');
@@ -83,6 +84,10 @@ Route::patch('/admin/user/remark/:id',            'AdminUser/remark');
 // 设置
 Route::get('/admin/setting',                      'AdminSetting/baseIndex');
 Route::put('/admin/setting',                      'AdminSetting/baseSave');
+
+// 解析
+Route::get('/admin/setting/resolv',               'AdminSetting/resolvIndex');
+Route::put('/admin/setting/resolv',               'AdminSetting/resolvSave');
 
 // 邮件
 Route::get('/admin/setting/email',                'AdminSetting/emailIndex');
