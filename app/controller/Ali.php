@@ -51,7 +51,7 @@ class Ali
                     'Type' => "A",
                     'RR' => $rr,
                     'Value' => $ip,
-                    'Ttl' => $configs['ali_ttl'],
+                    'TTL' => $configs['ali_ttl'],
                     'RecordId' => self::search($rr),
                 ],
             ])
@@ -103,7 +103,7 @@ class Ali
                     'RR' => $rr,
                     'Type' => "A",
                     'Value' => $ip,
-                    'Ttl' => $configs['ali_ttl'],
+                    'TTL' => $configs['ali_ttl'],
                     'DomainName' => $configs['ali_domain'],
                 ],
             ])->request();
