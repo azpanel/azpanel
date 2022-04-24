@@ -140,4 +140,24 @@ class AdminSetting extends AdminBase
 
         return json(Tools::msg('1', '保存结果', '保存成功'));
     }
+
+    public function resolvIndex()
+    {
+        View::assign('config', Config::class('resolv'));
+        return View::fetch('../app/view/admin/setting/resolv.html');
+    }
+
+    public function resolvSave()
+    {
+        $list = ['ali_whitelist', 'resolv_sync', 'ali_domain', 'ali_ak', 'ali_sk', 'ali_ttl'];
+
+        foreach ($list as $item)
+        {
+            $setting = Config::where('item', $item)->find();
+            $setting->value = input($item);
+            $setting->save();
+        }
+
+        return json(Tools::msg('1', '保存结果', '保存成功'));
+    }
 }

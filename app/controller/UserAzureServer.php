@@ -7,12 +7,14 @@ use think\facade\View;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use app\model\Azure;
+use app\model\Config;
 use app\model\User;
 use app\model\SshKey;
 use app\model\Traffic;
 use app\model\ControlRule;
 use app\model\AzureServer;
 use app\model\AzureServerResize;
+use app\controller\Ali;
 use app\controller\Tools;
 use app\controller\AzureApi;
 use app\controller\AzureList;
@@ -35,10 +37,14 @@ class UserAzureServer extends UserBase
             }
         }
 
-        View::assign('servers', $servers);
-        View::assign('count', $servers->count());
-        View::assign('sizes', AzureList::sizes());
-        View::assign('locations', AzureList::locations());
+        View::assign([
+            'servers' => $servers,
+            'count' => $servers->count(),
+            'sizes' => AzureList::sizes(),
+            'locations' => AzureList::locations(),
+            'resolv_sync' => Config::obtain('resolv_sync'),
+            'ali_whitelist' => Config::obtain('ali_whitelist'),
+        ]);
         return View::fetch('../app/view/user/azure/server/index.html');
     }
 
@@ -646,6 +652,22 @@ class UserAzureServer extends UserBase
         } catch (\Exception $e) {
             return json(Tools::msg('0', '检查失败', $e->getMessage()));
         }
+    }
+
+    public function sync($uuid)
+    {
+        if (session('user_id') != Config::obtain('ali_whitelist')) {
+            return json(Tools::msg('0', '同步失败', '你不在权限白名单中'));
+        }
+        $server = AzureServer::where('vm_id', $uuid)->find();
+
+        try {
+            Ali::createOrUpdate($server->name, $server->ip_address);
+        } catch (\Exception $e) {
+            return json(Tools::msg('0', '同步失败', $e->getMessage()));
+        }
+
+        return json(Tools::msg('1', '同步结果', '同步成功'));
     }
 
     public static function processGeneralData($array, $convert = false)

@@ -66,6 +66,13 @@
                       <i class="mdui-menu-item-icon mdui-icon material-icons">edit</i>修改备注
                     </a>
                   </li>
+                  {if $resolv_sync == true && session('user_id') == $ali_whitelist}
+                  <li class="mdui-menu-item">
+                    <a class="mdui-ripple" onclick="sync(this)" data-id="{$server.vm_id}">
+                      <i class="mdui-menu-item-icon mdui-icon material-icons">sync</i>同步解析
+                    </a>
+                  </li>
+                  {/if}
                   <li class="mdui-menu-item">
                     <a class="mdui-ripple" data-clipboard-target="#ip-{$server.id}">
                       <i class="mdui-menu-item-icon mdui-icon material-icons">content_copy</i>复制 IPv4
@@ -184,7 +191,8 @@
         </div>
       </div>
 
-      <a id="search-button" class="mdui-fab mdui-color-theme-accent mdui-ripple mdui-fab-fixed" mdui-dialog="{target: '#search'}">
+      <a id="search-button" class="mdui-fab mdui-color-theme-accent mdui-ripple mdui-fab-fixed"
+        mdui-dialog="{target: '#search'}">
         <i class="mdui-icon material-icons">search</i>
       </a>
 
@@ -192,7 +200,7 @@
 
     </div>
   </div>
-  <br/>
+  <br />
 </div>
 </body>
 
@@ -220,7 +228,7 @@
       success: function (data) {
         $("tr[class='hid']").hide();
         for (var i = 0; i < data.result.length; i++) {
-          $("tr[id='"+data.result[i].vm_id+"']").show();
+          $("tr[id='" + data.result[i].vm_id + "']").show();
         }
         // console.log(data.sql);
       }
@@ -411,6 +419,34 @@
           url: "/user/server/azure/stop/" + id,
           dataType: "json",
           success: function (data) {
+            if (data.status == '0') {
+              mdui.alert(data.content, data.title);
+            } else {
+              mdui.alert(data.content, data.title);
+              setTimeout("window.location = '/user/server/azure'", 1500);
+            }
+          }
+        });
+      },
+      function () { },
+      {
+        confirmText: "确定",
+        cancelText: "取消"
+      }
+    );
+  };
+
+  function sync(that) {
+    let id = $(that).data('id');
+    mdui.confirm('确认同步解析么', '同步确认',
+      function () {
+        var load = new mdui.alert('<div class=\"mdui-progress\"><div class=\"mdui-progress-indeterminate\"></div></div>', '进行中');
+        $.ajax({
+          method: 'POST',
+          url: "/user/server/azure/sync/" + id,
+          dataType: "json",
+          success: function (data) {
+            load.close();
             if (data.status == '0') {
               mdui.alert(data.content, data.title);
             } else {
