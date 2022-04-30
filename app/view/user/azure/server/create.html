@@ -78,7 +78,9 @@
               <textarea class="mdui-textfield-input" id="vm_script"
                 rows="8">{$personalise.vm_default_script ?? ''}</textarea>
             </div>
-            <p class="mdui-col-md-12 mdui-typo">* 默认脚本的运行身份是普通用户，部分命令需要加上 <code>sudo</code> 才能成功执行</p>
+            <p class="mdui-col-md-12 mdui-typo">
+              * 默认脚本的运行身份是普通用户，部分命令需要加上 <code>sudo</code> 才能成功执行。如想启用 <code>root</code> 账户登录，请参考 <a href="/user/docs" target="view_window">文档</a> 设置
+            </p>
           </div>
           <div class="mdui-col-sm-12 mdui-col-md-6">
             <div class="mdui-m-t-2">
@@ -164,6 +166,15 @@
                   </select>
                 </div>
               </div>
+              <div class="mdui-col-sm-12 mdui-col-md-12">
+                <div class="mdui-m-t-2">
+                  创建资格检查：
+                  <select id="create_check" class="mdui-select" mdui-select>
+                    <option value="1">执行</option>
+                    <option value="0">忽略</option>
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -220,6 +231,7 @@
             vm_image: $('#vm_image').val(),
             vm_traffic_rule: $('#vm_traffic_rule').val(),
             vm_ssh_key: $('#vm_ssh_key').val(),
+            create_check: $('#create_check').val(),
           },
           dataType: "json",
           success: function (data) {

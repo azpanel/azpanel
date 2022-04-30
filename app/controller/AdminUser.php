@@ -1,6 +1,7 @@
 <?php
 namespace app\controller;
 
+use think\facade\Db;
 use think\facade\View;
 use think\facade\Request;
 use think\helper\Str;
@@ -124,5 +125,32 @@ class AdminUser extends AdminBase
         View::assign('servers', $servers);
         View::assign('accounts', $accounts);
         return View::fetch('../app/view/admin/user/assets.html');
+    }
+
+    public function userReport()
+    {
+        $valid_user_number = Db::table('azure_server')->distinct(true)->field('user_id')->select();
+        $data = [
+            'user_number' => User::count(),
+            'valid_user_number' => count($valid_user_number),
+            'account_number' => Azure::count(),
+            'valid_account_number' => Azure::where('az_sub_status', 'Enabled')->count(),
+            'valid_payasyougo_account_number' => Azure::where('az_sub_status', 'Enabled')
+            ->where('az_sub_type', 'PayAsYouGo')
+            ->count(),
+            'valid_students_account_number' => Azure::where('az_sub_status', 'Enabled')
+            ->where('az_sub_type', 'Students')
+            ->count(),
+            'valid_freetrial_account_number' => Azure::where('az_sub_status', 'Enabled')
+            ->where('az_sub_type', 'FreeTrial')
+            ->count(),
+            'server_number' => AzureServer::count(),
+            'valid_server_number' => AzureServer::where('status', 'PowerState/running')
+            ->where('skip', '<>', '1')
+            ->count(),
+        ];
+
+        View::assign('data', $data);
+        return View::fetch('../app/view/admin/user/report.html');
     }
 }

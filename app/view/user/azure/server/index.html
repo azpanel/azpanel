@@ -281,7 +281,7 @@
 
   function check(that) {
     let ip = $(that).data('ip');
-    mdui.confirm('检测结果可能与实际情况不符，如提示异常，建议重试数次以确保结果可靠', '检测须知',
+    mdui.confirm('检测结果可能与实际情况不符，如提示异常，建议多试几次', '检测须知',
       function () {
         var load = new mdui.alert('<div class=\"mdui-progress\"><div class=\"mdui-progress-indeterminate\"></div></div>', '进行中');
         $.ajax({
@@ -447,12 +447,7 @@
           dataType: "json",
           success: function (data) {
             load.close();
-            if (data.status == '0') {
-              mdui.alert(data.content, data.title);
-            } else {
-              mdui.alert(data.content, data.title);
-              setTimeout("window.location = '/user/server/azure'", 1500);
-            }
+            mdui.alert(data.content, data.title);
           }
         });
       },
