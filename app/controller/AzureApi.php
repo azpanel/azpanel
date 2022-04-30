@@ -573,11 +573,11 @@ class AzureApi extends BaseController
         ]);
     }
 
-    public static function virtualMachinesRedisk($new_size, $new_tier, $server)
+    public static function virtualMachinesRedisk($new_size, $server)
     {
         // https://docs.microsoft.com/zh-cn/rest/api/compute/disks/create-or-update
 
-        $disk_tiers = AzureList::diskTiers();
+        //$disk_tiers = AzureList::diskTiers();
         $vm_details = json_decode($server->vm_details, true);
         $vm_disk_name = $vm_details['properties']['storageProfile']['osDisk']['name'];
         $vm_image_version = $vm_details['properties']['storageProfile']['imageReference']['exactVersion'];
@@ -593,13 +593,13 @@ class AzureApi extends BaseController
                     ],
                 ],
                 'diskSizeGB' => $new_size,
-                'diskMBpsReadWrite' => $disk_tiers[$new_tier]['diskMBpsReadWrite'],
-                'diskIOPSReadWrite' => $disk_tiers[$new_tier]['diskIOPSReadWrite'],
-                'tier' => $new_tier
+                //'diskMBpsReadWrite' => $disk_tiers[$new_tier]['diskMBpsReadWrite'],
+                //'diskIOPSReadWrite' => $disk_tiers[$new_tier]['diskIOPSReadWrite'],
+                //'tier' => $new_tier
             ]
         ];
 
-        $url = 'https://management.azure.com/subscriptions/' . $server->at_subscription_id . '/resourceGroups/' . $server->resource_group . '/providers/Microsoft.Compute/disks/' . $vm_disk_name . '?api-version=2020-12-01';
+        $url = 'https://management.azure.com/subscriptions/' . $server->at_subscription_id . '/resourceGroups/' . $server->resource_group . '/providers/Microsoft.Compute/disks/' . $vm_disk_name . '?api-version=2021-04-01';
 
         $client = new Client();
         $object = $client->put($url,[

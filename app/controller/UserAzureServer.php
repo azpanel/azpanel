@@ -124,6 +124,7 @@ class UserAzureServer extends UserBase
         $vm_disk_size    = (int) input('vm_disk_size/s');
         $vm_ssh_key      = (int) input('vm_ssh_key/s');
         $vm_traffic_rule = (int) input('vm_traffic_rule/s');
+        $create_check    = (int) input('create_check/s');
 
         // 创建账户检查
         if ($vm_account == '') {
@@ -136,7 +137,7 @@ class UserAzureServer extends UserBase
         }
 
         // 虚拟机用户名与密码检查
-        $prohibit_user = ['root', 'admin', 'centos', 'debian', 'ubuntu', 'administrator'];
+        $prohibit_user = ['root', 'admin', 'centos', 'debian', 'ubuntu', 'administrator', 'test'];
         if (!preg_match('/^[a-zA-Z0-9]+$/', $vm_user) || in_array($vm_user, $prohibit_user)) {
             return json(Tools::msg('0', '创建失败', '用户名只允许使用大小写字母与数字的组合，且不能使用常见用户名'));
         }
@@ -200,6 +201,7 @@ class UserAzureServer extends UserBase
                 'status' => $account->az_sub_status,
                 'type'   => $account->az_sub_type,
                 'email'  => $account->az_email,
+                'check'  => ($create_check == '1') ? true : false
             ],
             'server' => [
                 'name'        => $vm_name,
@@ -217,7 +219,7 @@ class UserAzureServer extends UserBase
         // 初始化创建任务
         $progress = 0;
         $client   = new Client();
-        $steps    = ($vm_number * 6) + 5;
+        $steps    = ($vm_number * 6) + 6;
         $task_id  = UserTask::create(session('user_id'), '创建虚拟机', json_encode($params, JSON_UNESCAPED_UNICODE));
 
         if ($account->reg_capacity == '0') {
@@ -236,13 +238,26 @@ class UserAzureServer extends UserBase
             $account->save();
         }
 
-        UserTask::update($task_id, (++$progress / $steps), '正在检查订阅');
+        UserTask::update($task_id, (++$progress / $steps), '正在检查订阅状态');
+        try {
+            $sub_info = AzureApi::getAzureSubscription($account->id); // array
+        } catch (\Exception $e) {
+            return json(Tools::msg('0', '创建失败', $e->getMessage()));
+        }
+        if ($sub_info['value']['0']['state'] != 'Enabled') {
+            UserTask::end($task_id, true, json_encode(
+                ['msg' => 'This subscription is disabled and therefore marked as read only.']
+            ), true);
+            return json(Tools::msg('0', '创建失败', '订阅状态被设置为 Disabled 或 Warned'));
+        }
+
+        UserTask::update($task_id, (++$progress / $steps), '正在检查订阅可用资源列表');
         $limits = AzureApi::getResourceSkusList($client, $account, $vm_location);
         foreach ($limits['value'] as $limit)
         {
             if ($limit['name'] == $vm_size) {
                 if (!empty($limit['restrictions']['0']['reasonCode'])) {
-                    if ($limit['restrictions']['0']['reasonCode'] == 'NotAvailableForSubscription') {
+                    if ($limit['restrictions']['0']['reasonCode'] == 'NotAvailableForSubscription' && $create_check == '1') {
                         UserTask::end($task_id, true, json_encode(
                             ['msg' => 'This subscription cannot create VMs of this size in this region.']
                         ), true);
@@ -513,7 +528,7 @@ class UserAzureServer extends UserBase
     {
         $count    = 0;
         $new_disk = input('new_disk/s');
-        $new_tier = input('new_tier/s');
+        //$new_tier = input('new_tier/s');
         $server   = AzureServer::where('vm_id', $uuid)->find();
         $task_id  = UserTask::create(session('user_id'), '更换硬盘大小');
 
@@ -528,7 +543,8 @@ class UserAzureServer extends UserBase
             } while ($status != 'PowerState/deallocated');
 
             UserTask::update($task_id, (++$count / 4), '正在启动虚拟机');
-            AzureApi::virtualMachinesRedisk($new_disk, $new_tier, $server);
+            //AzureApi::virtualMachinesRedisk($new_disk, $new_tier, $server);
+            AzureApi::virtualMachinesRedisk($new_disk, $server);
             AzureApi::manageVirtualMachine('start', $server->account_id, $server->request_url);
 
             do {
@@ -642,13 +658,33 @@ class UserAzureServer extends UserBase
     {
         // http://4563.org/?p=368746
 
-        try {
+        /* try {
             $result = file_get_contents('https://api-v2.50network.com/modules/ipcheck/icmp?ipv4=' . $ipv4);
             $result = json_decode($result, true);
             $cn_net = ($result['firewall-enable'] == true) ? '<p>中国节点 -> <span style="color: green">正常</span>' : '中国节点 -> <span style="color: red">异常</span></p>';
             $intl_net = ($result['firewall-disable'] == true) ? '<p>外国节点 -> <span style="color: green">正常</span>' : '外国节点 -> <span style="color: red">异常</span></p>';
 
             return json(Tools::msg('1', '检查成功', $cn_net . $intl_net));
+        } catch (\Exception $e) {
+            return json(Tools::msg('0', '检查失败', $e->getMessage()));
+        } */
+
+        try {
+            $client = new Client();
+            $response = $client->post('https://www.vps234.com/ipcheck/getdata/', [
+                'form_params' => [
+                    'idName' => 'itemblockid' . Tools::getUnixTimestamp(),
+                    'ip' => $ipv4,
+                ],
+            ]);
+            $result = json_decode($response->getBody(), true);
+            $r = $result['data']['data'];
+            $text = '<p>国内ICMP <span style="float: right; color: ' . (($r['innerICMP']) ? 'green">正常' : 'red">异常') . '</span></p>' .
+            '<p>国内TCP <span style="float: right; color: ' . (($r['innerTCP']) ? 'green">正常' : 'red">异常') . '</span></p>' .
+            '<div class="mdui-typo"><hr /></div>' .
+            '<p>国外ICMP <span style="float: right; color: ' . (($r['outICMP']) ? 'green">正常' : 'red">异常') . '</span></p>' .
+            '<p>国外TCP <span style="float: right; color: ' . (($r['outTCP']) ? 'green">正常' : 'red">异常' . '</span></p>');
+            return json(Tools::msg('1', '检查结果', $text));
         } catch (\Exception $e) {
             return json(Tools::msg('0', '检查失败', $e->getMessage()));
         }

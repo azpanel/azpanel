@@ -72,4 +72,11 @@ class Tools
 
         return $client_ip;
     }
+
+    public static function getUnixTimestamp()
+    {
+        // http://www.jsphp.net/php/show-12-640-1.html
+        list($s1, $s2) = explode(' ', microtime());
+        return (float)sprintf('%.0f',(floatval($s1) + floatval($s2)) * 1000);
+    }
 }
