@@ -241,9 +241,11 @@ class UserAzure extends UserBase
             ->select();
             foreach ($servers as $server)
             {
-                $start_time = date('Y-m-d\T H:i:00\Z', $server->created_at - 28800);
+                $instance_details = json_decode($server->instance_details, true);
+                $vm_disk_created = strtotime($instance_details['disks']['0']['statuses']['0']['time']);
+                $start_time = date('Y-m-d\T H:i:00\Z', $vm_disk_created - 28800);
                 $stop_time = date('Y-m-d\T H:i:00\Z', time() - 28800);
-                $cumulative_running_time = (time() - $server->created_at) / 2592000;
+                $cumulative_running_time = (time() - $vm_disk_created) / 2592000;
                 $statistics = AzureApi::getVirtualMachineStatistics($server, $start_time, $stop_time);
                 $network_in_total = $statistics['value']['3']['timeseries']['0']['data'];
                 $network_in_traffic = UserAzureServer::processNetworkData($network_in_total, true);
@@ -260,7 +262,8 @@ class UserAzure extends UserBase
 
         $text = '总虚拟机数：<span style="float: right">' . $servers->count() . '</span>' . '<br/>'
         . '累计出向流量：<span style="float: right">' . round($cumulative_traffic_usage, 2) . ' GB</span>' . '<br/>'
-        . '累计开机时长：<span style="float: right">' . round($cumulative_running_time, 2) . ' M</span>' . '<br/>'
+        . '累计开机时长：<span style="float: right">' . round($cumulative_startup_time * 30) . ' Day</span>' . '<br/>'
+        . '平均开机时长：<span style="float: right">' . round($cumulative_startup_time * 30 / $servers->count()) . ' Day</span>' . '<br/>'
         . '<div class="mdui-typo"><hr/></div>' . '<br/>'
         . '预估虚拟机费用：<span style="float: right">' . round($vm_charges, 2) . ' USD</span>' . '<br/>'
         . '预估流量费用：<span style="float: right">' . round($traffic_charges, 2) . ' USD</span>' . '<br/>'
