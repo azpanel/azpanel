@@ -167,7 +167,7 @@ class UserAzure extends UserBase
         try {
             $sub_info = AzureApi::getAzureSubscription($account->id); // array
             if ($sub_info['count']['value'] == '0') {
-                throw new \Exception('此账户无有效订阅。若有，请使用以下命令获取 Api 参数 <div class="mdui-typo"><code>az ad sp create-for-rbac --role contributor</code></div> ');
+                throw new \Exception('此账户无有效订阅。若有，建议使用以下命令获取 Api 参数 <div class="mdui-typo"><code>az ad sp create-for-rbac --role contributor --scopes /subscriptions/$(az account list --query [].id -o tsv)</code></div> ');
             }
         } catch (\Exception $e) {
             Azure::destroy($account->id);
