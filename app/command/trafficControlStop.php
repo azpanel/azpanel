@@ -44,12 +44,36 @@ class trafficControlStop extends Command
                 $start_time = date('Y-m-d\T H:i:s\Z', $start_time);
 
                 try {
-                    $pointer = ($rule->index == 'traffic_in') ? '3' : '4';
+                    //$pointer = ($rule->index == 'traffic_in') ? '3' : '4';
                     $statistics = AzureApi::getVirtualMachineStatistics($server, $start_time, $stop_time);
-                    $indicator_usage_raw = $statistics['value'][$pointer]['timeseries']['0']['data'];
-                    $indicator_usage = UserAzureServer::processNetworkData($indicator_usage_raw, true);
+                    $in_indicator_usage_raw = $statistics['value']['3']['timeseries']['0']['data'];
+                    $out_indicator_usage_raw = $statistics['value']['4']['timeseries']['0']['data'];
+                    $in_indicator_usage = UserAzureServer::processNetworkData($in_indicator_usage_raw, true);
+                    $out_indicator_usage = UserAzureServer::processNetworkData($out_indicator_usage_raw, true);
 
-                    if ($indicator_usage > $rule->limit) {
+                    $poweroff = false;
+                    if ($rule->index == 'traffic_in') {
+                        if ($in_indicator_usage > $rule->limit) {
+                            $poweroff = true;
+                        }
+                    }
+                    if ($rule->index == 'traffic_out') {
+                        if ($out_indicator_usage > $rule->limit) {
+                            $poweroff = true;
+                        }
+                    }
+                    if ($rule->index == 'traffic_in_or_out') {
+                        if ($in_indicator_usage > $rule->limit || $out_indicator_usage > $rule->limit) {
+                            $poweroff = true;
+                        }
+                    }
+                    if ($rule->index == 'traffic_in_and_out') {
+                        if ($in_indicator_usage + $out_indicator_usage > $rule->limit) {
+                            $poweroff = true;
+                        }
+                    }
+
+                    if ($poweroff) {
                         AzureApi::manageVirtualMachine('stop', $server->account_id, $server->request_url);
                         // set vm status
                         $server->status = 'PowerState/stopped';

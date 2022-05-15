@@ -45,8 +45,18 @@
           <div class="mdui-col-sm-12 mdui-col-md-3">
             <div class="mdui-m-t-2">
               检索指标：<select id="rule_index" class="mdui-select" mdui-select>
-                <option value="traffic_in">入向流量</option>
-                <option value="traffic_out" {if $rule.index == 'traffic_out'}selected{/if}>出向流量</option>
+                <option value="traffic_in" {if $rule.index=='traffic_in' }selected{/if}>
+                  入向流量
+                </option>
+                <option value="traffic_out" {if $rule.index=='traffic_out' }selected{/if}>
+                  出向流量
+                </option>
+                <option value="traffic_in_or_out" {if $rule.index=='traffic_in_or_out' }selected{/if}>
+                  入向或出向流量
+                </option>
+                <option value="traffic_in_and_out" {if $rule.index=='traffic_in_and_out' }selected{/if}>
+                  入向和出向流量
+                </option>
               </select>
             </div>
           </div>
@@ -54,7 +64,7 @@
             <div class="mdui-m-t-2">
               规则开关：<select id="rule_switch" class="mdui-select" mdui-select>
                 <option value="1">启用</option>
-                <option value="0" {if $rule.switch == '0'}selected{/if}>停用</option>
+                <option value="0" {if $rule.switch=='0' }selected{/if}>停用</option>
               </select>
             </div>
           </div>
@@ -62,7 +72,7 @@
             <div class="mdui-m-t-2">
               触发时通知：<select id="rule_execute_push" class="mdui-select" mdui-select>
                 <option value="0">停用</option>
-                <option value="1" {if $rule.execute_push == '1'}selected{/if}>启用</option>
+                <option value="1" {if $rule.execute_push=='1' }selected{/if}>启用</option>
               </select>
             </div>
           </div>
@@ -70,7 +80,7 @@
             <div class="mdui-m-t-2">
               恢复时通知：<select id="rule_recover_push" class="mdui-select" mdui-select>
                 <option value="0">停用</option>
-                <option value="1" {if $rule.recover_push == '1'}selected{/if}>启用</option>
+                <option value="1" {if $rule.recover_push=='1' }selected{/if}>启用</option>
               </select>
             </div>
           </div>
