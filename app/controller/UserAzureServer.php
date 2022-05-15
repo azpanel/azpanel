@@ -771,17 +771,28 @@ class UserAzureServer extends UserBase
         $traffic_usage = Traffic::where('uuid', $server->vm_id)->order('id', 'desc')->select();
         $chart_day = (empty($chart_day)) ? null : $chart_day;
 
-        View::assign('server', $server);
-        View::assign('chart_day', $chart_day);
-        View::assign('count', $traffic_usage->count());
-        View::assign('traffic_usage', $traffic_usage);
-        View::assign('cpu_credits_text', self::processGeneralData($cpu_credits));
-        View::assign('percentage_cpu_text', self::processGeneralData($percentage_cpu));
-        View::assign('network_in_total_text', self::processNetworkData($network_in_total));
-        View::assign('network_out_total_text', self::processNetworkData($network_out_total));
-        View::assign('network_in_traffic', self::processNetworkData($network_in_total, true));
-        View::assign('network_out_traffic', self::processNetworkData($network_out_total, true));
-        View::assign('available_memory_text', self::processGeneralData($available_memory, true));
+        $total_in_traffic_usage = 0;
+        $total_out_traffic_usage = 0;
+        foreach ($traffic_usage as $usage) {
+            $total_in_traffic_usage += $usage->u;
+            $total_out_traffic_usage += $usage->d;
+        }
+
+        View::assign([
+            'server' => $server,
+            'chart_day' => $chart_day,
+            'count' => $traffic_usage->count(),
+            'traffic_usage' => $traffic_usage,
+            'total_in_traffic_usage' => $total_in_traffic_usage,
+            'total_out_traffic_usage' => $total_out_traffic_usage,
+            'cpu_credits_text' => self::processGeneralData($cpu_credits),
+            'percentage_cpu_text' => self::processGeneralData($percentage_cpu),
+            'network_in_total_text' => self::processNetworkData($network_in_total),
+            'network_out_total_text' => self::processNetworkData($network_out_total),
+            'network_in_traffic' => self::processNetworkData($network_in_total, true),
+            'network_out_traffic' => self::processNetworkData($network_out_total, true),
+            'available_memory_text' => self::processGeneralData($available_memory, true),
+        ]);
         return View::fetch('../app/view/user/azure/server/chart.html');
     }
 
