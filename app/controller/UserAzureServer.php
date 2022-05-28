@@ -676,6 +676,7 @@ class UserAzureServer extends UserBase
                     'idName' => 'itemblockid' . Tools::getUnixTimestamp(),
                     'ip' => $ipv4,
                 ],
+                'verify' => false,
             ]);
             $result = json_decode($response->getBody(), true);
             $r = $result['data']['data'];
