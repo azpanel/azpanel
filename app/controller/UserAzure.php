@@ -150,9 +150,6 @@ class UserAzure extends UserBase
         if (strlen($az_api_tenant_id) != 36) {
             return json(Tools::msg('0', '添加失败', 'tenant_id 长度应为36位'));
         }
-        if (strlen($az_api_secret) != 34 || strlen($az_api_secret) != 40) {
-            return json(Tools::msg('0', '添加失败', 'secret 长度应为36位或40位'));
-        }
 
         $az_api = [
             'appId'     => $az_api_app_id,
