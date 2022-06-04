@@ -25,7 +25,7 @@ checkoutConfirm()
     echo -ne "${yellow_color}The update will execute the [git checkout .] command, which will lose all your custom modifications, are you sure you want to continue? [y/n]:${color_end}"
     read reply
 
-    if [[ ${reply} == 'n' ]];then
+    if [[ ${reply} != 'y' ]];then
         echo -e "${green_color}In fact, if you have experience with git, you can update it with your custom changes saved by using the [git stash] command.${color_end}"
         exit
     fi
@@ -36,7 +36,7 @@ checkoutConfirm()
 pullUpdate()
 {
     git fetch
-    git merge
+    git merge origin/master
 
     echo -e "${green_color}Update to the latest version is complete.${color_end}"
 }
