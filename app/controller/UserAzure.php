@@ -71,7 +71,7 @@ class UserAzure extends UserBase
 
         View::assign('az_api', $az_api);
         View::assign('account', $account);
-        View::assign('share', json_encode($share));
+        View::assign('share', json_encode($share, JSON_PRETTY_PRINT));
         return View::fetch('../app/view/user/azure/edit.html');
     }
 
@@ -80,23 +80,18 @@ class UserAzure extends UserBase
         if (strpos($quotaId, 'Students') !== false) {
             return 'Students';
         }
-
         if (strpos($quotaId, 'PayAsYouGo') !== false) {
             return 'PayAsYouGo';
         }
-
         if (strpos($quotaId, 'FreeTrial') !== false) {
             return 'FreeTrial';
         }
-
         if (strpos($quotaId, 'Sponsorship') !== false) {
             return 'Azure 3500';
         }
-
         if (strpos($quotaId, 'BizSpark') !== false) {
-            return 'VS Enterprise：BizSpark';
+            return 'VS Enterprise: BizSpark';
         }
-
         if (strpos($quotaId, 'MSDN') !== false) {
             return 'MSDN Platforms Subscription';
         }
@@ -113,17 +108,6 @@ class UserAzure extends UserBase
         $az_secret    = input('az_secret/s');
         $az_tenant_id = input('az_tenant_id/s');
         $az_configs   = input('az_configs/s');
-
-        // 如果账户已经添加
-        $exist = Azure::where('az_email', $az_email)->find();
-        if ($exist != null) {
-            return json(Tools::msg('0', '添加失败', '此账户已添加'));
-        }
-
-        // 如果邮箱不规范
-        if (!filter_var($az_email, FILTER_VALIDATE_EMAIL)) {
-            return json(Tools::msg('0', '添加失败', '此邮箱格式不规范'));
-        }
 
         // 如果没填 api 信息
         if ($az_app_id == '' && $az_secret == '' && $az_tenant_id == '' && $az_configs == '') {
@@ -142,6 +126,24 @@ class UserAzure extends UserBase
         $az_api_app_id    = $configs['appId']    ?? $az_app_id    ?? null;
         $az_api_secret    = $configs['password'] ?? $az_secret    ?? null;
         $az_api_tenant_id = $configs['tenant']   ?? $az_tenant_id ?? null;
+
+        if (!empty($configs['login_user'])) {
+            $az_email = $configs['login_user'];
+        }
+        if (!empty($configs['login_passwd'])) {
+            $az_passwd = $configs['login_passwd'];
+        }
+
+        // 如果邮箱不规范
+        if (!filter_var($az_email, FILTER_VALIDATE_EMAIL)) {
+            return json(Tools::msg('0', '添加失败', '此邮箱格式不规范'));
+        }
+
+        // 如果账户已经添加
+        $exist = Azure::where('az_email', $az_email)->find();
+        if ($exist != null) {
+            return json(Tools::msg('0', '添加失败', '此账户已添加'));
+        }
 
         // 如果长度不符
         if (strlen($az_api_app_id) != 36) {
@@ -170,7 +172,10 @@ class UserAzure extends UserBase
         try {
             $sub_info = AzureApi::getAzureSubscription($account->id); // array
             if ($sub_info['count']['value'] == '0') {
-                throw new \Exception('此账户无有效订阅。若有，建议使用以下命令获取 Api 参数 <div class="mdui-typo"><code>az ad sp create-for-rbac --role contributor --scopes /subscriptions/$(az account list --query [].id -o tsv)</code></div> ');
+                throw new \Exception('此账户无有效订阅。若有，建议使用以下命令获取 Api 参数 <div class="mdui-typo"><code>az ad sp create-for-rbac --role contributor --scopes /subscriptions/$(az account list --query [].id -o tsv)</code></div>');
+            }
+            if ($sub_info['value']['0']['state'] != 'Enabled') {
+                throw new \Exception('此账户第一个订阅的状态不是 Enabled');
             }
         } catch (\Exception $e) {
             Azure::destroy($account->id);

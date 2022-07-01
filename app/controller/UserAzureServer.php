@@ -558,6 +558,7 @@ class UserAzureServer extends UserBase
             $network_details = AzureApi::getAzureNetworkInterfacesDetails($server->account_id, $server->network_interfaces, $server->resource_group, $server->at_subscription_id);
 
             // update details
+            $origin_disk_size = $server->disk_size;
             $server->disk_size = $new_disk;
             $server->disk_details = json_encode(AzureApi::getDisks($server));
             $server->network_details = json_encode($network_details);
@@ -568,7 +569,7 @@ class UserAzureServer extends UserBase
             $log = new AzureServerResize;
             $log->user_id     = session('user_id');
             $log->vm_id       = $server->vm_id;
-            $log->before_size = $server->disk_size;
+            $log->before_size = $origin_disk_size;
             $log->after_size  = $new_disk;
             $log->created_at  = time();
             $log->save();
