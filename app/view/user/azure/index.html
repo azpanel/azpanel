@@ -29,7 +29,7 @@
           </thead>
           <tbody>
             {volist name="accounts" id="account"}
-            <tr>
+            <tr id="{$account.id}" class="hid">
               <td>
                 <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-ripple mdui-color-blue-grey"
                   mdui-menu="{target: '#action-{$account.id}', fixed: true}">操作</button>
@@ -90,7 +90,49 @@
         </table>
       </div>
 
-      {$page | raw}
+      <div class="mdui-dialog" id="search" style="overflow: visible">
+        <div class="mdui-dialog-content" style="overflow: visible">
+          <div class="mdui-col-sm-12 mdui-col-md-6">
+            <div class="mdui-textfield mdui-textfield-floating-label">
+              <i class="mdui-icon material-icons">flag</i>
+              <label class="mdui-textfield-label">账户名称</label>
+              <input class="mdui-textfield-input" id="s_name">
+            </div>
+          </div>
+          <div class="mdui-col-sm-12 mdui-col-md-6">
+            <div class="mdui-textfield mdui-textfield-floating-label">
+              <i class="mdui-icon material-icons">bookmark</i>
+              <label class="mdui-textfield-label">备注</label>
+              <input class="mdui-textfield-input" id="s_mark">
+            </div>
+          </div>
+          <div class="mdui-col-sm-12 mdui-col-md-12">
+            <div class="mdui-col-md-6 mdui-m-t-2">
+              状态：<select id="s_status" class="mdui-select" mdui-select>
+                <option value="all">不限</option>
+                <option value="Enabled">Enabled</option>
+                <option value="Warned">Warned</option>
+                <option value="Disabled">Disabled</option>
+              </select>
+            </div>
+            <div class="mdui-col-md-6 mdui-m-t-2">
+              类型：<select id="s_type" class="mdui-select" mdui-select>
+                <option value="all">不限</option>
+                <option value="PayAsYouGo">PayAsYouGo</option>
+                <option value="FreeTrial">FreeTrial</option>
+                <option value="Students">Students</option>
+              </select>
+            </div>
+          </div>
+          <div class="mdui-col-sm-12 mdui-col-md-12">
+            <p></p>
+          </div>
+        </div>
+        <div class="mdui-dialog-actions">
+          <button id="cancel-search" class="mdui-btn mdui-ripple" mdui-dialog-close>取消</button>
+          <button id="submit-search" class="mdui-btn mdui-ripple" mdui-dialog-confirm>搜索</button>
+        </div>
+      </div>
 
       <div class="mdui-container">
         <div class="mdui-fab-wrapper" id="fab">
@@ -100,6 +142,9 @@
           <div class="mdui-fab-dial">
             <button class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-red" onclick="deletedAllDisabledAccount()"><i
                 class="mdui-icon material-icons">delete</i>
+            </button>
+            <button class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-teal" mdui-dialog="{target: '#search'}">
+              <i class="mdui-icon material-icons">search</i>
             </button>
             <button class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-blue-grey"
               onclick="refreshAllAccountStatus()"><i class="mdui-icon material-icons">autorenew</i>
@@ -121,6 +166,27 @@
 
 <script>
   var inst = new mdui.Fab('#fab');
+
+  $('#submit-search').click(function () {
+    $.ajax({
+      method: 'POST',
+      url: "/user/azure/search",
+      data: {
+        s_name: $('#s_name').val(),
+        s_mark: $('#s_mark').val(),
+        s_type: $('#s_type').val(),
+        s_status: $('#s_status').val(),
+      },
+      dataType: "json",
+      success: function (data) {
+        $("tr[class='hid']").hide();
+        for (var i = 0; i < data.result.length; i++) {
+          $("tr[id='" + data.result[i].id + "']").show();
+        }
+        // console.log(data.sql);
+      }
+    });
+  });
 
   function update(that) {
     let id = $(that).data('id');

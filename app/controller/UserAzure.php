@@ -15,20 +15,36 @@ class UserAzure extends UserBase
 {
     public function index()
     {
-        $limit = Env::get('APP.paginate') ?? '15';
-        $pages_num = (input('page') == '') ? '1' : input('page');
-        $accounts_num = Azure::where('user_id', session('user_id'))->count();
         $accounts = Azure::where('user_id', session('user_id'))
         ->order('id', 'desc')
-        ->paginate($limit);
+        ->select();
 
-        $page = $accounts->render();
-        $count = $accounts_num - (($pages_num - 1) * $limit);
-
-        View::assign('page', $page);
-        View::assign('count', $count);
+        View::assign('count', $accounts->count());
         View::assign('accounts', $accounts);
         return View::fetch('../app/view/user/azure/index.html');
+    }
+
+    public function searchAccount()
+    {
+        $user_id = session('user_id');
+        $s_name = input('s_name/s');
+        $s_mark = input('s_mark/s');
+        $s_type = input('s_type/s');
+        $s_status = input('s_status/s');
+
+        $condition[] = ['user_id', '=', $user_id];
+        ($s_name != '')      && $condition[] = ['az_email',      'like', '%'.$s_name.'%'];
+        ($s_mark != '')      && $condition[] = ['user_mark',     'like', '%'.$s_mark.'%'];
+        ($s_type != 'all')   && $condition[] = ['az_sub_type',   '=', $s_type];
+        ($s_status != 'all') && $condition[] = ['az_sub_status', '=', $s_status];
+
+        $data = Azure::where($condition)
+        ->field('id')
+        ->select();
+
+        // $sql = Db::getLastSql();
+
+        return json(['result' => $data]);
     }
 
     public function create()

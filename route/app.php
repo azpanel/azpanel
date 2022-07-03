@@ -48,6 +48,7 @@ Route::resource('/user/azure',                    'UserAzure');
 Route::post('/user/azure/quota/:id',              'UserAzure/QueryAccountQuota');
 Route::post('/user/azure/cost/:id',               'UserAzure/estimatedCost');
 Route::post('/user/azure/refresh',                'UserAzure/refreshAllAzureSubscriptionStatus');
+Route::post('/user/azure/search',                 'UserAzure/searchAccount');
 Route::post('/user/azure/refresh/:id',            'UserAzure/refreshAzureSubscriptionStatus');
 Route::post('/user/azure/update/:id',             'UserAzure/updateAzureSubscriptionResources');
 Route::delete('/user/azure/disabled',             'UserAzure/deleteAzureDisabledSubscription');
