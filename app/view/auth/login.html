@@ -3,22 +3,41 @@
 <div class="mdui-container-fluid">
   <div class="mdui-row">
     <div class="mdui-col-xs-12 mdui-col-md-4 mdui-col-offset-md-4">
-      <div class="mdui-card" style="transform: translateY(35%)">
+      <div class="mdui-card" style="transform: translateY(25%)">
         <div class="mdui-card-content">
-          <div class="mdui-textfield mdui-textfield-floating-label"><i
-              class="mdui-icon material-icons">account_circle</i>
+          <div class="mdui-textfield mdui-textfield-floating-label">
+            <i class="mdui-icon material-icons">account_circle</i>
             <label class="mdui-textfield-label">注册邮箱</label>
             <input class="mdui-textfield-input" type="text" id="email" required />
           </div>
-          <div class="mdui-textfield mdui-textfield-floating-label"><i class="mdui-icon material-icons">lock</i>
+          <div class="mdui-textfield mdui-textfield-floating-label">
+            <i class="mdui-icon material-icons">lock</i>
             <label class="mdui-textfield-label">登录密码</label>
             <input class="mdui-textfield-input" type="password" id="password" required />
           </div>
+          {if $verify.login_verification_code == '1'}
+          <div class="mdui-row">
+            <div class="mdui-textfield mdui-textfield-floating-label mdui-col-xs-6">
+              <i class="mdui-icon material-icons">code</i>
+              <label class="mdui-textfield-label">验证码</label>
+              <input class="mdui-textfield-input" type="text" id="code" required />
+            </div>
+            <div class="mdui-col-xs-4 mdui-m-t-2">
+              {:captcha_img()}
+            </div>
+          </div>
+          {/if}
           <div class="mdui-card-actions">
-            <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised" id="login">登录</button>
-            <a href="/forget" class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-ripple mdui-color-indigo">重置密码</a>
+            <button id="login" class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised">
+              登录
+            </button>
+            <a href="/forget" class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-ripple mdui-color-indigo">
+              重置密码
+            </a>
             <a href="/register"
-              class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-ripple mdui-color-indigo mdui-float-right">注册账户</a>
+              class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-ripple mdui-color-indigo mdui-float-right">
+              注册账户
+            </a>
           </div>
         </div>
       </div>
@@ -33,8 +52,9 @@
       method: 'POST',
       url: "/login",
       data: {
+        code: $('#code').val(),
         email: $('#email').val(),
-        password: $('#password').val()
+        password: $('#password').val(),
       },
       dataType: "json",
       success: function (data) {
@@ -48,4 +68,5 @@
 </script>
 
 {include file="../app/view/auth/footer.html" /}
+
 </html>

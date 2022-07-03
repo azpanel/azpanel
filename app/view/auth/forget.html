@@ -5,8 +5,8 @@
     <div class="mdui-col-xs-12 mdui-col-md-4 mdui-col-offset-md-4">
       <div class="mdui-card" style="transform: translateY(20%)">
         <div class="mdui-card-content">
-          <div class="mdui-textfield mdui-textfield-floating-label"><i
-              class="mdui-icon material-icons">account_circle</i>
+          <div class="mdui-textfield mdui-textfield-floating-label">
+            <i class="mdui-icon material-icons">account_circle</i>
             <label class="mdui-textfield-label">注册邮箱</label>
             <input class="mdui-textfield-input" type="text" id="email" />
           </div>
@@ -30,9 +30,13 @@
           </div>
 
           <div class="mdui-card-actions">
-            <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-indigo" id="request_code">获取</button>
+            <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-indigo" id="request_code">
+              获取
+            </button>
             <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-indigo mdui-float-right"
-              id="forget_password">重置</button>
+              id="forget_password">
+              重置
+            </button>
           </div>
         </div>
       </div>
@@ -79,4 +83,5 @@
 </script>
 
 {include file="../app/view/auth/footer.html" /}
+
 </html>
