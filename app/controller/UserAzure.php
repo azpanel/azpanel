@@ -334,20 +334,36 @@ class UserAzure extends UserBase
     public function refreshAllAzureSubscriptionStatus()
     {
         $count = 0;
-        $accounts = Azure::where('user_id', session('user_id'))
+        $user_id = session('user_id');
+        $refresh_action = input('action/a');
+        $refresh_account_type = input('type/a');
+
+        $query_set = [];
+        $type_set = ['PayAsYouGo', 'FreeTrial', 'Students', 'Unknown'];
+        foreach ($type_set as $type_name) {
+            if (in_array($type_name, $refresh_account_type)) {
+                $query_set[] = $type_name;
+            }
+        }
+
+        $accounts = Azure::where('user_id', $user_id)
         ->where('az_sub_status', '<>', 'Disabled')
+        ->whereIn('az_sub_type', $query_set)
         ->select();
 
         $task_id = UserTask::create(session('user_id'), '刷新账户订阅状态');
-        $accounts_count = $accounts->count() + 1;
+        $steps = $accounts->count() + 1;
 
         foreach ($accounts as $account)
         {
             $count += 1;
 
             try {
-                UserTask::update($task_id, ($count / $accounts_count), '正在刷新 ' . $account->az_email);
+                UserTask::update($task_id, ($count / $steps), '正在刷新 ' . $account->az_email);
                 $sub_info = AzureApi::getAzureSubscription($account->id); // array
+                if (in_array('resources', $refresh_action)) {
+                    AzureApi::getAzureVirtualMachines($account->id);
+                }
             } catch (\Exception $e) {
                 UserTask::end($task_id, true);
                 return json(Tools::msg('0', '刷新失败', $e->getMessage()));
