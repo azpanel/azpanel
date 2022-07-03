@@ -401,6 +401,20 @@ class UserAzureServer extends UserBase
         // 加载到虚拟机列表
         AzureApi::getAzureVirtualMachines($account->id);
 
+        // 同步解析
+        if (session('user_id') == Config::obtain('ali_whitelist')) {
+            if (Config::obtain('sync_immediately_after_creation')) {
+                foreach ($names as $vm_name) {
+                    $server = AzureServer::where('name', $vm_name)->order('id', 'desc')->limit(1)->find();
+                    try {
+                        Ali::createOrUpdate($server->name, $server->ip_address);
+                    } catch (\Exception $e) {
+                        // ...
+                    }
+                }
+            }
+        }
+
         // 将设置的备注应用
         $pointer = 0;
         foreach($names as $name) {

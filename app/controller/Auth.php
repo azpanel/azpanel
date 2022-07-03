@@ -234,7 +234,6 @@ class Auth extends BaseController
 
     public function forgetIndex()
     {
-        View::assign('verify', Config::class('verification_code'));
         return View::fetch('../app/view/auth/forget.html');
     }
 

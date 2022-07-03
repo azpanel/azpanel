@@ -15,10 +15,16 @@
 
       <div class="mdui-card mdui-m-t-2" style="overflow: visible">
         <div class="mdui-card-content mdui-container">
-          <div class="mdui-m-t-2">
-            功能开关：<select id="resolv" class="mdui-select" mdui-select>
+          <div class="mdui-m-t-2">功能开关：
+            <select id="resolv_sync" class="mdui-select" mdui-select>
               <option value="0">关闭</option>
-              <option value="1" {if $config.resolv_sync==true}selected{/if}>开启</option>
+              <option value="1">开启</option>
+            </select>
+          </div>
+          <div class="mdui-m-t-2">创建后立即同步：
+            <select id="sync_immediately_after_creation" class="mdui-select" mdui-select>
+              <option value="0">关闭</option>
+              <option value="1">开启</option>
             </select>
           </div>
           <div class="mdui-textfield mdui-textfield-floating-label">
@@ -64,6 +70,12 @@
 
 <script>
   var $ = mdui.$;
+
+  // 应用设置值
+  $("#resolv_sync").val("{$config.resolv_sync}");
+  $("#sync_immediately_after_creation").val("{$config.sync_immediately_after_creation}");
+
+  // 点击事件
   $('#modify').on('click', function () {
     mdui.confirm('确认应用这些设置么', '修改确认',
       function () {
@@ -71,12 +83,13 @@
           method: 'PUT',
           url: "/admin/setting/resolv",
           data: {
-            resolv_sync: $('#resolv').val(),
             ali_ak: $('#ali_ak').val(),
             ali_sk: $('#ali_sk').val(),
-            ali_whitelist: $('#ali_whitelist').val(),
             ali_ttl: $('#ali_ttl').val(),
             ali_domain: $('#ali_domain').val(),
+            resolv_sync: $('#resolv_sync').val(),
+            ali_whitelist: $('#ali_whitelist').val(),
+            sync_immediately_after_creation: $('#sync_immediately_after_creation').val(),
           },
           dataType: "json",
           success: function (data) {

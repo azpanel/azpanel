@@ -35,7 +35,7 @@ class VerificationCodeSwitch extends Migrator
                 'value' => '0',
                 'class' => 'verification_code',
                 'default_value' => '0',
-                'type' => 'int',
+                'type' => 'bool',
             ],
             [
                 'id' => null,
@@ -43,7 +43,7 @@ class VerificationCodeSwitch extends Migrator
                 'value' => '0',
                 'class' => 'verification_code',
                 'default_value' => '0',
-                'type' => 'int',
+                'type' => 'bool',
             ],
             [
                 'id' => null,
@@ -51,7 +51,7 @@ class VerificationCodeSwitch extends Migrator
                 'value' => '0',
                 'class' => 'verification_code',
                 'default_value' => '0',
-                'type' => 'int',
+                'type' => 'bool',
             ],
             [
                 'id' => null,
@@ -59,7 +59,7 @@ class VerificationCodeSwitch extends Migrator
                 'value' => '0',
                 'class' => 'verification_code',
                 'default_value' => '0',
-                'type' => 'int',
+                'type' => 'bool',
             ],
         ];
 

@@ -148,7 +148,7 @@ class AdminSetting extends AdminBase
 
     public function resolvSave()
     {
-        $list = ['ali_whitelist', 'resolv_sync', 'ali_domain', 'ali_ak', 'ali_sk', 'ali_ttl'];
+        $list = ['ali_whitelist', 'resolv_sync', 'sync_immediately_after_creation', 'ali_domain', 'ali_ak', 'ali_sk', 'ali_ttl'];
 
         foreach ($list as $item) {
             $setting = Config::where('item', $item)->find();
