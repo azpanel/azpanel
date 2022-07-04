@@ -35,8 +35,9 @@ checkoutConfirm()
 
 pullUpdate()
 {
-    git fetch
-    git merge origin/master
+    #git fetch
+    #git merge origin/master
+    git pull
 
     echo -e "${green_color}Update to the latest version is complete.${color_end}"
 }
