@@ -119,6 +119,7 @@ class UserAzureServer extends UserBase
         $vm_location     = input('vm_location/s');
         $vm_size         = input('vm_size/s');
         $vm_image        = input('vm_image/s');
+        $task_uuid       = input('task_uuid/s');
         $vm_number       = (int) input('vm_number/s');
         $vm_account      = (int) input('vm_account/s');
         $vm_disk_size    = (int) input('vm_disk_size/s');
@@ -220,7 +221,7 @@ class UserAzureServer extends UserBase
         $progress = 0;
         $client   = new Client();
         $steps    = ($vm_number * 6) + 6;
-        $task_id  = UserTask::create(session('user_id'), '创建虚拟机', json_encode($params, JSON_UNESCAPED_UNICODE));
+        $task_id  = UserTask::create(session('user_id'), '创建虚拟机', $params, $task_uuid);
 
         if ($account->reg_capacity == '0') {
             ++$steps;
@@ -540,11 +541,17 @@ class UserAzureServer extends UserBase
 
     public function redisk($uuid)
     {
-        $count    = 0;
+        $count = 0;
         $new_disk = input('new_disk/s');
+        $task_uuid = input('task_uuid/s');
         //$new_tier = input('new_tier/s');
-        $server   = AzureServer::where('vm_id', $uuid)->find();
-        $task_id  = UserTask::create(session('user_id'), '更换硬盘大小');
+        $server = AzureServer::where('vm_id', $uuid)->find();
+        $params = [
+            'vm_name' => $server->name,
+            'original_size' => $server->disk_size,
+            'upgrade_size' => $new_disk,
+        ];
+        $task_id = UserTask::create(session('user_id'), '更换硬盘大小', $params, $task_uuid);
 
         try {
             UserTask::update($task_id, (++$count / 4), '正在分离计算资源');
@@ -632,8 +639,13 @@ class UserAzureServer extends UserBase
     public function change($uuid)
     {
         $count = 0;
+        $task_uuid = input('task_uuid/s');
         $server = AzureServer::where('vm_id', $uuid)->find();
-        $task_id = UserTask::create(session('user_id'), '更换公网地址');
+        $params = [
+            'vm_name' => $server->name,
+            'original_ip' => $server->ip_address,
+        ];
+        $task_id = UserTask::create(session('user_id'), '更换公网地址', $params, $task_uuid);
 
         try {
             UserTask::update($task_id, (++$count / 4), '正在分离计算资源');

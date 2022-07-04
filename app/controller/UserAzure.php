@@ -335,6 +335,7 @@ class UserAzure extends UserBase
     {
         $count = 0;
         $user_id = session('user_id');
+        $task_uuid = input('task_uuid/s');
         $refresh_action = input('action/a');
         $refresh_account_type = input('type/a');
 
@@ -351,7 +352,12 @@ class UserAzure extends UserBase
         ->whereIn('az_sub_type', $query_set)
         ->select();
 
-        $task_id = UserTask::create(session('user_id'), '刷新账户订阅状态');
+        $params = [
+            'refresh_action' => $refresh_action,
+            'refresh_account_type' => $refresh_account_type,
+        ];
+
+        $task_id = UserTask::create(session('user_id'), '刷新账户订阅状态', $params, $task_uuid);
         $steps = $accounts->count() + 1;
 
         foreach ($accounts as $account)

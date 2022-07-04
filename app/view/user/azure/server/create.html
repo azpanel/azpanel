@@ -79,7 +79,8 @@
                 rows="8">{$personalise.vm_default_script ?? ''}</textarea>
             </div>
             <p class="mdui-col-md-12 mdui-typo">
-              * 默认脚本的运行身份是普通用户，部分命令需要加上 <code>sudo</code> 才能成功执行。如想启用 <code>root</code> 账户登录，请参考 <a href="/user/docs" target="view_window">文档</a> 设置
+              * 默认脚本的运行身份是普通用户，部分命令需要加上 <code>sudo</code> 才能成功执行。
+              如想启用 <code>root</code> 账户登录，请参考 <a href="/user/docs" target="view_window">文档</a> 设置
             </p>
           </div>
           <div class="mdui-col-sm-12 mdui-col-md-6">
@@ -199,7 +200,7 @@
   function getProgress() {
     $.ajax({
       method: 'GET',
-      url: "/user/progress",
+      url: "/user/progress/" + uuid,
       dataType: "json",
       success: function (data) {
         var width = data.schedule + '%';
@@ -209,11 +210,19 @@
     });
   }
 
+  function guid() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
+
   $('#create').on('click', function () {
     mdui.confirm('创建过程中请不要离开本页面', '创建确认',
       function () {
         var load = new mdui.alert('<p id=\"hint\">准备中</p><div class=\"mdui-progress\"><div class=\"mdui-progress-determinate\"></div></div>', '进行中');
         var cycle = setInterval(getProgress, 500);
+        uuid = guid();
         $.ajax({
           method: 'POST',
           url: "/user/server/azure",
@@ -232,6 +241,7 @@
             vm_traffic_rule: $('#vm_traffic_rule').val(),
             vm_ssh_key: $('#vm_ssh_key').val(),
             create_check: $('#create_check').val(),
+            task_uuid: uuid,
           },
           dataType: "json",
           success: function (data) {

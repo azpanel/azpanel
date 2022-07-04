@@ -115,4 +115,4 @@ Route::get('/admin/log/task',                     'AdminLog/task');
 Route::get('/admin/log/task/:id',                 'AdminLog/taskDetails');
 
 // 其他
-Route::get('/user/progress',   'UserTask/ajaxQuery')->json();
+Route::get('/user/progress/:uuid',              'UserTask/ajaxQuery')->json();

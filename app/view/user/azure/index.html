@@ -258,6 +258,7 @@
 
     var load = new mdui.alert('<p id=\"hint\">准备中</p><div class=\"mdui-progress\"><div class=\"mdui-progress-determinate\"></div></div>', '进行中');
     var cycle = setInterval(getProgress, 500);
+    uuid = guid();
 
     $.ajax({
       method: 'POST',
@@ -265,6 +266,7 @@
       data: {
         type: type,
         action: action,
+        task_uuid: uuid,
       },
       dataType: "json",
       success: function (data) {
@@ -283,6 +285,13 @@
       }
     });
   });
+
+  function guid() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
 
   function update(that) {
     let id = $(that).data('id');
@@ -415,7 +424,7 @@
   function getProgress() {
     $.ajax({
       method: 'GET',
-      url: "/user/progress",
+      url: "/user/progress/" + uuid,
       dataType: "json",
       success: function (data) {
         var width = data.schedule + '%';

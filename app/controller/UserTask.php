@@ -5,13 +5,14 @@ use app\model\Task;
 
 class UserTask
 {
-    public static function create($user_id, $name, $params = null)
+    public static function create($user_id, $name, $params = null, $task_uuid = null)
     {
         $task = new Task;
         $msg = [];
         $task->user_id     = $user_id;
+        $task->task_uuid   = $task_uuid;
         $task->name        = $name;
-        $task->params      = $params;
+        $task->params      = json_encode($params, JSON_UNESCAPED_UNICODE);
         $task->schedule    = '0';
         $task->status      = 'created';
         $task->current     = '任务已创建';
@@ -34,10 +35,10 @@ class UserTask
         return $task;
     }
 
-    public static function ajaxQuery()
+    public static function ajaxQuery($uuid)
     {
         $task = Task::where('user_id', session('user_id'))
-        ->order('id', 'desc')
+        ->where('task_uuid', $uuid)
         ->find();
 
         $data = [
@@ -45,6 +46,7 @@ class UserTask
             'schedule' => $task->schedule,
             'current' => $task->current
         ];
+
         return json($data);
     }
 

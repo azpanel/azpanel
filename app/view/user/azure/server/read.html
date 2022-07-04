@@ -119,7 +119,8 @@
                   <div class="mdui-m-t-2">
                     大小：<select id="new_disk" class="mdui-select" mdui-select>
                       {volist name="disk_sizes" id="disk_size"}
-                      <option value="{$disk_size}" {if $server->disk_size >= $disk_size}disabled{/if}>{$disk_size} GB</option>
+                      <option value="{$disk_size}" {if $server->disk_size >= $disk_size}disabled{/if}>{$disk_size} GB
+                      </option>
                       {/volist}
                     </select>
                   </div>
@@ -154,7 +155,8 @@
                   规格：<select id="new_size" class="mdui-select" mdui-select>
                     {volist name="vm_sizes" id="size"}
                     <option value="{$key}">
-                      {:str_replace('Standard_', '', $key)} {$size.cpu}C_{$size.memory}G ({:round($size.cost, 1)} USD / Month)
+                      {:str_replace('Standard_', '', $key)} {$size.cpu}C_{$size.memory}G ({:round($size.cost, 1)} USD /
+                      Month)
                     </option>
                     {/volist}
                   </select>
@@ -284,7 +286,7 @@
   function getProgress() {
     $.ajax({
       method: 'GET',
-      url: "/user/progress",
+      url: "/user/progress/" + uuid,
       dataType: "json",
       success: function (data) {
         var width = data.schedule + '%';
@@ -294,17 +296,27 @@
     });
   }
 
+  function guid() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
+
   function redisk(that) {
     mdui.confirm('硬盘大小调整过程中需要重新启动虚拟机，请注意保存重要数据。<span style="color: red">调整完成后，公网地址会发生变动，请在服务器列表获取新地址</span>', '调整确认',
       function () {
         var id = $(that).data('id');
         var load = new mdui.alert('<p id=\"hint\">准备中</p><div class=\"mdui-progress\"><div class=\"mdui-progress-determinate\"></div></div>', '进行中');
-        var cycle = setInterval(getProgress, 1000);
+        var cycle = setInterval(getProgress, 2000);
+        uuid = guid();
+
         $.ajax({
           method: 'PUT',
           url: "/user/server/azure/redisk/" + id,
           data: {
             new_disk: $('#new_disk').val(),
+            task_uuid: uuid,
           },
           dataType: "json",
           success: function (data) {
