@@ -1,10 +1,10 @@
 <?php
 namespace app\controller;
 
+use app\controller\Notify;
+use app\controller\Tools;
 use app\model\Config;
 use think\facade\View;
-use app\controller\Tools;
-use app\controller\Notify;
 
 class AdminSetting extends AdminBase
 {
@@ -12,6 +12,7 @@ class AdminSetting extends AdminBase
     {
         View::assign('switch', Config::class('switch'));
         View::assign('register', Config::class('register'));
+        View::assign('verify', Config::class('verification_code'));
         return View::fetch('../app/view/admin/setting/index.html');
     }
 
@@ -23,10 +24,11 @@ class AdminSetting extends AdminBase
             $list = ['email_notify', 'telegram_notify'];
         } elseif ($class == 'register') {
             $list = ['allow_public_reg', 'reg_email_veriy'];
+        } elseif ($class == 'verify') {
+            $list = ['registration_verification_code', 'login_verification_code', 'reset_password_verification_code', 'create_virtual_machine_verification_code'];
         }
 
-        foreach ($list as $item)
-        {
+        foreach ($list as $item) {
             $setting = Config::where('item', $item)->find();
             $setting->value = input($item);
             $setting->save();
@@ -45,8 +47,7 @@ class AdminSetting extends AdminBase
     {
         $list = ['smtp_host', 'smtp_username', 'smtp_password', 'smtp_port', 'smtp_name', 'smtp_sender'];
 
-        foreach ($list as $item)
-        {
+        foreach ($list as $item) {
             if (input($item) == '') {
                 return json(Tools::msg('0', '保存失败', '请填写所有项目'));
             }
@@ -107,8 +108,7 @@ class AdminSetting extends AdminBase
     {
         $list = ['telegram_account', 'telegram_token'];
 
-        foreach ($list as $item)
-        {
+        foreach ($list as $item) {
             if (input($item) == '') {
                 return json(Tools::msg('0', '保存失败', '请填写所有项目'));
             }
@@ -131,8 +131,7 @@ class AdminSetting extends AdminBase
     {
         $list = ['custom_text', 'custom_script'];
 
-        foreach ($list as $item)
-        {
+        foreach ($list as $item) {
             $setting = Config::where('item', $item)->find();
             $setting->value = input($item);
             $setting->save();
@@ -149,10 +148,9 @@ class AdminSetting extends AdminBase
 
     public function resolvSave()
     {
-        $list = ['ali_whitelist', 'resolv_sync', 'ali_domain', 'ali_ak', 'ali_sk', 'ali_ttl'];
+        $list = ['ali_whitelist', 'resolv_sync', 'sync_immediately_after_creation', 'ali_domain', 'ali_ak', 'ali_sk', 'ali_ttl'];
 
-        foreach ($list as $item)
-        {
+        foreach ($list as $item) {
             $setting = Config::where('item', $item)->find();
             $setting->value = input($item);
             $setting->save();

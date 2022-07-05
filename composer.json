@@ -30,7 +30,8 @@
         "nesbot/carbon": "^2.57",
         "topthink/think-migration": "^3.0",
         "phpseclib/phpseclib": "^3.0",
-        "alibabacloud/client": "^1.5"
+        "alibabacloud/client": "^1.5",
+        "topthink/think-captcha": "^3.0"
     },
     "require-dev": {
         "symfony/var-dumper": "^4.2",

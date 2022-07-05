@@ -17,6 +17,8 @@ class Config extends Model
     {
         $item = self::where('item', $key)->find();
         
+        // 网站目录下执行 php think migrate:run 修复
+
         if ($item->type == 'bool') {
             return (bool) $item->value;
         } elseif ($item->type == 'int') {
@@ -28,7 +30,7 @@ class Config extends Model
 
     public static function class($name)
     {
-        // 此报错需导入 database/config.sql 修复
+        // 导入 database/config.sql 修复
 
         $items = self::where('class', $name)->select();
         

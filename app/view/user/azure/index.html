@@ -29,7 +29,7 @@
           </thead>
           <tbody>
             {volist name="accounts" id="account"}
-            <tr>
+            <tr id="{$account.id}" class="hid">
               <td>
                 <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-ripple mdui-color-blue-grey"
                   mdui-menu="{target: '#action-{$account.id}', fixed: true}">操作</button>
@@ -90,7 +90,103 @@
         </table>
       </div>
 
-      {$page | raw}
+      <div class="mdui-dialog" id="search" style="overflow: visible">
+        <div class="mdui-dialog-content" style="overflow: visible">
+          <div class="mdui-col-sm-12 mdui-col-md-6">
+            <div class="mdui-textfield mdui-textfield-floating-label">
+              <i class="mdui-icon material-icons">flag</i>
+              <label class="mdui-textfield-label">账户名称</label>
+              <input class="mdui-textfield-input" id="s_name">
+            </div>
+          </div>
+          <div class="mdui-col-sm-12 mdui-col-md-6">
+            <div class="mdui-textfield mdui-textfield-floating-label">
+              <i class="mdui-icon material-icons">bookmark</i>
+              <label class="mdui-textfield-label">备注</label>
+              <input class="mdui-textfield-input" id="s_mark">
+            </div>
+          </div>
+          <div class="mdui-col-sm-12 mdui-col-md-12">
+            <div class="mdui-col-md-6 mdui-m-t-2">
+              状态：<select id="s_status" class="mdui-select" mdui-select>
+                <option value="all">不限</option>
+                <option value="Enabled">Enabled</option>
+                <option value="Warned">Warned</option>
+                <option value="Disabled">Disabled</option>
+              </select>
+            </div>
+            <div class="mdui-col-md-6 mdui-m-t-2">
+              类型：<select id="s_type" class="mdui-select" mdui-select>
+                <option value="all">不限</option>
+                <option value="PayAsYouGo">PayAsYouGo</option>
+                <option value="FreeTrial">FreeTrial</option>
+                <option value="Students">Students</option>
+              </select>
+            </div>
+          </div>
+          <div class="mdui-col-sm-12 mdui-col-md-12">
+            <p></p>
+          </div>
+        </div>
+        <div class="mdui-dialog-actions">
+          <button id="cancel-search" class="mdui-btn mdui-ripple" mdui-dialog-close>取消</button>
+          <button id="submit-search" class="mdui-btn mdui-ripple" mdui-dialog-confirm>搜索</button>
+        </div>
+      </div>
+
+      <div class="mdui-dialog" id="refresh" style="overflow: visible">
+        <div class="mdui-dialog-content" style="overflow: visible">
+          <h3>选择账户类型</h3>
+          <div class="mdui-col-sm-12 mdui-col-md-3">
+            <label class="mdui-checkbox">
+              <input name="account_type" value="PayAsYouGo" type="checkbox" checked />
+              <i class="mdui-checkbox-icon"></i>
+              PayAsYouGo
+            </label>
+          </div>
+          <div class="mdui-col-sm-12 mdui-col-md-3">
+            <label class="mdui-checkbox">
+              <input name="account_type" value="FreeTrial" type="checkbox" checked />
+              <i class="mdui-checkbox-icon"></i>
+              FreeTrial
+            </label>
+          </div>
+          <div class="mdui-col-sm-12 mdui-col-md-3">
+            <label class="mdui-checkbox">
+              <input name="account_type" value="Students" type="checkbox" />
+              <i class="mdui-checkbox-icon"></i>
+              Students
+            </label>
+          </div>
+          <div class="mdui-col-sm-12 mdui-col-md-3">
+            <label class="mdui-checkbox">
+              <input name="account_type" value="Unknown" type="checkbox" disabled checked />
+              <i class="mdui-checkbox-icon"></i>
+              Unknown
+            </label>
+          </div>
+          <br /><br />
+          <h3>选择刷新内容</h3>
+          <div class="mdui-col-sm-12 mdui-col-md-3">
+            <label class="mdui-checkbox">
+              <input name="refresh_action" value="status" type="checkbox" disabled checked />
+              <i class="mdui-checkbox-icon"></i>
+              订阅状态
+            </label>
+          </div>
+          <div class="mdui-col-sm-12 mdui-col-md-3">
+            <label class="mdui-checkbox">
+              <input name="refresh_action" value="resources" type="checkbox" />
+              <i class="mdui-checkbox-icon"></i>
+              账户资源
+            </label>
+          </div>
+        </div>
+        <div class="mdui-dialog-actions">
+          <button id="cancel-refresh" class="mdui-btn mdui-ripple" mdui-dialog-close>取消</button>
+          <button id="submit-refresh" class="mdui-btn mdui-ripple" mdui-dialog-confirm>执行</button>
+        </div>
+      </div>
 
       <div class="mdui-container">
         <div class="mdui-fab-wrapper" id="fab">
@@ -98,14 +194,17 @@
             <i class="mdui-icon material-icons">build</i>
           </button>
           <div class="mdui-fab-dial">
-            <button class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-red" onclick="deletedAllDisabledAccount()"><i
-                class="mdui-icon material-icons">delete</i>
+            <button class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-red" onclick="deletedAllDisabledAccount()">
+              <i class="mdui-icon material-icons">delete</i>
             </button>
-            <button class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-blue-grey"
-              onclick="refreshAllAccountStatus()"><i class="mdui-icon material-icons">autorenew</i>
+            <button class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-teal" mdui-dialog="{target: '#search'}">
+              <i class="mdui-icon material-icons">search</i>
             </button>
-            <a class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-indigo" href="/user/azure/create"><i
-                class="mdui-icon material-icons">add</i>
+            <button class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-blue-grey" mdui-dialog="{target: '#refresh'}">
+              <i class="mdui-icon material-icons">autorenew</i>
+            </button>
+            <a class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-indigo" href="/user/azure/create">
+              <i class="mdui-icon material-icons">add</i>
             </a>
           </div>
         </div>
@@ -121,6 +220,78 @@
 
 <script>
   var inst = new mdui.Fab('#fab');
+
+  $('#submit-search').click(function () {
+    $.ajax({
+      method: 'POST',
+      url: "/user/azure/search",
+      data: {
+        s_name: $('#s_name').val(),
+        s_mark: $('#s_mark').val(),
+        s_type: $('#s_type').val(),
+        s_status: $('#s_status').val(),
+      },
+      dataType: "json",
+      success: function (data) {
+        $("tr[class='hid']").hide();
+        for (var i = 0; i < data.result.length; i++) {
+          $("tr[id='" + data.result[i].id + "']").show();
+        }
+        // console.log(data.sql);
+      }
+    });
+  });
+
+  $('#submit-refresh').click(function () {
+    var type = [];
+    $("input[name='account_type']:checked").each(function (i) {
+      type[i] = $(this).val();
+    });
+
+    var action = [];
+    $("input[name='refresh_action']:checked").each(function (i) {
+      action[i] = $(this).val();
+    });
+
+    //console.log(type)
+    //console.log(action)
+
+    var load = new mdui.alert('<p id=\"hint\">准备中</p><div class=\"mdui-progress\"><div class=\"mdui-progress-determinate\"></div></div>', '进行中');
+    var cycle = setInterval(getProgress, 500);
+    uuid = guid();
+
+    $.ajax({
+      method: 'POST',
+      url: "/user/azure/refresh",
+      data: {
+        type: type,
+        action: action,
+        task_uuid: uuid,
+      },
+      dataType: "json",
+      success: function (data) {
+        load.close();
+        clearInterval(cycle);
+        if (data.status == '0') {
+          mdui.alert(data.content, data.title);
+        } else {
+          mdui.alert(data.content, data.title);
+          setTimeout("window.location = '/user/azure'", 1500);
+        }
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        clearInterval(cycle);
+        console.log('false');
+      }
+    });
+  });
+
+  function guid() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
 
   function update(that) {
     let id = $(that).data('id');
@@ -253,7 +424,7 @@
   function getProgress() {
     $.ajax({
       method: 'GET',
-      url: "/user/progress",
+      url: "/user/progress/" + uuid,
       dataType: "json",
       success: function (data) {
         var width = data.schedule + '%';
@@ -262,35 +433,6 @@
       }
     });
   }
-
-  function refreshAllAccountStatus() {
-    mdui.confirm('此操作将刷新所有账户的订阅状态，但可能需要耗费较长时间，期间请不要重复操作。是否继续？', '批量刷新确认',
-      function () {
-        var load = new mdui.alert('<p id=\"hint\">准备中</p><div class=\"mdui-progress\"><div class=\"mdui-progress-determinate\"></div></div>', '进行中');
-        var cycle = setInterval(getProgress, 500);
-        $.ajax({
-          method: 'POST',
-          url: "/user/azure/refresh",
-          dataType: "json",
-          success: function (data) {
-            load.close();
-            clearInterval(cycle);
-            if (data.status == '0') {
-              mdui.alert(data.content, data.title);
-            } else {
-              mdui.alert(data.content, data.title);
-              setTimeout("window.location = '/user/azure'", 1500);
-            }
-          }
-        });
-      },
-      function () { },
-      {
-        confirmText: "确定",
-        cancelText: "取消",
-      }
-    );
-  };
 
   $("td:contains('Enabled')").css("color", "green");
   $("td:contains('Disabled')").css("color", "red");

@@ -6,8 +6,8 @@
       <div class="mdui-card" style="transform: translateY(20%)">
         <div class="mdui-card-content">
           {if $register.allow_public_reg == true}
-          <div class="mdui-textfield mdui-textfield-floating-label"><i
-              class="mdui-icon material-icons">account_circle</i>
+          <div class="mdui-textfield mdui-textfield-floating-label">
+            <i class="mdui-icon material-icons">account_circle</i>
             <label class="mdui-textfield-label">注册邮箱</label>
             <input class="mdui-textfield-input" type="text" id="email" />
           </div>
@@ -26,22 +26,40 @@
 
           {if $register.reg_email_veriy == true}
           <div class="mdui-textfield mdui-textfield-floating-label">
-            <i class="mdui-icon material-icons">code</i>
+            <i class="mdui-icon material-icons">markunread_mailbox</i>
             <label class="mdui-textfield-label">请输入邮箱验证码</label>
             <input class="mdui-textfield-input" id="verify_code" />
           </div>
           {/if}
 
+          {if $verify.registration_verification_code == '1'}
+          <div class="mdui-row">
+            <div class="mdui-textfield mdui-textfield-floating-label mdui-col-xs-6">
+              <i class="mdui-icon material-icons">code</i>
+              <label class="mdui-textfield-label">验证码</label>
+              <input class="mdui-textfield-input" type="text" id="code" required />
+            </div>
+            <div class="mdui-col-xs-4 mdui-m-t-2">
+              {:captcha_img()}
+            </div>
+          </div>
+          {/if}
+
           <div class="mdui-card-actions">
             {if $register.reg_email_veriy == true}
-            <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-indigo" id="request_code">获取</button>
+            <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-indigo" id="request_code">
+              获取
+            </button>
             {/if}
-            <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-indigo mdui-float-right"
-              id="register_user">注册</button>
+            <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-indigo mdui-float-right" id="register_user">
+              注册
+            </button>
           </div>
 
           {else /}
-          <p style="text-align: center">管理员未开放公共注册。如有需要，请联系管理员</p>
+          <p style="text-align: center">
+            管理员未开放公共注册。如有需要，请联系管理员
+          </p>
           {/if}
         </div>
       </div>
@@ -57,6 +75,7 @@
       method: 'POST',
       url: "/register",
       data: {
+        code: $('#code').val(),
         email: $('#email').val(),
         passwd: $('#passwd').val(),
         repeat_passwd: $('#repeat_passwd').val(),
@@ -64,10 +83,8 @@
       },
       dataType: "json",
       success: function (data) {
-        if (data.status == '0') {
-          mdui.alert(data.content, data.title);
-        } else {
-          mdui.alert(data.content, data.title);
+        mdui.alert(data.content, data.title);
+        if (data.status == '1') {
           setTimeout("window.location.href = '/login'", 1500);
         }
       }
@@ -90,4 +107,5 @@
 </script>
 
 {include file="../app/view/auth/footer.html" /}
+
 </html>

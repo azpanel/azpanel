@@ -15,20 +15,36 @@ class UserAzure extends UserBase
 {
     public function index()
     {
-        $limit = Env::get('APP.paginate') ?? '15';
-        $pages_num = (input('page') == '') ? '1' : input('page');
-        $accounts_num = Azure::where('user_id', session('user_id'))->count();
         $accounts = Azure::where('user_id', session('user_id'))
         ->order('id', 'desc')
-        ->paginate($limit);
+        ->select();
 
-        $page = $accounts->render();
-        $count = $accounts_num - (($pages_num - 1) * $limit);
-
-        View::assign('page', $page);
-        View::assign('count', $count);
+        View::assign('count', $accounts->count());
         View::assign('accounts', $accounts);
         return View::fetch('../app/view/user/azure/index.html');
+    }
+
+    public function searchAccount()
+    {
+        $user_id = session('user_id');
+        $s_name = input('s_name/s');
+        $s_mark = input('s_mark/s');
+        $s_type = input('s_type/s');
+        $s_status = input('s_status/s');
+
+        $condition[] = ['user_id', '=', $user_id];
+        ($s_name != '')      && $condition[] = ['az_email',      'like', '%'.$s_name.'%'];
+        ($s_mark != '')      && $condition[] = ['user_mark',     'like', '%'.$s_mark.'%'];
+        ($s_type != 'all')   && $condition[] = ['az_sub_type',   '=', $s_type];
+        ($s_status != 'all') && $condition[] = ['az_sub_status', '=', $s_status];
+
+        $data = Azure::where($condition)
+        ->field('id')
+        ->select();
+
+        // $sql = Db::getLastSql();
+
+        return json(['result' => $data]);
     }
 
     public function create()
@@ -71,7 +87,7 @@ class UserAzure extends UserBase
 
         View::assign('az_api', $az_api);
         View::assign('account', $account);
-        View::assign('share', json_encode($share));
+        View::assign('share', json_encode($share, JSON_PRETTY_PRINT));
         return View::fetch('../app/view/user/azure/edit.html');
     }
 
@@ -80,23 +96,18 @@ class UserAzure extends UserBase
         if (strpos($quotaId, 'Students') !== false) {
             return 'Students';
         }
-
         if (strpos($quotaId, 'PayAsYouGo') !== false) {
             return 'PayAsYouGo';
         }
-
         if (strpos($quotaId, 'FreeTrial') !== false) {
             return 'FreeTrial';
         }
-
         if (strpos($quotaId, 'Sponsorship') !== false) {
             return 'Azure 3500';
         }
-
         if (strpos($quotaId, 'BizSpark') !== false) {
-            return 'VS Enterprise：BizSpark';
+            return 'VS Enterprise: BizSpark';
         }
-
         if (strpos($quotaId, 'MSDN') !== false) {
             return 'MSDN Platforms Subscription';
         }
@@ -113,17 +124,6 @@ class UserAzure extends UserBase
         $az_secret    = input('az_secret/s');
         $az_tenant_id = input('az_tenant_id/s');
         $az_configs   = input('az_configs/s');
-
-        // 如果账户已经添加
-        $exist = Azure::where('az_email', $az_email)->find();
-        if ($exist != null) {
-            return json(Tools::msg('0', '添加失败', '此账户已添加'));
-        }
-
-        // 如果邮箱不规范
-        if (!filter_var($az_email, FILTER_VALIDATE_EMAIL)) {
-            return json(Tools::msg('0', '添加失败', '此邮箱格式不规范'));
-        }
 
         // 如果没填 api 信息
         if ($az_app_id == '' && $az_secret == '' && $az_tenant_id == '' && $az_configs == '') {
@@ -142,6 +142,24 @@ class UserAzure extends UserBase
         $az_api_app_id    = $configs['appId']    ?? $az_app_id    ?? null;
         $az_api_secret    = $configs['password'] ?? $az_secret    ?? null;
         $az_api_tenant_id = $configs['tenant']   ?? $az_tenant_id ?? null;
+
+        if (!empty($configs['login_user'])) {
+            $az_email = $configs['login_user'];
+        }
+        if (!empty($configs['login_passwd'])) {
+            $az_passwd = $configs['login_passwd'];
+        }
+
+        // 如果邮箱不规范
+        if (!filter_var($az_email, FILTER_VALIDATE_EMAIL)) {
+            return json(Tools::msg('0', '添加失败', '此邮箱格式不规范'));
+        }
+
+        // 如果账户已经添加
+        $exist = Azure::where('az_email', $az_email)->find();
+        if ($exist != null) {
+            return json(Tools::msg('0', '添加失败', '此账户已添加'));
+        }
 
         // 如果长度不符
         if (strlen($az_api_app_id) != 36) {
@@ -170,7 +188,10 @@ class UserAzure extends UserBase
         try {
             $sub_info = AzureApi::getAzureSubscription($account->id); // array
             if ($sub_info['count']['value'] == '0') {
-                throw new \Exception('此账户无有效订阅。若有，建议使用以下命令获取 Api 参数 <div class="mdui-typo"><code>az ad sp create-for-rbac --role contributor --scopes /subscriptions/$(az account list --query [].id -o tsv)</code></div> ');
+                throw new \Exception('此账户无有效订阅。若有，建议使用以下命令获取 Api 参数 <div class="mdui-typo"><code>az ad sp create-for-rbac --role contributor --scopes /subscriptions/$(az account list --query [].id -o tsv)</code></div>');
+            }
+            if ($sub_info['value']['0']['state'] != 'Enabled') {
+                throw new \Exception('此账户第一个订阅的状态不是 Enabled');
             }
         } catch (\Exception $e) {
             Azure::destroy($account->id);
@@ -313,20 +334,42 @@ class UserAzure extends UserBase
     public function refreshAllAzureSubscriptionStatus()
     {
         $count = 0;
-        $accounts = Azure::where('user_id', session('user_id'))
+        $user_id = session('user_id');
+        $task_uuid = input('task_uuid/s');
+        $refresh_action = input('action/a');
+        $refresh_account_type = input('type/a');
+
+        $query_set = [];
+        $type_set = ['PayAsYouGo', 'FreeTrial', 'Students', 'Unknown'];
+        foreach ($type_set as $type_name) {
+            if (in_array($type_name, $refresh_account_type)) {
+                $query_set[] = $type_name;
+            }
+        }
+
+        $accounts = Azure::where('user_id', $user_id)
         ->where('az_sub_status', '<>', 'Disabled')
+        ->whereIn('az_sub_type', $query_set)
         ->select();
 
-        $task_id = UserTask::create(session('user_id'), '刷新账户订阅状态');
-        $accounts_count = $accounts->count() + 1;
+        $params = [
+            'refresh_action' => $refresh_action,
+            'refresh_account_type' => $refresh_account_type,
+        ];
+
+        $task_id = UserTask::create(session('user_id'), '刷新账户订阅状态', $params, $task_uuid);
+        $steps = $accounts->count() + 1;
 
         foreach ($accounts as $account)
         {
             $count += 1;
 
             try {
-                UserTask::update($task_id, ($count / $accounts_count), '正在刷新 ' . $account->az_email);
+                UserTask::update($task_id, ($count / $steps), '正在刷新 ' . $account->az_email);
                 $sub_info = AzureApi::getAzureSubscription($account->id); // array
+                if (in_array('resources', $refresh_action)) {
+                    AzureApi::getAzureVirtualMachines($account->id);
+                }
             } catch (\Exception $e) {
                 UserTask::end($task_id, true);
                 return json(Tools::msg('0', '刷新失败', $e->getMessage()));

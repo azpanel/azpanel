@@ -21,11 +21,13 @@ class Auth extends BaseController
             return redirect('/user')->send();
         }
 
+        View::assign('verify', Config::class('verification_code'));
         return View::fetch('../app/view/auth/login.html');
     }
 
     public function login()
     {
+        $code       = input('code/s');
         $email      = input('email/s');
         $password   = Tools::encryption(input('password/s'));
         $ip_address = Tools::getClientIp();
@@ -37,6 +39,11 @@ class Auth extends BaseController
 
         if (!Tools::emailCheck($email)) {
             return json(Tools::msg('0', '登录失败', '邮箱不规范'));
+        }
+
+        if(!captcha_check($code) && Config::obtain('login_verification_code'))
+        {
+            return json(Tools::msg('0', '登录失败', '验证码错误'));
         }
 
         $log = new LoginLog;
@@ -101,6 +108,7 @@ class Auth extends BaseController
     public function registerIndex()
     {
         View::assign('register', Config::class('register'));
+        View::assign('verify', Config::class('verification_code'));
         return View::fetch('../app/view/auth/register.html');
     }
 
@@ -166,12 +174,18 @@ class Auth extends BaseController
 
     public function publicRegister()
     {
+        $code          = input('code/s');
         $email         = input('email/s');
         $passwd        = input('passwd/s');
         $repeat_passwd = input('repeat_passwd/s');
 
         if (!Tools::emailCheck($email)) {
             return json(Tools::msg('0', '注册失败', '邮箱不规范'));
+        }
+
+        if(!captcha_check($code) && Config::obtain('registration_verification_code'))
+        {
+            return json(Tools::msg('0', '注册失败', '验证码错误'));
         }
 
         $exist = User::where('email', $email)->find();
