@@ -457,12 +457,27 @@ class UserAzure extends UserBase
         }
 
         $count = 0;
+        $ip_set = [];
         $resources = AzureApi::getAzureResourceGroupsList($id, $account->az_sub_id);
         $virtual_machines = AzureApi::readAzureVirtualMachinesList($id, $account->az_sub_id);
 
         View::assign('count', $count);
         View::assign('resources', $resources);
         View::assign('virtual_machines', $virtual_machines);
+
+        foreach ($virtual_machines as $vm) {
+            $vm_id = $vm['properties']['vmId'];
+            $server = AzureServer::where('vm_id', $vm_id)->find();
+            if ($server == null) {
+                $details = explode('/', $vm['properties']['networkProfile']['networkInterfaces']['0']['id']);
+                $network = AzureApi::getAzureNetworkInterfacesDetails($id, $details['8'], $details['4'], $details['2']);
+                $ip_set[$vm_id] = $network['properties']['ipConfigurations']['0']['properties']['publicIPAddress']['properties']['ipAddress'] ?? 'null';
+            } else {
+                $ip_set[$vm_id] = $server->ip_address ?? 'null';
+            }
+        }
+
+        View::assign('ip_set', $ip_set);
         return View::fetch('../app/view/user/azure/resources.html');
     }
 
@@ -479,7 +494,7 @@ class UserAzure extends UserBase
         return View::fetch('../app/view/user/azure/groups.html');
     }
 
-    public function QueryAccountQuota($id)
+    public function queryAccountQuota($id)
     {
         $account = Azure::find($id);
         $location = input('location');

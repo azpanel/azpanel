@@ -49,6 +49,7 @@
               <th>#</th>
               <th>名称</th>
               <th>地域</th>
+              <th>地址</th>
               <th>规格</th>
               <th>系统 Offer</th>
               <th>系统 Sku</th>
@@ -62,6 +63,7 @@
               <td>{++$count}</td>
               <td>{$virtual_machine['name']}</td>
               <td>{$virtual_machine['location']}</td>
+              <td>{$ip_set[$virtual_machine['properties']['vmId']]}</td>
               <td>{$virtual_machine['properties']['hardwareProfile']['vmSize']}</td>
               <td>{$virtual_machine['properties']['storageProfile']['imageReference']['offer']}</td>
               <td>{$virtual_machine['properties']['storageProfile']['imageReference']['sku']}</td>
