@@ -677,6 +677,17 @@ class UserAzureServer extends UserBase
             return json(Tools::msg('0', '更换失败', $error));
         }
 
+        // 同步解析
+        if (session('user_id') == Config::obtain('ali_whitelist')) {
+            if (Config::obtain('sync_immediately_after_creation')) {
+                try {
+                    Ali::createOrUpdate($server->name, $server->ip_address);
+                } catch (\Exception $e) {
+                    // ...
+                }
+            }
+        }
+
         UserTask::end($task_id, false);
         return json(Tools::msg('1', '更换结果', '更换成功'));
     }
