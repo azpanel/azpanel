@@ -2,6 +2,8 @@
 namespace app\controller;
 
 use app\controller\Ip;
+use app\model\Config;
+use GuzzleHttp\Client;
 use think\facade\Request;
 
 class Tools
@@ -26,7 +28,7 @@ class Tools
         if (!self::isIpv4($ip_addr)) {
             return 'null';
         }
-        
+
         $ip = new Ip;
         $addr = $ip->ip2addr($ip_addr);
         $result = $addr['country'] . $addr['area'];
@@ -38,7 +40,7 @@ class Tools
         $body = [
             'status' => $code,
             'title' => $title,
-            'content' => $content
+            'content' => $content,
         ];
 
         return $body;
@@ -77,6 +79,31 @@ class Tools
     {
         // http://www.jsphp.net/php/show-12-640-1.html
         list($s1, $s2) = explode(' ', microtime());
-        return (float)sprintf('%.0f',(floatval($s1) + floatval($s2)) * 1000);
+        return (float) sprintf('%.0f', (floatval($s1) + floatval($s2)) * 1000);
+    }
+
+    public static function verifyHcaptcha($result): bool
+    {
+        // https://artisansweb.net/a-guide-on-hcaptcha-integration-with-php/
+
+        $client = new Client([
+            'base_uri' => 'https://hcaptcha.com',
+        ]);
+
+        $response = $client->request('POST', '/siteverify', [
+            'form_params' => [
+                'secret' => Config::obtain('hcaptcha_secret'),
+                'response' => $result,
+            ],
+        ]);
+
+        $body = $response->getBody();
+        $object_body = json_decode($body);
+
+        if ($object_body->success) {
+            return true;
+        }
+
+        return false;
     }
 }
