@@ -33,16 +33,21 @@
           {/if}
 
           {if $verify.registration_verification_code == '1'}
-          <div class="mdui-row">
-            <div class="mdui-textfield mdui-textfield-floating-label mdui-col-xs-6">
-              <i class="mdui-icon material-icons">code</i>
-              <label class="mdui-textfield-label">验证码</label>
-              <input class="mdui-textfield-input" type="text" id="code" required />
-            </div>
-            <div class="mdui-col-xs-4 mdui-m-t-2">
-              {:captcha_img()}
-            </div>
-          </div>
+            {if $verify.captcha_provider == 'think-captcha'}
+              <div class="mdui-row">
+                <div class="mdui-textfield mdui-textfield-floating-label mdui-col-xs-6">
+                  <i class="mdui-icon material-icons">code</i>
+                  <label class="mdui-textfield-label">验证码</label>
+                  <input class="mdui-textfield-input" type="text" id="code" required />
+                </div>
+                <div class="mdui-col-xs-4 mdui-m-t-2">
+                  {:captcha_img()}
+                </div>
+              </div>
+            {/if}
+            {if $verify.captcha_provider == 'hcaptcha'}
+              <div class="mdui-m-t-2 h-captcha" data-sitekey="{$verify.hcaptcha_site_key}"></div>
+            {/if}
           {/if}
 
           <div class="mdui-card-actions">
@@ -75,11 +80,12 @@
       method: 'POST',
       url: "/register",
       data: {
-        code: $('#code').val(),
+        code: $('#code').val(), // 如果使用 think-captcha
         email: $('#email').val(),
         passwd: $('#passwd').val(),
+        verify_code: $('#verify_code').val(),
         repeat_passwd: $('#repeat_passwd').val(),
-        verify_code: $('#verify_code').val()
+        hcaptcha_result: $('[name=h-captcha-response]').val(), // 如果使用 hcaptcha
       },
       dataType: "json",
       success: function (data) {

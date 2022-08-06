@@ -41,9 +41,19 @@ class Auth extends BaseController
             return json(Tools::msg('0', '登录失败', '邮箱不规范'));
         }
 
-        if(!captcha_check($code) && Config::obtain('login_verification_code'))
-        {
-            return json(Tools::msg('0', '登录失败', '验证码错误'));
+        if (Config::obtain('login_verification_code')) {
+            if (Config::obtain('captcha_provider') == 'hcaptcha') {
+                $code = input('hcaptcha_result/s');
+                if ($code == '') {
+                    return json(Tools::msg('0', '登录失败', '请完成验证码'));
+                }
+                if (!Tools::verifyHcaptcha($code)) {
+                    return json(Tools::msg('0', '登录失败', '验证码错误'));
+                }
+            }
+            if (!captcha_check($code) && Config::obtain('captcha_provider') == 'think-captcha') {
+                return json(Tools::msg('0', '登录失败', '验证码错误'));
+            }
         }
 
         $log = new LoginLog;
@@ -183,9 +193,19 @@ class Auth extends BaseController
             return json(Tools::msg('0', '注册失败', '邮箱不规范'));
         }
 
-        if(!captcha_check($code) && Config::obtain('registration_verification_code'))
-        {
-            return json(Tools::msg('0', '注册失败', '验证码错误'));
+        if (Config::obtain('registration_verification_code')) {
+            if (Config::obtain('captcha_provider') == 'hcaptcha') {
+                $code = input('hcaptcha_result/s');
+                if ($code == '') {
+                    return json(Tools::msg('0', '登录失败', '请完成验证码'));
+                }
+                if (!Tools::verifyHcaptcha($code)) {
+                    return json(Tools::msg('0', '登录失败', '验证码错误'));
+                }
+            }
+            if (!captcha_check($code) && Config::obtain('captcha_provider') == 'think-captcha') {
+                return json(Tools::msg('0', '登录失败', '验证码错误'));
+            }
         }
 
         $exist = User::where('email', $email)->find();

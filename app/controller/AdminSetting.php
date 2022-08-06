@@ -25,7 +25,9 @@ class AdminSetting extends AdminBase
         } elseif ($class == 'register') {
             $list = ['allow_public_reg', 'reg_email_veriy'];
         } elseif ($class == 'verify') {
-            $list = ['registration_verification_code', 'login_verification_code', 'reset_password_verification_code', 'create_virtual_machine_verification_code'];
+            $list = ['captcha_provider', 'registration_verification_code', 'login_verification_code', 'reset_password_verification_code', 'create_virtual_machine_verification_code'];
+        } elseif ($class == 'hcaptcha') {
+            $list = ['hcaptcha_secret', 'hcaptcha_site_key'];
         }
 
         foreach ($list as $item) {

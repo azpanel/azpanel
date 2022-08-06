@@ -107,8 +107,9 @@
                 <i class="mdui-icon material-icons">verified_user</i>&nbsp;验证码
               </p>
               <div class="mdui-m-t-2">提供者：
-                <select id="verification_code_provider" class="mdui-select" mdui-select>
+                <select id="captcha_provider" class="mdui-select" mdui-select>
                   <option value="think-captcha">think-captcha</option>
+                  <option value="hcaptcha">hcaptcha</option>
                 </select>
               </div>
               <div class="mdui-m-t-2">注册：
@@ -140,6 +141,28 @@
             </div>
           </div>
         </div>
+
+        <div class="mdui-col-md-4 mdui-col-sm-12 mdui-m-t-2">
+          <div class="mdui-card">
+            <div class="mdui-card-content">
+              <p style="color: #3F51B5; font-size: 18px">
+                <i class="mdui-icon material-icons">android</i>&nbsp;hCaptcha
+              </p>
+              <div class="mdui-textfield mdui-textfield-floating-label">
+                <i class="mdui-icon material-icons">vpn_key</i>
+                <label class="mdui-textfield-label">sitekey</label>
+                <textarea class="mdui-textfield-input" id="hcaptcha_site_key">{$verify.hcaptcha_site_key}</textarea>
+              </div>
+              <div class="mdui-textfield mdui-textfield-floating-label">
+                <i class="mdui-icon material-icons">vpn_lock</i>
+                <label class="mdui-textfield-label">secret</label>
+                <textarea class="mdui-textfield-input" id="hcaptcha_secret">{$verify.hcaptcha_secret}</textarea>
+              </div>
+              <button id="save_hcaptcha"
+                class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">保存</button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="mdui-m-t-2"></div>
@@ -157,8 +180,9 @@
   $("#telegram_notify").val("{$switch.telegram_notify}");
   $("#allow_public_reg").val("{$register.allow_public_reg}");
   $("#reg_email_veriy").val("{$register.reg_email_veriy}");
-  $("#registration_verification_code").val("{$verify.registration_verification_code}");
+  $("#captcha_provider").val("{$verify.captcha_provider}");
   $("#login_verification_code").val("{$verify.login_verification_code}");
+  $("#registration_verification_code").val("{$verify.registration_verification_code}");
   $("#reset_password_verification_code").val("{$verify.reset_password_verification_code}");
   $("#create_virtual_machine_verification_code").val("{$verify.create_virtual_machine_verification_code}");
 
@@ -227,10 +251,39 @@
           url: "/admin/setting",
           data: {
             class: 'verify',
+            captcha_provider: $('#captcha_provider').val(),
             login_verification_code: $('#login_verification_code').val(),
             registration_verification_code: $('#registration_verification_code').val(),
             reset_password_verification_code: $('#reset_password_verification_code').val(),
             create_virtual_machine_verification_code: $('#create_virtual_machine_verification_code').val(),
+          },
+          dataType: "json",
+          success: function (data) {
+            mdui.alert(data.content, data.title);
+            if (data.status == '1') {
+              setTimeout("window.location = '/admin/setting'", 1500);
+            }
+          }
+        });
+      },
+      function () { },
+      {
+        confirmText: "确定",
+        cancelText: "取消"
+      }
+    );
+  });
+
+  $('#save_hcaptcha').on('click', function () {
+    mdui.confirm('确认提交这些信息么？', '修改确认',
+      function () {
+        $.ajax({
+          method: 'PUT',
+          url: "/admin/setting",
+          data: {
+            class: 'hcaptcha',
+            hcaptcha_site_key: $('#hcaptcha_site_key').val(),
+            hcaptcha_secret: $('#hcaptcha_secret').val()
           },
           dataType: "json",
           success: function (data) {
