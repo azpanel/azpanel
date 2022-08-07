@@ -340,7 +340,7 @@ class UserAzure extends UserBase
         $refresh_account_type = input('type/a');
 
         $query_set = [];
-        $type_set = ['PayAsYouGo', 'FreeTrial', 'Students', 'Unknown'];
+        $type_set = ['PayAsYouGo', 'FreeTrial', 'Students','MSDN Platforms Subscription','VS Enterprise: BizSpark', 'Unknown'];
         foreach ($type_set as $type_name) {
             if (in_array($type_name, $refresh_account_type)) {
                 $query_set[] = $type_name;
