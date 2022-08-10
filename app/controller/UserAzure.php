@@ -347,6 +347,10 @@ class UserAzure extends UserBase
             }
         }
 
+        if (in_array('Unknown', $query_set)) {
+            array_push($query_set, 'MSDN Platforms Subscription', 'VS Enterprise: BizSpark');
+        }
+
         $accounts = Azure::where('user_id', $user_id)
         ->where('az_sub_status', '<>', 'Disabled')
         ->whereIn('az_sub_type', $query_set)
