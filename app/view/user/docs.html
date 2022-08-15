@@ -21,7 +21,11 @@
   "tenant": "7e0a6485-5a39-4e2f-a12b-13e6c4a5b053"
 }</code></pre>
             <p>你可以执行以下命令获取上述信息</p>
-            <pre><code class="language-php">az ad sp create-for-rbac --role contributor --scopes /subscriptions/$(az account list --query [].id -o tsv)</code></pre>
+            <pre id="extract-api"><code class="language-php">az ad sp create-for-rbac --role contributor --scopes /subscriptions/$(az account list --query [].id -o tsv)</code></pre>
+            <button data-clipboard-target="#extract-api"
+              class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-ripple mdui-color-indigo">
+              复制
+            </button>
           </div>
         </div>
       </div>
@@ -50,8 +54,17 @@ sudo service ssh restart</code></pre>
   </div>
   <br />
 </div>
-
 </body>
+
+<script>
+  let clipboard = new ClipboardJS('.mdui-btn-raised')
+  clipboard.on('success', (e) => {
+    mdui.snackbar({
+      message: "复制成功"
+    })
+  });
+</script>
+
 {include file="../app/view/user/footer.html" /}
 
 </html>
