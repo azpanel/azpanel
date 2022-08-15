@@ -1,6 +1,7 @@
 <?php
 namespace app\controller;
 
+use think\facade\Db;
 use think\facade\Env;
 use think\facade\View;
 use GuzzleHttp\Client;
@@ -49,6 +50,14 @@ class UserAzure extends UserBase
 
     public function create()
     {
+        $notes = Db::table('azure')
+            ->where('user_id', session('user_id'))
+            ->where('user_mark', '<>', '')
+            ->distinct(true)
+            ->field('user_mark')
+            ->select();
+
+        View::assign('notes', $notes);
         return View::fetch('../app/view/user/azure/create.html');
     }
 
@@ -124,6 +133,8 @@ class UserAzure extends UserBase
         $az_secret    = input('az_secret/s');
         $az_tenant_id = input('az_tenant_id/s');
         $az_configs   = input('az_configs/s');
+        $ignore_status = input('ignore_status/s');
+        $remark_filling = input('remark_filling/s');
 
         // 如果没填 api 信息
         if ($az_app_id == '' && $az_secret == '' && $az_tenant_id == '' && $az_configs == '') {
@@ -179,7 +190,7 @@ class UserAzure extends UserBase
         $account->user_id    = session('user_id');
         $account->az_email   = $az_email;
         $account->az_passwd  = $az_passwd;
-        $account->user_mark  = $user_mark;
+        $account->user_mark  = ($remark_filling == 'input') ? $user_mark : $remark_filling;
         $account->az_api     = json_encode($az_api);
         $account->created_at = time();
         $account->updated_at = time();
@@ -191,7 +202,9 @@ class UserAzure extends UserBase
                 throw new \Exception('此账户无有效订阅。若有，建议使用以下命令获取 Api 参数 <div class="mdui-typo"><code>az ad sp create-for-rbac --role contributor --scopes /subscriptions/$(az account list --query [].id -o tsv)</code></div>');
             }
             if ($sub_info['value']['0']['state'] != 'Enabled') {
-                throw new \Exception('此账户第一个订阅的状态不是 Enabled');
+                if ($ignore_status == 'false') {
+                    throw new \Exception('此账户订阅状态异常，若有需要，请勾选忽略订阅状态');
+                }
             }
         } catch (\Exception $e) {
             Azure::destroy($account->id);
@@ -213,8 +226,10 @@ class UserAzure extends UserBase
             $account->save();
         }
 
-        $client = new Client();
-        AzureApi::registerMainAzureProviders($client, $account, 'Microsoft.Capacity');
+        if ($sub_info['value']['0']['state'] == 'Enabled') {
+            $client = new Client();
+            AzureApi::registerMainAzureProviders($client, $account, 'Microsoft.Capacity');
+        }
 
         return json(Tools::msg('1', '添加结果', $content));
     }

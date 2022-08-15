@@ -424,7 +424,7 @@
 
   function stop(that) {
     let id = $(that).data('id');
-    mdui.confirm('确认停止此虚拟机运行么？', '停止确认',
+    mdui.confirm('确认停止此虚拟机么？', '停止确认',
       function () {
         $.ajax({
           method: 'PATCH',

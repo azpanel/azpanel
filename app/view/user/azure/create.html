@@ -70,6 +70,28 @@
               <textarea class="mdui-textfield-input" id="az_configs" rows="6"></textarea>
             </div>
           </div>
+          <div class="mdui-col-sm-12 mdui-col-md-12 mdui-m-t-2">
+            <p style="color: #3F51B5; font-size: 18px">更多</p>
+          </div>
+          <div class="mdui-col-sm-12 mdui-col-md-6">
+            备注填充：
+            <select id="remark_filling" class="mdui-select" mdui-select>
+              <option value="input">使用输入框值</option>
+              <option value="{:date('md')}">{:date('md')}</option>
+              {volist name="notes" id="note"}
+              <option value="{$note.user_mark}">{$note.user_mark}</option>
+              {/volist}
+            </select>
+          </div>
+          <div class="mdui-col-sm-12 mdui-col-md-6">
+            <div class="mdui-col">
+              忽略订阅状态：
+              <label class="mdui-switch">
+                <input id="ignore_status" type="checkbox" />
+                <i class="mdui-switch-icon"></i>
+              </label>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -102,7 +124,9 @@
             az_app_id: $('#az_app_id').val(),
             az_secret: $('#az_secret').val(),
             az_tenant_id: $('#az_tenant_id').val(),
-            az_configs: $('#az_configs').val()
+            az_configs: $('#az_configs').val(),
+            remark_filling: $('#remark_filling').val(),
+            ignore_status: $("#ignore_status").is(":checked"),
           },
           dataType: "json",
           success: function (data) {
