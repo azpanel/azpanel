@@ -11,6 +11,7 @@ use app\controller\UserTask;
 use app\controller\UserAzureServer;
 use app\model\Azure;
 use app\model\AzureServer;
+use app\model\AzureRecycle;
 
 class UserAzure extends UserBase
 {
@@ -256,18 +257,46 @@ class UserAzure extends UserBase
 
     public function delete($id)
     {
-        Azure::where('user_id', session('user_id'))
-        ->where('id', $id)
-        ->delete();
+        $account = Azure::where('user_id', session('user_id'))
+            ->find($id);
+
+        $cycle = new AzureRecycle;
+        $cycle->user_id = session('user_id');
+        $cycle->az_email = $account->az_email;
+        $cycle->az_sub_type = $account->az_sub_type;
+        $cycle->user_mark = $account->user_mark;
+        $cycle->bill_charges = self::estimatedCost($id, true);
+        $cycle->life_cycle = self::getEarliestTime($id);
+        $cycle->created_at = time();
+        $cycle->save();
 
         AzureServer::where('user_id', session('user_id'))
         ->where('account_id', $id)
         ->delete();
 
+        $account->delete();
         return json(Tools::msg('1', '删除成功', '将返回账户列表'));
     }
 
-    public function estimatedCost($id)
+    public static function getEarliestTime($id)
+    {
+        $time_set = [];
+        $account = Azure::find($id);
+        $servers = AzureServer::where('account_id', $id)->select();
+
+        foreach ($servers as $server) {
+            $disk_details = json_decode($server->disk_details, true);
+            $vm_disk_created = strtotime($disk_details['properties']['timeCreated']);
+            $time_set[] = $vm_disk_created;
+        }
+
+        $min_value = ($account->updated_at > min($time_set)) ? min($time_set) : $account->updated_at;
+        $min_timestamp = round((time() - $min_value) / 86400, 2);
+
+        return $min_timestamp;
+    }
+
+    public static function estimatedCost($id, $api = false)
     {
         try {
             $vm_charges = 0;
@@ -280,8 +309,12 @@ class UserAzure extends UserBase
             ->select();
             foreach ($servers as $server)
             {
-                $instance_details = json_decode($server->instance_details, true);
-                $vm_disk_created = strtotime($instance_details['disks']['0']['statuses']['0']['time']);
+                if (empty($server->disk_details)) {
+                    $server->disk_details = json_encode(AzureApi::getDisks($server));
+                    $server->save();
+                }
+                $disk_details = json_decode($server->disk_details, true);
+                $vm_disk_created = strtotime($disk_details['properties']['timeCreated']);
                 $start_time = date('Y-m-d\T H:i:00\Z', $vm_disk_created - 28800);
                 $stop_time = date('Y-m-d\T H:i:00\Z', time() - 28800);
                 $cumulative_running_time = (time() - $vm_disk_created) / 2592000;
@@ -308,7 +341,11 @@ class UserAzure extends UserBase
         . '预估流量费用：<span style="float: right">' . round($traffic_charges, 2) . ' USD</span>' . '<br/>'
         . '累计费用：<span style="float: right">' . round($vm_charges + $traffic_charges, 2) . ' USD</span>';
 
-        return json(Tools::msg('0', '统计结果', $text));
+        if ($api) {
+            return round($vm_charges + $traffic_charges, 2);
+        } else {
+            return json(Tools::msg('0', '统计结果', $text));
+        }
     }
 
     public static function refreshTheResourceStatusUnderTheAccount($account)
@@ -440,6 +477,16 @@ class UserAzure extends UserBase
         }
 
         foreach ($accounts as $account) {
+            $cycle = new AzureRecycle;
+            $cycle->user_id = session('user_id');
+            $cycle->az_email = $account->az_email;
+            $cycle->az_sub_type = $account->az_sub_type;
+            $cycle->user_mark = $account->user_mark;
+            $cycle->bill_charges = self::estimatedCost($account->id, true);
+            $cycle->life_cycle = self::getEarliestTime($account->id);
+            $cycle->created_at = time();
+            $cycle->save();
+
             AzureServer::where('account_id', $account->id)->delete();
             Azure::destroy($account->id);
         }

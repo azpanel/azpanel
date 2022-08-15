@@ -7,6 +7,7 @@ use app\model\Config;
 use app\model\SshKey;
 use app\model\LoginLog;
 use app\model\AutoRefresh;
+use app\model\AzureRecycle;
 use think\facade\Log;
 use think\facade\View;
 use phpseclib3\Crypt\RSA;
@@ -22,6 +23,26 @@ class UserDashboard extends UserBase
 
         View::assign('anns', $anns);
         return View::fetch('../app/view/user/index.html');
+    }
+
+    public function recycle()
+    {
+        $user_id = session('user_id');
+        $accounts = AzureRecycle::where('user_id', session('user_id'))
+            ->order('id', 'desc')
+            ->paginate(30);
+
+        $ranking = [
+            'time' => AzureRecycle::where('user_id', $user_id)->max('life_cycle') ?? '0',
+            'cost' => AzureRecycle::where('user_id', $user_id)->max('bill_charges') ?? '0',
+        ];
+
+        View::assign([
+            'ranking' => $ranking,
+            'accounts' => $accounts,
+            'page' => $accounts->render(),
+        ]);
+        return View::fetch('../app/view/user/recycle.html');
     }
 
     public function loginLog()

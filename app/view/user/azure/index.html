@@ -318,13 +318,15 @@
 
   function remove(that) {
     let id = $(that).data('id');
-    mdui.confirm('删除此账户时，也将删除在虚拟机列表中归属于此账户下的虚拟机。是否继续？', '删除确认',
+    mdui.confirm('删除此账户时，也将从虚拟机列表中移除归属于此账户下的虚拟机。<span style="color: red">由于在删除时要进行数据统计，耗时将相较之前有延长</span>。是否继续？', '删除确认',
       function () {
+        var load = new mdui.alert('<div class=\"mdui-progress\"><div class=\"mdui-progress-indeterminate\"></div></div>', '进行中');
         $.ajax({
           method: 'DELETE',
           url: "/user/azure/" + id,
           dataType: "json",
           success: function (data) {
+            load.close();
             if (data.status == '0') {
               mdui.alert(data.content, data.title);
             } else {
@@ -397,17 +399,17 @@
   };
 
   function deletedAllDisabledAccount() {
-    mdui.confirm('此操作将移除所有 <span class="mdui-typo"><code>Warned</code> 和 <code>Disabled</code></span> 状态的账户，以及在虚拟机列表中归属于这些账户下的虚拟机。是否继续？', '批量删除确认',
+    mdui.confirm('此操作将移除所有 <span class="mdui-typo"><code>Warned</code> 和 <code>Disabled</code></span> 状态的账户，以及在虚拟机列表中归属于这些账户下的虚拟机。<span style="color: red">由于在删除时要进行数据统计，耗时将相较之前有延长</span>。是否继续？', '批量删除确认',
       function () {
+        var load = new mdui.alert('<div class=\"mdui-progress\"><div class=\"mdui-progress-indeterminate\"></div></div>', '进行中');
         $.ajax({
           method: 'DELETE',
           url: "/user/azure/disabled",
           dataType: "json",
           success: function (data) {
-            if (data.status == '0') {
-              mdui.alert(data.content, data.title);
-            } else {
-              mdui.alert(data.content, data.title);
+            load.close();
+            mdui.alert(data.content, data.title);
+            if (data.status == '1') {
               setTimeout("window.location = '/user/azure'", 1500);
             }
           }

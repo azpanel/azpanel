@@ -65,11 +65,13 @@
           <a href="/user/azure" class="mdui-list-item mdui-ripple">
             账户列表
           </a>
-        </div>
 
-        <div class="mdui-collapse-item-body mdui-list">
           <a href="/user/azure/create" class="mdui-list-item mdui-ripple">
             添加账户
+          </a>
+
+          <a href="/user/recycle" class="mdui-list-item mdui-ripple">
+            回收站
           </a>
         </div>
       </div>
@@ -143,7 +145,7 @@
           </a>
         </div>
       </div>
-      
+
       {if session('is_admin') == 1}
       <a href="/admin" class="mdui-list-item mdui-ripple">
         进入管理后台
@@ -151,7 +153,7 @@
       {/if}
 
       <div class="mdui-typo">
-        <hr/>
+        <hr />
       </div>
 
       <div class="mdui-typo mdui-m-a-2">

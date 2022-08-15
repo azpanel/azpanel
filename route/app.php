@@ -31,6 +31,7 @@ Route::post('/forget',       'Auth/resetPassword');
 
 Route::get('/user',            'UserDashboard/index');
 Route::get('/user/login',      'UserDashboard/loginLog');
+Route::get('/user/recycle',    'UserDashboard/recycle');
 
 Route::get('/user/profile',                       'UserDashboard/profile');
 Route::get('/user/profile/sshkey',                'UserDashboard/createSshKey');
