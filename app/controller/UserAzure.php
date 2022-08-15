@@ -400,7 +400,7 @@ class UserAzure extends UserBase
         }
 
         if (in_array('Unknown', $query_set)) {
-            array_push($query_set, 'MSDN Platforms Subscription', 'VS Enterprise: BizSpark');
+            array_push($query_set, 'MSDN Platforms Subscription', 'VS Enterprise: BizSpark', 'Azure 3500', 'Unknown');
         }
 
         $accounts = Azure::where('user_id', $user_id)
