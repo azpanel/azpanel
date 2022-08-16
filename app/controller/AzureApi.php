@@ -435,8 +435,10 @@ class AzureApi extends BaseController
         // With the GA of AN, region limitations have been removed, making the feature widely available around the world. Supported VM series include D/DSv2, D/DSv3, E/ESv3, F/FS, FSv2, and Ms/Mms.
 
         $sizes_list = AzureList::sizes();
-        if ($sizes_list[$vm_size]['acc']) {
-            $body['properties']['enableAcceleratedNetworking'] = true;
+        if (!empty($sizes_list[$vm_size]['acc'])) {
+            if ($sizes_list[$vm_size]['acc']) {
+                $body['properties']['enableAcceleratedNetworking'] = true;
+            }
         }
 
         $url = 'https://management.azure.com/subscriptions/' . $account->az_sub_id . '/resourceGroups/' . $vm_name . '_group/providers/Microsoft.Network/networkInterfaces/' . $vm_name . '_vif?api-version=2021-03-01';
