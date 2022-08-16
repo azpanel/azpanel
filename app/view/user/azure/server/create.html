@@ -240,7 +240,7 @@
         $('#vm_size').empty();
         // load
         for (var i = 0; i < data.length; i++) {
-          $('#vm_size').append('<option value="' + data[i] + '">' + data[i] + '</option>');
+          $('#vm_size').append('<option value="' + data[i].name + '">' + data[i].size_name + '</option>');
         }
         inst.handleUpdate();
         // return

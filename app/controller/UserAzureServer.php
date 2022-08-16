@@ -867,7 +867,11 @@ class UserAzureServer extends UserBase
         {
             if ($limit['resourceType'] == 'virtualMachines') {
                 if (empty($limit['restrictions']['0']['reasonCode'])) {
-                    $set[] = $limit['name'];
+                    $size = [
+                        'name' => $limit['name'],
+                        'size_name' => $limit['name'] . ' => ' . $limit['capabilities']['2']['value'] . 'C_' . $limit['capabilities']['5']['value'] . 'GB',
+                    ];
+                    array_push($set, $size);
                 }
             }
         }
