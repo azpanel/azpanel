@@ -139,6 +139,10 @@ class UserAzureServer extends UserBase
             return json(Tools::msg('0', '创建失败', '密码不符合要求，请阅读使用说明'));
         }
 
+        if ($vm_remark == '') {
+            $vm_remark = $vm_name;
+        }
+
         // 虚拟机名称与备注检查
         $names   = explode(',', $vm_name);
         $remarks = explode(',', $vm_remark);

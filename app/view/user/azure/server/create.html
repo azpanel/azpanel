@@ -45,7 +45,7 @@
           <div class="mdui-col-sm-12 mdui-col-md-6">
             <div class="mdui-textfield mdui-textfield-floating-label">
               <i class="mdui-icon material-icons">bookmark</i>
-              <label class="mdui-textfield-label">列表备注（必填）</label>
+              <label class="mdui-textfield-label">列表备注（选填，留空时延用虚拟机名称设置）</label>
               <input class="mdui-textfield-input" id="vm_remark" required>
             </div>
           </div>
@@ -75,7 +75,7 @@
               <i class="mdui-icon material-icons">code</i>
               <label class="mdui-textfield-label">bash 脚本（可不填）</label>
               <textarea class="mdui-textfield-input" id="vm_script"
-                rows="8">{$personalise.vm_default_script ?? ''}</textarea>
+                rows="10">{$personalise.vm_default_script ?? ''}</textarea>
             </div>
             <p class="mdui-col-md-12 mdui-typo">
               * 默认脚本的运行身份是普通用户，部分命令需要加上 <code>sudo</code> 才能成功执行。
@@ -165,7 +165,7 @@
                   </select>
                 </div>
               </div>
-              <div class="mdui-col-sm-12 mdui-col-md-8">
+              <div class="mdui-col-sm-12 mdui-col-md-5">
                 <div class="mdui-m-t-2">
                   创建资格检查：
                   <select id="create_check" class="mdui-select" mdui-select>
@@ -174,7 +174,7 @@
                   </select>
                 </div>
               </div>
-              <div class="mdui-col-sm-12 mdui-col-md-4">
+              <div class="mdui-col-sm-12 mdui-col-md-3">
                 <div class="mdui-m-t-2">
                   <button id="load_available_models"
                     class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">
@@ -182,14 +182,16 @@
                   </button>
                 </div>
               </div>
+              <div class="mdui-col-sm-12 mdui-col-md-4">
+                <div class="mdui-m-t-2">
+                  <button id="create"
+                    class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-pink mdui-ripple">
+                    创建
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div class="mdui-card mdui-m-t-2">
-        <div class="mdui-card-actions">
-          <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised" id="create">创建</button>
         </div>
       </div>
 
