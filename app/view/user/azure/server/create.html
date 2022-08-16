@@ -21,7 +21,6 @@
                 <li>归属账户默认使用最新添加的</li>
                 <li>只显示订阅状态为 <code>Enabled</code> 的账户</li>
                 <li>你可以在 <a href="/user/profile">个人资料</a> 页设置各项开机默认参数</li>
-                <li>归属账户后括号内的数字，代表此账户下除 <code>B1s</code> 以外规格的虚拟机数目</li>
                 <li>创建多个虚拟机时，备注和名称的填写需使用英文逗号分隔</li>
                 <li>不能使用这些用户名：<code>root</code>, <code>admin</code>, <code>centos</code>, <code>debian</code>,
                   <code>ubuntu</code>
@@ -92,7 +91,7 @@
               </select>
             </div>
             <div class="mdui-m-t-2">
-              规格：<select id="vm_size" class="mdui-select" mdui-select>
+              规格：<select id="vm_size">
                 {volist name="sizes" id="size"}
                 <option value="{$key}">
                   {:str_replace('Standard_', '', $key)} {$size.cpu}C_{$size.memory}G ({:round($size.cost, 1)} USD /
@@ -105,7 +104,7 @@
             <div class="mdui-m-t-2">
               归属：<select id="vm_account" class="mdui-select" mdui-select>
                 {volist name="accounts" id="account"}
-                <option value="{$account->id}">{$account->az_email} ({$has_vm_num[$account->id]})</option>
+                <option value="{$account->id}">{$account->az_email}</option>
                 {/volist}
               </select>
             </div>
@@ -119,8 +118,7 @@
             <div class="mdui-m-t-2">
               归属：
               <select id="vm_account" class="mdui-select" mdui-select>
-                <option value="{$designated_account->id}">{$designated_account->az_email}
-                  ({$has_vm_num[$designated_account->id]})</option>
+                <option value="{$designated_account->id}">{$designated_account->az_email}</option>
               </select>
             </div>
             {/if}
@@ -167,13 +165,21 @@
                   </select>
                 </div>
               </div>
-              <div class="mdui-col-sm-12 mdui-col-md-12">
+              <div class="mdui-col-sm-12 mdui-col-md-8">
                 <div class="mdui-m-t-2">
                   创建资格检查：
                   <select id="create_check" class="mdui-select" mdui-select>
                     <option value="1">执行</option>
                     <option value="0">忽略</option>
                   </select>
+                </div>
+              </div>
+              <div class="mdui-col-sm-12 mdui-col-md-4">
+                <div class="mdui-m-t-2">
+                  <button id="load_available_models"
+                    class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">
+                    加载可用型号
+                  </button>
                 </div>
               </div>
             </div>
@@ -196,6 +202,7 @@
 
 <script>
   var $ = mdui.$;
+  var inst = new mdui.Select('#vm_size');
 
   function getProgress() {
     $.ajax({
@@ -216,6 +223,32 @@
       return v.toString(16);
     });
   }
+
+  $('#load_available_models').on('click', function () {
+    $.ajax({
+      method: 'POST',
+      url: "/user/server/azure/available",
+      data: {
+        vm_account: $('#vm_account').val(),
+        location: $('#vm_location').val(),
+      },
+      dataType: "json",
+      success: function (data) {
+        // clear
+        $('#vm_size').empty();
+        // load
+        for (var i = 0; i < data.length; i++) {
+          $('#vm_size').append('<option value="' + data[i] + '">' + data[i] + '</option>');
+        }
+        inst.handleUpdate();
+        // return
+        mdui.snackbar({
+          message: '已加载 ' + data.length + ' 个可用规格',
+          position: 'top',
+        })
+      }
+    });
+  });
 
   $('#create').on('click', function () {
     mdui.confirm('创建过程中请不要离开本页面', '创建确认',

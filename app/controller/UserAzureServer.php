@@ -72,19 +72,6 @@ class UserAzureServer extends UserBase
         $user         = User::find(session('user_id'));
         $personalise  = json_decode($user->personalise, true);
 
-        if (!$accounts->isEmpty()) {
-            foreach ($accounts as $account)
-            {
-                $count = AzureServer::where('account_id', $account->id)
-                ->where('vm_size', '<>', 'Standard_B1s')
-                ->count();
-
-                $has_vm_num[$account->id] = $count;
-            }
-
-            View::assign('has_vm_num', $has_vm_num);
-        }
-
         View::assign([
             'ssh_key'       => $ssh_key,
             'accounts'      => $accounts,
@@ -860,5 +847,27 @@ class UserAzureServer extends UserBase
         // $sql = Db::getLastSql();
 
         return json(['result' => $data]);
+    }
+
+    public function available()
+    {
+        $location = input('location/s');
+        $vm_account = input('vm_account/s');
+
+        $set = [];
+        $client = new Client();
+        $account = Azure::where('user_id', session('user_id'))->find($vm_account);
+        $limits = AzureApi::getResourceSkusList($client, $account, $location);
+
+        foreach ($limits['value'] as $limit)
+        {
+            if ($limit['resourceType'] == 'virtualMachines') {
+                if (empty($limit['restrictions']['0']['reasonCode'])) {
+                    $set[] = $limit['name'];
+                }
+            }
+        }
+
+        return json($set);
     }
 }
