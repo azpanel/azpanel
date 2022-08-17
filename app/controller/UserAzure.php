@@ -257,24 +257,25 @@ class UserAzure extends UserBase
 
     public function delete($id)
     {
-        $account = Azure::where('user_id', session('user_id'))
-            ->find($id);
+        $account = Azure::where('user_id', session('user_id'))->find($id);
+        $servers = AzureServer::where('user_id', session('user_id'))
+            ->where('account_id', $id)
+            ->select();
 
-        $cycle = new AzureRecycle;
-        $cycle->user_id = session('user_id');
-        $cycle->az_email = $account->az_email;
-        $cycle->az_sub_type = $account->az_sub_type;
-        $cycle->user_mark = $account->user_mark;
-        $cycle->bill_charges = self::estimatedCost($id, true);
-        $cycle->life_cycle = self::getEarliestTime($id);
-        $cycle->created_at = time();
-        $cycle->save();
-
-        AzureServer::where('user_id', session('user_id'))
-        ->where('account_id', $id)
-        ->delete();
+        if ($servers->count() >= '1') {
+            $cycle = new AzureRecycle;
+            $cycle->user_id = session('user_id');
+            $cycle->az_email = $account->az_email;
+            $cycle->az_sub_type = $account->az_sub_type;
+            $cycle->user_mark = $account->user_mark;
+            $cycle->bill_charges = self::estimatedCost($id, true);
+            $cycle->life_cycle = self::getEarliestTime($id);
+            $cycle->created_at = time();
+            $cycle->save();
+        }
 
         $account->delete();
+        $servers->delete();
         return json(Tools::msg('1', '删除成功', '将返回账户列表'));
     }
 
@@ -465,11 +466,10 @@ class UserAzure extends UserBase
     public function deleteAzureDisabledSubscription()
     {
         $accounts = Azure::where('user_id', session('user_id'))
-        ->where('az_sub_status', '<>', 'Enabled')
-        ->select();
+            ->where('az_sub_status', '<>', 'Enabled')
+            ->select();
 
         $count = $accounts->count();
-
         $content = ($count != 0) ? '删除了 ' . $count . ' 个账户' : '没有需要删除的账户';
 
         if ($count == '0') {
@@ -477,17 +477,20 @@ class UserAzure extends UserBase
         }
 
         foreach ($accounts as $account) {
-            $cycle = new AzureRecycle;
-            $cycle->user_id = session('user_id');
-            $cycle->az_email = $account->az_email;
-            $cycle->az_sub_type = $account->az_sub_type;
-            $cycle->user_mark = $account->user_mark;
-            $cycle->bill_charges = self::estimatedCost($account->id, true);
-            $cycle->life_cycle = self::getEarliestTime($account->id);
-            $cycle->created_at = time();
-            $cycle->save();
+            $servers = AzureServer::where('account_id', $account->id)->select();
+            if ($servers->count() >= '1') {
+                $cycle = new AzureRecycle;
+                $cycle->user_id = session('user_id');
+                $cycle->az_email = $account->az_email;
+                $cycle->az_sub_type = $account->az_sub_type;
+                $cycle->user_mark = $account->user_mark;
+                $cycle->bill_charges = self::estimatedCost($account->id, true);
+                $cycle->life_cycle = self::getEarliestTime($account->id);
+                $cycle->created_at = time();
+                $cycle->save();
+            }
 
-            AzureServer::where('account_id', $account->id)->delete();
+            $servers->delete();
             Azure::destroy($account->id);
         }
 
