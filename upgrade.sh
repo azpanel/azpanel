@@ -18,6 +18,8 @@ checkGit()
         echo -e "${red_color}You need to install the git command first. Try running [yum -y install git] or [apt-get -y install git].${color_end}"
         exit
     fi
+
+    number_of_files_before_update=$(ls database/migrations | wc -l | awk '{print $1}')
 }
 
 checkoutConfirm()
@@ -64,11 +66,20 @@ modifyVersion()
     sed -i "${admin_tvl}c\        <span>v.${big_v}.${medium_v}.${small_v} ${hash}</span>" ${dir}/app/view/admin/header.html
 }
 
+databaseMigration()
+{
+    number_of_files_after_update=$(ls database/migrations | wc -l | awk '{print $1}')
+    if [[ "${number_of_files_before_update}" != "${number_of_files_after_update}" ]];then
+        php think migrate:run
+    fi
+}
+
 main()
 {
     checkGit
     checkoutConfirm
     pullUpdate
+    databaseMigration
     modifyVersion
 }
 

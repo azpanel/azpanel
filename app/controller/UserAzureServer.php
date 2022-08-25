@@ -256,6 +256,14 @@ class UserAzureServer extends UserBase
                         return json(Tools::msg('0', '创建失败', '此订阅似乎不能在此区域创建此规格虚拟机。如不信任此检测结果，可以在创建页面将 “创建资格检查” 设置为 “忽略” 后重试'));
                     }
                 }
+                if ($limit['capabilities']['4']['value'] == 'V1') {
+                    if (Str::contains($images[$vm_image]['sku'], 'gen2')) {
+                        UserTask::end($task_id, true, json_encode(
+                            ['msg' => 'The virtual machine model is not compatible with the image.']
+                        ), true);
+                        return json(Tools::msg('0', '创建失败', '此规格虚拟机不可使用镜像列表中包含 gen2 关键词的选项'));
+                    }
+                }
                 $size_family = $limit['family'];
             }
         }
