@@ -75,7 +75,7 @@
               <i class="mdui-icon material-icons">code</i>
               <label class="mdui-textfield-label">bash 脚本（可不填）</label>
               <textarea class="mdui-textfield-input" id="vm_script"
-                rows="10">{$personalise.vm_default_script ?? ''}</textarea>
+                rows="14">{$personalise.vm_default_script ?? ''}</textarea>
             </div>
             <p class="mdui-col-md-12 mdui-typo">
               * 默认脚本的运行身份是普通用户，部分命令需要加上 <code>sudo</code> 才能成功执行。
@@ -123,7 +123,7 @@
             </div>
             {/if}
             <div class="mdui-row">
-              <div class="mdui-col-sm-12 mdui-col-md-7">
+              <div class="mdui-col-sm-12 mdui-col-md-12">
                 <div class="mdui-m-t-2">
                   镜像：<select id="vm_image" class="mdui-select" mdui-select>
                     {volist name="images" id="image"}
@@ -132,7 +132,9 @@
                   </select>
                 </div>
               </div>
-              <div class="mdui-col-sm-12 mdui-col-md-5">
+            </div>
+            <div class="mdui-row">
+              <div class="mdui-col-sm-12 mdui-col-md-12">
                 <div class="mdui-m-t-2 ">
                   存储：<select id="vm_disk_size" class="mdui-select" mdui-select>
                     {foreach $disk_sizes as $disk_size}
@@ -143,9 +145,9 @@
               </div>
             </div>
             <div class="mdui-row">
-              <div class="mdui-col-sm-12 mdui-col-md-7">
+              <div class="mdui-col-sm-12 mdui-col-md-12">
                 <div class="mdui-m-t-2">
-                  流量控制规则：
+                  流控：
                   <select id="vm_traffic_rule" class="mdui-select" mdui-select>
                     <option value="0">不使用</option>
                     {volist name="traffic_rules" id="traffic_rule"}
@@ -154,7 +156,7 @@
                   </select>
                 </div>
               </div>
-              <div class="mdui-col-sm-12 mdui-col-md-5">
+              <div class="mdui-col-sm-12 mdui-col-md-12">
                 <div class="mdui-m-t-2">
                   密钥：
                   <select id="vm_ssh_key" class="mdui-select" mdui-select>
@@ -165,29 +167,13 @@
                   </select>
                 </div>
               </div>
-              <div class="mdui-col-sm-12 mdui-col-md-5">
+              <div class="mdui-col-sm-12 mdui-col-md-12">
                 <div class="mdui-m-t-2">
-                  创建资格检查：
+                  检查：
                   <select id="create_check" class="mdui-select" mdui-select>
                     <option value="1">执行</option>
                     <option value="0">忽略</option>
                   </select>
-                </div>
-              </div>
-              <div class="mdui-col-sm-12 mdui-col-md-3">
-                <div class="mdui-m-t-2">
-                  <button id="load_available_models"
-                    class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">
-                    加载可用型号
-                  </button>
-                </div>
-              </div>
-              <div class="mdui-col-sm-12 mdui-col-md-4">
-                <div class="mdui-m-t-2">
-                  <button id="create"
-                    class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-pink mdui-ripple">
-                    创建
-                  </button>
                 </div>
               </div>
             </div>
@@ -195,7 +181,23 @@
         </div>
       </div>
 
-      <div class="mdui-m-t-2"></div>
+      <div class="mdui-card mdui-m-t-2">
+        <div class="mdui-card-actions">
+          <div class="mdui-row-xs-2">
+            <div class="mdui-col">
+              <button id="load_available_models"
+                class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-btn-block mdui-color-indigo">
+                加载可用型号
+              </button>
+            </div>
+            <div class="mdui-col">
+              <button id="create" class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-btn-block mdui-color-pink">
+                创建虚拟机
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
 
     </div>
   </div>

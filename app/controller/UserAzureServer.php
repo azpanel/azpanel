@@ -253,7 +253,7 @@ class UserAzureServer extends UserBase
                         UserTask::end($task_id, true, json_encode(
                             ['msg' => 'This subscription cannot create VMs of this size in this region.']
                         ), true);
-                        return json(Tools::msg('0', '创建失败', '此订阅似乎不能在此区域创建此规格虚拟机。如不信任此检测结果，可以在创建页面将 “创建资格检查” 设置为 “忽略” 后重试'));
+                        return json(Tools::msg('0', '创建失败', '此订阅似乎不能在此区域创建此规格虚拟机。如不信任此检测结果，可以在创建页面将 “检查” 设置为 “忽略” 后重试'));
                     }
                 }
                 if ($limit['capabilities']['4']['value'] == 'V1') {
