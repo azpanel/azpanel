@@ -55,7 +55,7 @@ class autoRefreshAccount extends Command
                         if ($sub_info['value']['0']['state'] != 'Enabled') {
                             $count += 1;
                             $text .= PHP_EOL . $account->az_email . ' (' . $account->az_sub_type . ') ' . ' [' . $account->az_sub_status . ']';
-                            $text .= PHP_EOL . '归属在此账户下的虚拟机名称列表：';
+                            $text .= PHP_EOL . '└';
 
                             $servers = AzureServer::where('account_id', $account->id)->select();
                             foreach ($servers as $server)
@@ -63,7 +63,7 @@ class autoRefreshAccount extends Command
                                 $text .= $server->name . ',';
                             }
 
-                            $text .= '合计' . $servers->count() . '台虚拟机';
+                            // $text .= '合计' . $servers->count() . '台虚拟机';
 
                             UserAzure::refreshTheResourceStatusUnderTheAccount($account);
                         }
