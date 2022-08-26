@@ -31,10 +31,16 @@
                     <i class="mdui-icon material-icons">device_hub</i>
                     <label>硬盘</label>
                   </a>
-                  <a href="#public-network" class="mdui-ripple">
+                  <a href="#public-network-v4" class="mdui-ripple">
                     <i class="mdui-icon material-icons">public</i>
-                    <label>外部网络</label>
+                    <label>外部网络 (IPv4)</label>
                   </a>
+                  {if isset($network_details.properties.ipConfigurations.1.name)}
+                  <a href="#public-network-v6" class="mdui-ripple">
+                    <i class="mdui-icon material-icons">public</i>
+                    <label>外部网络 (IPv6)</label>
+                  </a>
+                  {/if}
                   <a href="#private-network" class="mdui-ripple">
                     <i class="mdui-icon material-icons">settings_ethernet</i>
                     <label>内部网络</label>
@@ -51,8 +57,8 @@
                     <p>创建：<code>{:date('Y-m-d H:i:s', $vm_disk_created)}</code></p>
                   </div>
                 </div>
-                <!-- 外部网络 -->
-                <div id="public-network">
+                <!-- 外部v4网络 -->
+                <div id="public-network-v4">
                   <div class="mdui-typo mdui-m-t-2">
                     <p>名称：<code>{$network_details.properties.ipConfigurations.0.properties.publicIPAddress.name}</code>
                     </p>
@@ -67,6 +73,24 @@
                     </p>
                   </div>
                 </div>
+                {if isset($network_details.properties.ipConfigurations.1.name)}
+                <!-- 外部v6网络 -->
+                <div id="public-network-v6">
+                  <div class="mdui-typo mdui-m-t-2">
+                    <p>名称：<code>{$network_details.properties.ipConfigurations.1.properties.publicIPAddress.name}</code>
+                    </p>
+                    <p>
+                      地址：<code>{$network_details.properties.ipConfigurations.1.properties.publicIPAddress.properties.ipAddress ?? 'null'}</code>
+                    </p>
+                    <p>
+                      类型：<code>{$network_details.properties.ipConfigurations.1.properties.publicIPAddress.properties.publicIPAllocationMethod ?? 'null'}</code>
+                    </p>
+                    <p>
+                      DDNS：<code>{$network_details.properties.ipConfigurations.1.properties.publicIPAddress.properties.dnsSettings.fqdn ?? 'null'}</code>
+                    </p>
+                  </div>
+                </div>
+                {/if}
                 <!-- 内部网络 -->
                 <div id="private-network">
                   <div class="mdui-typo mdui-m-t-2">

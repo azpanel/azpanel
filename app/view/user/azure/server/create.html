@@ -167,12 +167,21 @@
                   </select>
                 </div>
               </div>
-              <div class="mdui-col-sm-12 mdui-col-md-12">
+              <div class="mdui-col-sm-12 mdui-col-md-4">
                 <div class="mdui-m-t-2">
                   检查：
                   <select id="create_check" class="mdui-select" mdui-select>
                     <option value="1">执行</option>
                     <option value="0">忽略</option>
+                  </select>
+                </div>
+              </div>
+              <div class="mdui-col-sm-12 mdui-col-md-4">
+                <div class="mdui-m-t-2">
+                  IPv6：
+                  <select id="create_ipv6" class="mdui-select" mdui-select>
+                    <option value="0">不创建</option>
+                    <option value="1">创建</option>
                   </select>
                 </div>
               </div>
@@ -195,6 +204,16 @@
                 创建虚拟机
               </button>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mdui-container">
+        <div class="mdui-dialog" id="create-ipv6-confirm-dialog">
+          <div class="mdui-dialog-title">创建确认</div>
+          <div class="mdui-dialog-content">若创建 IPv6 地址，这些虚拟机将无法更换 IPv4 地址，请按需选择</div>
+          <div class="mdui-dialog-actions">
+            <button class="mdui-btn mdui-ripple" mdui-dialog-confirm>确认</button>
           </div>
         </div>
       </div>
@@ -254,6 +273,14 @@
     });
   });
 
+  $('#create_ipv6').on('change', function () {
+    var create_switch = $('#create_ipv6').val();
+    if (create_switch == '1') {
+      var ipv6_inst = new mdui.Dialog('#create-ipv6-confirm-dialog');
+      ipv6_inst.open();
+    }
+  });
+
   $('#create').on('click', function () {
     mdui.confirm('创建过程中请不要离开本页面', '创建确认',
       function () {
@@ -278,6 +305,7 @@
             vm_traffic_rule: $('#vm_traffic_rule').val(),
             vm_ssh_key: $('#vm_ssh_key').val(),
             create_check: $('#create_check').val(),
+            create_ipv6: $('#create_ipv6').val(),
             task_uuid: uuid,
           },
           dataType: "json",
