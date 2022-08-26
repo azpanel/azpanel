@@ -206,6 +206,7 @@ class UserAzureServer extends UserBase
                 'location'    => $vm_location,
                 'size'        => $vm_size,
                 'script'      => $vm_script,
+                'ipv6'        => $create_ipv6,
             ]
         ];
 
