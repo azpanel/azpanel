@@ -215,6 +215,9 @@ class AzureApi extends BaseController
                 $network_details = self::getAzureNetworkInterfacesDetails($account_id, $network_interfaces, $params['4'], $params['2']);
                 $server->network_details    = json_encode($network_details);
                 $server->ip_address         = $network_details['properties']['ipConfigurations']['0']['properties']['publicIPAddress']['properties']['ipAddress'] ?? 'null';
+                if (isset($network_details['properties']['ipConfigurations']['1']['name'])) {
+                    $server->ipv6_address = $network_details['properties']['ipConfigurations']['1']['properties']['publicIPAddress']['properties']['ipAddress'];
+                }
 
                 $server->vm_details         = json_encode($virtual_machine);
                 $server->instance_details   = json_encode($instance_details);
@@ -502,6 +505,7 @@ class AzureApi extends BaseController
         $client, $account, $virtual_network_name, $resource_group_name, $location, $create_ipv6
     ) {
         // https://docs.microsoft.com/zh-cn/rest/api/virtualnetwork/subnets/create-or-update
+        // https://luotianyi.vc/5607.html
 
         $body = [
             'location' => $location,

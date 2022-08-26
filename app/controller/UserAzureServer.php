@@ -209,9 +209,9 @@ class UserAzureServer extends UserBase
             ]
         ];
 
-        if (session('user_id') != 1) {
+        /* if (session('user_id') != 1) {
             return json(Tools::msg('0', '创建失败', '维护中'));
-        }
+        } */
 
         // 初始化创建任务
         $progress = 0;
@@ -376,7 +376,7 @@ class UserAzureServer extends UserBase
                 );
 
                 if ($create_ipv6) {
-                    // 创建公网ipv6地址
+                    // 创建网络安全组
                     UserTask::update($task_id, (++$progress / $steps), '在资源组 ' . $vm_resource_group_name . ' 中创建网络安全组');
                     sleep(2);
                     $security_group_id = AzureApi::createNetworkSecurityGroups(
@@ -692,6 +692,10 @@ class UserAzureServer extends UserBase
         $task_id = UserTask::create(session('user_id'), '更换公网地址', $params, $task_uuid);
 
         try {
+            if (isset($server->ipv6_address)) {
+                throw new \Exception('此虚拟机 ipv4 是静态类型地址，不支持更换');
+            }
+
             UserTask::update($task_id, (++$count / 4), '正在分离计算资源');
             AzureApi::virtualMachinesDeallocate($server->account_id, $server->request_url);
 
@@ -716,7 +720,11 @@ class UserAzureServer extends UserBase
             $server->ip_address         = $network_details['properties']['ipConfigurations']['0']['properties']['publicIPAddress']['properties']['ipAddress'] ?? 'null';
             $server->save();
         } catch (\Exception $e) {
-            $error = $e->getResponse()->getBody()->getContents();
+            if ($e->getMessage() != null) {
+                $error = $e->getMessage();
+            } else {
+                $error = $e->getResponse()->getBody()->getContents();
+            }
             UserTask::end($task_id, true, $error);
             return json(Tools::msg('0', '更换失败', $error));
         }
