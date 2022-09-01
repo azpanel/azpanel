@@ -76,7 +76,7 @@ class UserAzure extends UserBase
                     'tenant' => $az_api['tenant']
                 ];
                 // delete
-                $account->delete();
+                $details->delete();
             }
 
             $task = new Share();
