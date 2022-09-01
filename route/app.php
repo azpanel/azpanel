@@ -16,23 +16,29 @@ Route::pattern([
     'uuid'  => '[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}',
 ]);
 
+// 登入登出
 Route::get('/',                'Auth/index');
 Route::get('/login',           'Auth/index');
 Route::post('/login',          'Auth/login');
 Route::post('/logout',         'Auth/logout');
+
 // 注册账户
 Route::get('/register',        'Auth/registerIndex');
 Route::post('/register/code',  'Auth/registerCode');
 Route::post('/register',       'Auth/publicRegister');
-// 重置密码
-Route::get('/forget',        'Auth/forgetIndex');
-Route::post('/forget/code',  'Auth/forgetCode');
-Route::post('/forget',       'Auth/resetPassword');
 
+// 重置密码
+Route::get('/forget',          'Auth/forgetIndex');
+Route::post('/forget/code',    'Auth/forgetCode');
+Route::post('/forget',         'Auth/resetPassword');
+
+// 其他功能
 Route::get('/user',            'UserDashboard/index');
 Route::get('/user/login',      'UserDashboard/loginLog');
+Route::get('/user/share',      'UserDashboard/shareList');
 Route::get('/user/recycle',    'UserDashboard/recycle');
 
+// 个人资料
 Route::get('/user/profile',                       'UserDashboard/profile');
 Route::get('/user/profile/sshkey',                'UserDashboard/createSshKey');
 Route::put('/user/profile/sshkey',                'UserDashboard/resetSshKey');
@@ -41,6 +47,7 @@ Route::put('/user/profile/passwd',                'UserDashboard/savePasswd');
 Route::put('/user/profile/refresh',               'UserDashboard/saveRefresh');
 Route::put('/user/profile/personalise',           'UserDashboard/savePersonalise');
 
+// 关于项目
 Route::get('/user/license',                       'UserDashboard/license');
 Route::get('/user/docs',                          'UserDashboard/docs');
 
@@ -49,6 +56,8 @@ Route::resource('/user/azure',                    'UserAzure');
 Route::post('/user/azure/quota/:id',              'UserAzure/queryAccountQuota');
 Route::post('/user/azure/cost/:id',               'UserAzure/estimatedCost');
 Route::post('/user/azure/refresh',                'UserAzure/refreshAllAzureSubscriptionStatus');
+Route::put('/user/azure/share',                   'UserAzure/shareAccount');
+Route::post('/user/azure/share',                  'UserAzure/processShare');
 Route::post('/user/azure/search',                 'UserAzure/searchAccount');
 Route::post('/user/azure/refresh/:id',            'UserAzure/refreshAzureSubscriptionStatus');
 Route::post('/user/azure/update/:id',             'UserAzure/updateAzureSubscriptionResources');
@@ -117,4 +126,5 @@ Route::get('/admin/log/task',                     'AdminLog/task');
 Route::get('/admin/log/task/:id',                 'AdminLog/taskDetails');
 
 // 其他
-Route::get('/user/progress/:uuid',              'UserTask/ajaxQuery')->json();
+Route::get('/share',                              'Share/getShare');
+Route::get('/user/progress/:uuid',                'UserTask/ajaxQuery')->json();

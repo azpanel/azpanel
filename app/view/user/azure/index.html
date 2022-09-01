@@ -13,7 +13,7 @@
       </div>
 
       <div class="card-body mdui-table-fluid-fixed mdui-m-t-2">
-        <table class="mdui-table" style="border: none;">
+        <table class="mdui-table mdui-table-selectable" style="border: none;">
           <thead>
             <tr>
               <th>操作</th>
@@ -29,7 +29,7 @@
           </thead>
           <tbody>
             {volist name="accounts" id="account"}
-            <tr id="{$account.id}" class="hid">
+            <tr id="{$account.id}" data-id="{$account.id}" class="hid">
               <td>
                 <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-ripple mdui-color-blue-grey"
                   mdui-menu="{target: '#action-{$account.id}', fixed: true}">操作</button>
@@ -202,6 +202,9 @@
             </button>
             <button class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-blue-grey" mdui-dialog="{target: '#refresh'}">
               <i class="mdui-icon material-icons">autorenew</i>
+            </button>
+            <button class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-purple" onclick="share()">
+              <i class="mdui-icon material-icons">share</i>
             </button>
             <a class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-indigo" href="/user/azure/create">
               <i class="mdui-icon material-icons">add</i>
@@ -421,6 +424,48 @@
         cancelText: "取消"
       }
     );
+  };
+
+  function share() {
+    var set = [];
+    $('.mdui-table-row-selected').each(function () {
+      var id = $(this).attr('data-id');
+      set.push(id);
+    });
+
+    if (set.length == 0) {
+      return mdui.alert('请先勾选一个或多个账户的复选框', '分享失败');
+    }
+
+    mdui.confirm('选中的账户将立即从当前面板移除，并生成一个分享链接。其他人可通过此链接快速导入选中账户', '创建分享链接',
+      function () {
+        $.ajax({
+          method: 'PUT',
+          url: "/user/azure/share",
+          dataType: "json",
+          data: {
+            account_set: set,
+          },
+          success: function (data) {
+            mdui.alert(data.content, data.title, function () {
+              // https://www.zhangxinxu.com/wordpress/2021/10/js-copy-paste-clipboard/
+              navigator.clipboard.writeText(data.share_link);
+            },
+              {
+                confirmText: "复制并关闭",
+              }
+            );
+          }
+        });
+      },
+      function () { },
+      {
+        confirmText: "确定",
+        cancelText: "取消"
+      }
+    );
+
+    // console.log(set);
   };
 
   function getProgress() {

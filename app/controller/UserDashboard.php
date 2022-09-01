@@ -3,6 +3,7 @@ namespace app\controller;
 
 use app\model\User;
 use app\model\Ann;
+use app\model\Share;
 use app\model\Config;
 use app\model\SshKey;
 use app\model\LoginLog;
@@ -43,6 +44,19 @@ class UserDashboard extends UserBase
             'page' => $accounts->render(),
         ]);
         return View::fetch('../app/view/user/recycle.html');
+    }
+
+    public function shareList()
+    {
+        $records = Share::where('user_id', session('user_id'))
+            ->order('id', 'desc')
+            ->paginate(30);
+
+        $page = $records->render();
+
+        View::assign('page', $page);
+        View::assign('records', $records);
+        return View::fetch('../app/view/user/share.html');
     }
 
     public function loginLog()

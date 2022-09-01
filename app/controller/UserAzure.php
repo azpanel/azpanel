@@ -2,6 +2,7 @@
 namespace app\controller;
 
 use think\facade\Db;
+use think\helper\Str;
 use think\facade\Env;
 use think\facade\View;
 use GuzzleHttp\Client;
@@ -10,6 +11,7 @@ use app\controller\AzureApi;
 use app\controller\UserTask;
 use app\controller\UserAzureServer;
 use app\model\Azure;
+use app\model\Share;
 use app\model\AzureServer;
 use app\model\AzureRecycle;
 
@@ -47,6 +49,119 @@ class UserAzure extends UserBase
         // $sql = Db::getLastSql();
 
         return json(['result' => $data]);
+    }
+
+    public function shareAccount()
+    {
+        try {
+            $set = [];
+            $accounts = input('account_set/a');
+            foreach ($accounts as $account) {
+                // query
+                $details = Azure::where('user_id', session('user_id'))
+                    ->where('id', $account)
+                    ->find();
+                // check
+                if (! isset($details)) {
+                    throw new \Exception('此账户不存在或不属于你');
+                }
+                // encode
+                $az_api = json_decode($details->az_api, true);
+                $set[] = [
+                    'login_user' => $details->az_email,
+                    'login_passwd' => $details->az_passwd,
+                    'subscription_id' => $details->az_sub_id,
+                    'appId' => $az_api['appId'],
+                    'password' => $az_api['password'],
+                    'tenant' => $az_api['tenant']
+                ];
+            }
+
+            $task = new Share();
+            $token = substr(md5(Str::random($length = 32)), 8, 24);
+            $task->user_id = session('user_id');
+            $task->content = json_encode($set);
+            $task->created_at = time();
+            $task->count = count($set);
+            $task->token = $token;
+            $task->save();
+
+            $share_link = 'https://' . $_SERVER['HTTP_HOST'] . '/share?token=' . $token;
+            $share_text = '<div class="mdui-typo"><code>' . $share_link . '</code></div>';
+            return json([
+                'title' => '分享成功',
+                'status' => 0,
+                'content' => $share_text,
+                'share_link' => $share_link,
+            ]);
+        } catch (\Exception $e) {
+            return json(Tools::msg('0', '分享失败', $e->getMessage()));
+        }
+    }
+
+    public function processShare()
+    {
+        try {
+            $url = input('share_link/s');
+            $user_mark = input('user_mark/s');
+            $remark_filling = input('remark_filling/s');
+            // get & decode
+            $content = file_get_contents($url);
+            if (Str::contains($content, 'thinkphp_show_page_trace')) {
+                throw new \Exception('共享方站点未关闭调试模式，因此不能正确解码数据');
+            }
+            $content = json_decode($content, true);
+            if ($content['msg'] !== 'ok') {
+                throw new \Exception('无效的分享链接');
+            }
+            // save
+            foreach ($content['content'] as $api) {
+                $az_api = [
+                    'appId' => $api['appId'],
+                    'password' => $api['password'],
+                    'tenant' => $api['tenant'],
+                ];
+
+                $account = new Azure();
+                $account->user_id = session('user_id');
+                $account->az_email = $api['login_user'];
+                $account->az_passwd = $api['login_passwd'];
+                $account->user_mark = ($remark_filling === 'input') ? $user_mark : $remark_filling;
+                $account->az_api = json_encode($az_api);
+                $account->created_at = time();
+                $account->updated_at = time();
+                $account->save();
+
+                $sub_info = AzureApi::getAzureSubscription($account->id); // array
+                if ($sub_info['count']['value'] !== '0') {
+                    $account->az_sub = json_encode($sub_info);
+                    $account->az_sub_id = $sub_info['value']['0']['subscriptionId'];
+                    $account->az_sub_status = $sub_info['value']['0']['state'];
+                    $account->az_sub_type = self::discern($sub_info['value']['0']['subscriptionPolicies']['quotaId']);
+                    $account->az_sub_updated_at = time();
+                    $account->save();
+                }
+
+                $count = AzureApi::getAzureVirtualMachines($account->id);
+                if ($count != 0) {
+                    $account->providers_register = '1';
+                    $account->save();
+                } else {
+                    AzureApi::registerMainAzureProviders($client, $account, 'Microsoft.Compute');
+                    AzureApi::registerMainAzureProviders($client, $account, 'Microsoft.Network');
+                }
+
+                if ($sub_info['value']['0']['state'] == 'Enabled') {
+                    $client = new Client();
+                    AzureApi::registerMainAzureProviders($client, $account, 'Microsoft.Capacity');
+                }
+            }
+            $ajax_content = '添加了 ' . $content['count'] . ' 个账户';
+        } catch (\Exception $e) {
+            return json(Tools::msg('0', '添加失败', $e->getMessage()));
+        }
+
+        return json(Tools::msg('1', '添加结果', $ajax_content));
     }
 
     public function create()
@@ -225,6 +340,9 @@ class UserAzure extends UserBase
         if ($count != 0) {
             $account->providers_register = '1';
             $account->save();
+        } else {
+            AzureApi::registerMainAzureProviders($client, $account, 'Microsoft.Compute');
+            AzureApi::registerMainAzureProviders($client, $account, 'Microsoft.Network');
         }
 
         if ($sub_info['value']['0']['state'] == 'Enabled') {
@@ -263,15 +381,19 @@ class UserAzure extends UserBase
             ->select();
 
         if ($servers->count() >= '1') {
-            $cycle = new AzureRecycle;
-            $cycle->user_id = session('user_id');
-            $cycle->az_email = $account->az_email;
-            $cycle->az_sub_type = $account->az_sub_type;
-            $cycle->user_mark = $account->user_mark;
-            $cycle->bill_charges = self::estimatedCost($id, true);
-            $cycle->life_cycle = self::getEarliestTime($id);
-            $cycle->created_at = time();
-            $cycle->save();
+            try {
+                $cycle = new AzureRecycle;
+                $cycle->user_id = session('user_id');
+                $cycle->az_email = $account->az_email;
+                $cycle->az_sub_type = $account->az_sub_type;
+                $cycle->user_mark = $account->user_mark;
+                $cycle->bill_charges = self::estimatedCost($id, true);
+                $cycle->life_cycle = self::getEarliestTime($id);
+                $cycle->created_at = time();
+                $cycle->save();
+            } catch (\Exception $e) {
+                // to do
+            }
         }
 
         $account->delete();
@@ -286,6 +408,10 @@ class UserAzure extends UserBase
         $servers = AzureServer::where('account_id', $id)->select();
 
         foreach ($servers as $server) {
+            if (! isset($server->disk_details)) {
+                $server->disk_details = json_encode(AzureApi::getDisks($server));
+                $server->save();
+            }
             $disk_details = json_decode($server->disk_details, true);
             $vm_disk_created = strtotime($disk_details['properties']['timeCreated']);
             $time_set[] = $vm_disk_created;
@@ -479,15 +605,19 @@ class UserAzure extends UserBase
         foreach ($accounts as $account) {
             $servers = AzureServer::where('account_id', $account->id)->select();
             if ($servers->count() >= '1') {
-                $cycle = new AzureRecycle;
-                $cycle->user_id = session('user_id');
-                $cycle->az_email = $account->az_email;
-                $cycle->az_sub_type = $account->az_sub_type;
-                $cycle->user_mark = $account->user_mark;
-                $cycle->bill_charges = self::estimatedCost($account->id, true);
-                $cycle->life_cycle = self::getEarliestTime($account->id);
-                $cycle->created_at = time();
-                $cycle->save();
+                try {
+                    $cycle = new AzureRecycle;
+                    $cycle->user_id = session('user_id');
+                    $cycle->az_email = $account->az_email;
+                    $cycle->az_sub_type = $account->az_sub_type;
+                    $cycle->user_mark = $account->user_mark;
+                    $cycle->bill_charges = self::estimatedCost($account->id, true);
+                    $cycle->life_cycle = self::getEarliestTime($account->id);
+                    $cycle->created_at = time();
+                    $cycle->save();
+                } catch (\Exception $e) {
+                    // to do
+                }
             }
 
             $servers->delete();
