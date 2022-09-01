@@ -75,6 +75,8 @@ class UserAzure extends UserBase
                     'password' => $az_api['password'],
                     'tenant' => $az_api['tenant']
                 ];
+                // delete
+                $account->delete();
             }
 
             $task = new Share();
@@ -89,8 +91,8 @@ class UserAzure extends UserBase
             $share_link = 'https://' . $_SERVER['HTTP_HOST'] . '/share?token=' . $token;
             $share_text = '<div class="mdui-typo"><code>' . $share_link . '</code></div>';
             return json([
+                'status' => 1,
                 'title' => '分享成功',
-                'status' => 0,
                 'content' => $share_text,
                 'share_link' => $share_link,
             ]);
@@ -142,6 +144,7 @@ class UserAzure extends UserBase
                     $account->save();
                 }
 
+                $client = new Client();
                 $count = AzureApi::getAzureVirtualMachines($account->id);
                 if ($count != 0) {
                     $account->providers_register = '1';
@@ -152,11 +155,10 @@ class UserAzure extends UserBase
                 }
 
                 if ($sub_info['value']['0']['state'] == 'Enabled') {
-                    $client = new Client();
                     AzureApi::registerMainAzureProviders($client, $account, 'Microsoft.Capacity');
                 }
             }
-            $ajax_content = '添加了 ' . $content['count'] . ' 个账户';
+            $ajax_content = '通过此链接添加了 ' . $content['count'] . ' 个账户';
         } catch (\Exception $e) {
             return json(Tools::msg('0', '添加失败', $e->getMessage()));
         }
@@ -334,6 +336,7 @@ class UserAzure extends UserBase
         $account->az_sub_updated_at = time();
         $account->save();
 
+        $client = new Client();
         $count = AzureApi::getAzureVirtualMachines($account->id);
         $content = ($count != 0) ? '加载了 ' . $count . ' 个资源' : '添加成功';
 
@@ -346,7 +349,6 @@ class UserAzure extends UserBase
         }
 
         if ($sub_info['value']['0']['state'] == 'Enabled') {
-            $client = new Client();
             AzureApi::registerMainAzureProviders($client, $account, 'Microsoft.Capacity');
         }
 

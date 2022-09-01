@@ -11,8 +11,8 @@ class Share
             $token = input('token/s');
             $share = ShareModel::where('token', $token)->find();
             // check
-            if (!isset($share)) {
-                throw new \Exception('Sharing does not exist.');
+            if (! isset($share)) {
+                throw new \Exception('Invalid link credentials.');
             }
             // update
             $share->is_use = 1;
