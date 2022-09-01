@@ -75,7 +75,7 @@
               <i class="mdui-icon material-icons">code</i>
               <label class="mdui-textfield-label">bash 脚本（可不填）</label>
               <textarea class="mdui-textfield-input" id="vm_script"
-                rows="14">{$personalise.vm_default_script ?? ''}</textarea>
+                rows="15">{$personalise.vm_default_script ?? ''}</textarea>
             </div>
             <p class="mdui-col-md-12 mdui-typo">
               * 默认脚本的运行身份是普通用户，部分命令需要加上 <code>sudo</code> 才能成功执行。
@@ -176,7 +176,7 @@
                   </select>
                 </div>
               </div>
-              <div class="mdui-col-sm-12 mdui-col-md-4">
+              <div class="mdui-col-sm-12 mdui-col-md-8">
                 <div class="mdui-m-t-2">
                   IPv6：
                   <select id="create_ipv6" class="mdui-select" mdui-select>
@@ -211,7 +211,8 @@
       <div class="mdui-container">
         <div class="mdui-dialog" id="create-ipv6-confirm-dialog">
           <div class="mdui-dialog-title">创建确认</div>
-          <div class="mdui-dialog-content mdui-typo">若创建 IPv6 地址，这些虚拟机将无法更换 IPv4 地址，请按需选择。分配的 IPv6 地址可以在虚拟机详情查看，也可以使用 IPv4 地址链接服务器后，执行 <code>curl ip.sb</code> 获取</div>
+          <div class="mdui-dialog-content mdui-typo">若创建 IPv6 地址，这些虚拟机将无法更换 IPv4 地址，请按需选择。分配的 IPv6 地址可以在虚拟机详情查看，也可以使用
+            IPv4 地址链接服务器后，执行 <code>curl ip.sb</code> 获取</div>
           <div class="mdui-dialog-actions">
             <button class="mdui-btn mdui-ripple" mdui-dialog-confirm>确认</button>
           </div>
@@ -248,6 +249,12 @@
   }
 
   $('#load_available_models').on('click', function () {
+    mdui.snackbar({
+      message: '加载中...',
+      position: 'top',
+      timeout: '500',
+    });
+
     $.ajax({
       method: 'POST',
       url: "/user/server/azure/available",
