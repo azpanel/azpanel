@@ -107,8 +107,16 @@ class UserAzure extends UserBase
             $url = input('share_link/s');
             $user_mark = input('user_mark/s');
             $remark_filling = input('remark_filling/s');
+            // https://www.jianshu.com/p/074f96f9d005
+            // 忽略证书问题
+            $stream_opts = [
+                'ssl' => [
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                ],
+            ];
             // get & decode
-            $content = file_get_contents($url);
+            $content = file_get_contents($url, false, stream_context_create($stream_opts));
             if (Str::contains($content, 'thinkphp_show_page_trace')) {
                 throw new \Exception('共享方站点未关闭调试模式，因此不能正确解码数据');
             }
