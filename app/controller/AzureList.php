@@ -256,6 +256,24 @@ class AzureList
                 'cost' => 0.2930 * 720,
                 'acc' => true,
             ],
+            'Standard_D1' => [
+                'cpu' => '1',
+                'memory' => '3.5',
+                'cost' => 0.0770 * 720,
+                'acc' => false,
+            ],
+            'Standard_D2' => [
+                'cpu' => '2',
+                'memory' => '7',
+                'cost' => 0.1540 * 720,
+                'acc' => false,
+            ],
+            'Standard_D11' => [
+                'cpu' => '2',
+                'memory' => '14',
+                'cost' => 0.1930 * 720,
+                'acc' => false,
+            ],
         ];
 
         return $sizes_list;

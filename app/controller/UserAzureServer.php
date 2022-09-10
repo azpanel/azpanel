@@ -408,13 +408,14 @@ class UserAzureServer extends UserBase
                 );
 
                 // 创建子网
+                sleep(3);
                 UserTask::update($task_id, (++$progress / $steps), '在虚拟网络 ' . $vm_virtual_network_name . ' 中创建子网');
                 $subnets = AzureApi::createAzureVirtualNetworkSubnets(
                     $client, $account, $vm_virtual_network_name, $vm_resource_group_name, $vm_location, $create_ipv6
                 );
 
                 // 创建网络接口
-                sleep(3);
+                sleep(6);
                 UserTask::update($task_id, (++$progress / $steps), '在资源组 ' . $vm_resource_group_name . ' 中创建网络接口');
                 $interfaces = AzureApi::createAzureVirtualNetworkInterfaces(
                     $client, $account, $vm_name, $ipv4, $ipv6, $subnets, $vm_location, $vm_size, $create_ipv6, $security_group_id
