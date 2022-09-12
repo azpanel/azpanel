@@ -76,6 +76,7 @@ class UserAzure extends UserBase
                     'tenant' => $az_api['tenant']
                 ];
                 // delete
+                AzureServer::where('account_id', $details->id)->delete();
                 $details->delete();
             }
 
