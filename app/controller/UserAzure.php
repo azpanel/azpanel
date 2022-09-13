@@ -273,7 +273,13 @@ class UserAzure extends UserBase
             $configs = json_decode($az_configs, true);
             $decode_error = json_last_error();
             if ($decode_error != 'JSON_ERROR_NONE') {
-                return json(Tools::msg('0', '添加失败', '此 json 内容格式不规范'));
+                $az_email = Tools::getMailAddress($az_configs);
+                $json_text = Tools::getJsonContent($az_configs);
+                $configs = json_decode($json_text, true);
+                $decode_error = json_last_error();
+                if ($decode_error != 'JSON_ERROR_NONE') {
+                    return json(Tools::msg('0', '添加失败', '此 json 内容格式不规范'));
+                }
             }
         }
 

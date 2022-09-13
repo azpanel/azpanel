@@ -106,4 +106,18 @@ class Tools
 
         return false;
     }
+
+    public static function getMailAddress($text)
+    {
+        $pattern = "/([a-z0-9]*[-_\.]*[a-z0-9]+)*[-_\.]*@([a-z0-9]*[-_]?[a-z0-9]+)+[\.]([a-z0-9]{2,3}|[a-z0-9]*[-_]?[a-z0-9]+)([\.][a-z0-9]{2})?/i";
+        preg_match($pattern, $text, $matches);
+        return $matches[0];
+    }
+
+    public static function getJsonContent($text)
+    {
+        // https://segmentfault.com/q/1010000002455112 @sogouo
+        preg_match('/{(.*?)}/is', $text, $matches);
+        return $matches[0];
+    }
 }
