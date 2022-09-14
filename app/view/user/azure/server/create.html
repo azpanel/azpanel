@@ -38,7 +38,7 @@
           <div class="mdui-col-sm-12 mdui-col-md-6">
             <div class="mdui-textfield mdui-textfield-floating-label">
               <i class="mdui-icon material-icons">flag</i>
-              <label class="mdui-textfield-label">虚拟机名称（必填）</label>
+              <label class="mdui-textfield-label">虚拟机名称（必填，创建多个时用英文逗号分隔）</label>
               <input class="mdui-textfield-input" id="vm_name" required>
             </div>
           </div>
@@ -49,14 +49,7 @@
               <input class="mdui-textfield-input" id="vm_remark" required>
             </div>
           </div>
-          <div class="mdui-col-sm-12 mdui-col-md-2">
-            <div class="mdui-textfield mdui-textfield-floating-label">
-              <i class="mdui-icon material-icons">tune</i>
-              <label class="mdui-textfield-label">数量</label>
-              <input class="mdui-textfield-input" id="vm_number" type="number" setp="1" value="1" min="1" required>
-            </div>
-          </div>
-          <div class="mdui-col-sm-12 mdui-col-md-4">
+          <div class="mdui-col-sm-12 mdui-col-md-6">
             <div class="mdui-textfield mdui-textfield-floating-label">
               <i class="mdui-icon material-icons">assignment_ind</i>
               <label class="mdui-textfield-label">用户名</label>
@@ -300,7 +293,6 @@
           data: {
             vm_remark: $('#vm_remark').val(),
             vm_name: $('#vm_name').val(),
-            vm_number: $('#vm_number').val(),
             vm_user: $('#vm_user').val(),
             vm_passwd: $('#vm_passwd').val(),
             vm_script: $('#vm_script').val(),

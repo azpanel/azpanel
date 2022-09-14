@@ -107,7 +107,7 @@ class UserAzureServer extends UserBase
         $vm_size         = input('vm_size/s');
         $vm_image        = input('vm_image/s');
         $task_uuid       = input('task_uuid/s');
-        $vm_number       = (int) input('vm_number/s');
+        //$vm_number       = (int) input('vm_number/s');
         $vm_account      = (int) input('vm_account/s');
         $vm_disk_size    = (int) input('vm_disk_size/s');
         $vm_ssh_key      = (int) input('vm_ssh_key/s');
@@ -148,6 +148,7 @@ class UserAzureServer extends UserBase
         $names   = explode(',', $vm_name);
         $remarks = explode(',', $vm_remark);
 
+        $vm_number = count($names);
         if (count($names) != $vm_number || count($remarks) != $vm_number || count($names) != count($remarks)) {
             return json(Tools::msg('0', '创建失败', '请检查创建数量、备注和虚拟机名称是否正确分隔'));
         }
