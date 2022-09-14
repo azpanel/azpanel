@@ -1,19 +1,37 @@
 {include file="../app/view/user/header.html" title="使用文档" /}
 
+<style>
+  .head-line {
+    color: #3F51B5;
+    font-size: 34px;
+  }
+
+  .medium-title {
+    color: #3F51B5;
+    font-size: 24px;
+  }
+
+  .mini-title {
+    color: #3F51B5;
+    font-size: 18px;
+  }
+</style>
+
 <div class="mdui-container-fluid">
   <div class="mdui-row">
     <div
       class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
       <div class="mdui-container-fluid">
-        <p style="color: #3F51B5; font-size: 34px">使用文档</p>
+        <p class="head-line">使用文档</p>
       </div>
 
-      <p style="color: #3F51B5; font-size: 24px">Azure 账户</p>
+      <p class="medium-title">Azure 账户</p>
 
       <div class="mdui-card">
         <div class="mdui-card-content mdui-container">
           <div class="mdui-typo">
             <p>你可以在 <a href="/user/azure/create">此页面</a> 添加 Azure 账户。自动识别区块可识别如下格式的信息</p>
+            <p>如果自动识别区块的内容混杂着登录邮箱和JSON，亦可以自动拆分识别这两项内容</p>
             <pre><code class="language-bash">{
   "appId": "e84cae80-c647-424d-8934-0de6da2ede0d",
   "displayName": "azcli",
@@ -21,7 +39,8 @@
   "tenant": "7e0a6485-5a39-4e2f-a12b-13e6c4a5b053"
 }</code></pre>
             <p>你可以执行以下命令获取上述信息</p>
-            <pre id="extract-api"><code class="language-php">az ad sp create-for-rbac --role contributor --scopes /subscriptions/$(az account list --query [].id -o tsv)</code></pre>
+            <pre
+              id="extract-api"><code class="language-php">az ad sp create-for-rbac --role contributor --scopes /subscriptions/$(az account list --query [].id -o tsv)</code></pre>
             <button data-clipboard-target="#extract-api"
               class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-ripple mdui-color-indigo">
               复制
@@ -30,23 +49,40 @@
         </div>
       </div>
 
-      <p style="color: #3F51B5; font-size: 24px">Azure 虚拟机</p>
+      <p class="medium-title">Azure 虚拟机</p>
 
       <div class="mdui-card mdui-m-t-2">
-        <div class="mdui-card-content mdui-container">
-          <div class="mdui-typo">
+        <div class="mdui-card-content mdui-container mdui-typo">
+          <div>
+            <!-- 个性化配置 DOC START -->
+            <p class="mini-title mdui-m-t-2">个性化配置</p>
             <ul>
               <li>你可以在 <a href="/user/profile">此页面</a> 设置个人偏好配置</li>
               <li>虚拟机的镜像、规格配置文件位于<code>/app/controller/AzureList.php</code>，你可以通过编辑此文件添加所需项目</li>
             </ul>
-            <p>如果你希望能够在创建虚拟机时启用 <code>root</code> 账户，可以使用以下脚本</p>
+            <!-- 启用 root 账户 DOC START -->
+            <p class="mini-title">启用 root 账户</p>
+            <p>如果你希望能够在创建虚拟机时启用 <code>root</code> 账户，可以使用以下脚本。</p>
             <p style="color: red">请不要在个人偏好配置的默认脚本中存储你的私人密码，因为这些信息是明文存储的！</p>
             <pre><code class="language-bash">#!/bin/bash
 sudo sed -i 's/^.*PermitRootLogin.*/PermitRootLogin yes/g' /etc/ssh/sshd_config
 sudo sed -i 's/^.*PasswordAuthentication.*/PasswordAuthentication yes/g' /etc/ssh/sshd_config
 echo root:yourRootPasswd | sudo chpasswd
 sudo service ssh restart</code></pre>
+            <!-- 执行外部脚本 DOC START -->
+            <p class="mini-title mdui-m-t-2">执行外部脚本</p>
+            <p>如果你希望在虚拟创建完成后，自动执行外部脚本，可以参考下面的模板</p>
+            <pre><code class="language-bash">#!/bin/bash
+sudo apt-get -y install wget curl ca-certificates
+sudo wget -P /root https://{SCRIPT_DOWNLOAD_URL}
+sudo chmod 777 /root/{SCRIPT_FULL_NAME}
+sudo -i bash /root/{SCRIPT_FULL_NAME} | sudo tee -a /root/run.log</code></pre>
           </div>
+          <ul class=" mdui-m-t-2">
+            <li>注意修改 <code>{SCRIPT_DOWNLOAD_URL}</code> 和 <code>{SCRIPT_FULL_NAME}</code> 为有意义的内容</li>
+            <li>脚本执行的输出，可以在登录后执行 <code>tail -f /root/run.log</code> 查看</li>
+            <li>如果系统是 CentOS，需要将 <code>apt-get</code> 修改为 <code>yum</code></li>
+          </ul>
         </div>
       </div>
 
