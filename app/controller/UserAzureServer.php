@@ -440,7 +440,7 @@ class UserAzureServer extends UserBase
         // 直到最后一个创建的虚拟机运行状态变为 running 再将所创建的虚拟机加入到列表中
         $count = 0;
         do {
-            sleep(1);
+            sleep(2);
             ++$count;
             $vm_status = AzureApi::getAzureVirtualMachineStatus($account->id, $vm_url);
             $status = $vm_status['statuses']['1']['code'] ?? 'null';
