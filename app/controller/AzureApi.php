@@ -447,11 +447,11 @@ class AzureApi extends BaseController
         return $resource_url->id;
     }
 
-    public static function countAzurePublicNetworkIpv4($client, $account, $location)
+    public static function countAzurePublicNetworkIpv4($client, $account, $location): int
     {
         // https://docs.microsoft.com/zh-cn/rest/api/virtualnetwork/public-ip-addresses/list-all
 
-        $url = 'https://management.azure.com/subscriptions/' . $account->az_sub_id . '/providers/Microsoft.Network/publicIPAddresses?api-version=2021-05-01';
+        $url = 'https://management.azure.com/subscriptions/' . $account->az_sub_id . '/providers/Microsoft.Network/publicIPAddresses?api-version=2022-01-01';
         $result = $client->get($url, [
             'headers' => self::getToken($account->id, true)
         ]);

@@ -280,6 +280,17 @@ class UserAzureServer extends UserBase
             }
         }
 
+        if ($create_check == '1' && $account->az_sub_type == 'FreeTrial') {
+            $ip_num = AzureApi::countAzurePublicNetworkIpv4($client, $account, $vm_location);
+            $available = 3 - $ip_num;
+            if ($vm_number + $ip_num >= 4) {
+                UserTask::end($task_id, true, json_encode(
+                    ['msg' => 'FreeTrial subscriptions are only allowed up to 3 IPs per region.']
+                ), true);
+                return json(Tools::msg('0', '创建失败', "试用订阅在每个区域的公网地址数量被限制为不能超过三个，当前区域还有 ${$available} 个公网地址配额。如不信任此检测结果，可以在创建页面将 “检查” 设置为 “忽略” 后重试"));
+            }
+        }
+
         // 资源组检查
         UserTask::update($task_id, (++$progress / $steps), '正在检查资源组');
         $resource_groups = AzureApi::getAzureResourceGroupsList($account->id, $account->az_sub_id);
@@ -943,7 +954,8 @@ class UserAzureServer extends UserBase
         foreach ($limits['value'] as $limit)
         {
             if ($limit['resourceType'] == 'virtualMachines') {
-                if (empty($limit['restrictions']['0']['reasonCode'])) {
+                // 若虚拟机规格中包含关键字p 则代表是arm64处理器 与默认镜像不兼容 因此需要过滤掉
+                if (empty($limit['restrictions']['0']['reasonCode']) && !Str::contains($limit['name'], 'p')) {
                     $size = [
                         'name' => $limit['name'],
                         'size_name' => $limit['name'] . ' => ' . $limit['capabilities']['2']['value'] . 'C_' . $limit['capabilities']['5']['value'] . 'GB',
