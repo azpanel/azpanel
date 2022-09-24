@@ -711,7 +711,7 @@ class UserAzureServer extends UserBase
                 throw new \Exception('此虚拟机 ipv4 是静态类型地址，不支持更换');
             }
 
-            UserTask::update($task_id, (++$count / $steps), "正在检查 ${$server->name} 归属订阅状态");
+            UserTask::update($task_id, (++$count / $steps), "正在检查 {$server->name} 归属订阅状态");
             $sub_info = AzureApi::getAzureSubscription($server->account_id); // array
             if ($sub_info['value']['0']['state'] != 'Enabled') {
                 UserTask::end($task_id, true, json_encode(
@@ -720,7 +720,7 @@ class UserAzureServer extends UserBase
                 return json(Tools::msg('0', '更换失败', '订阅状态被设置为 Disabled 或 Warned'));
             }
 
-            UserTask::update($task_id, (++$count / $steps), "正在分离 ${$server->name} 计算资源");
+            UserTask::update($task_id, (++$count / $steps), "正在分离 {$server->name} 计算资源");
             AzureApi::virtualMachinesDeallocate($server->account_id, $server->request_url);
 
             do {
@@ -730,7 +730,7 @@ class UserAzureServer extends UserBase
             } while ($status != 'PowerState/deallocated');
 
             sleep(3);
-            UserTask::update($task_id, (++$count / $steps), "正在启动虚拟机 ${$server->name}");
+            UserTask::update($task_id, (++$count / $steps), "正在启动虚拟机 {$server->name}");
             AzureApi::manageVirtualMachine('start', $server->account_id, $server->request_url);
 
             do {
@@ -739,7 +739,7 @@ class UserAzureServer extends UserBase
                 $status = $vm_status['statuses']['1']['code'] ?? 'null';
             } while ($status != 'PowerState/running');
 
-            UserTask::update($task_id, (++$count / $steps), "正在获取 ${$server->name} 新地址");
+            UserTask::update($task_id, (++$count / $steps), "正在获取 {$server->name} 新地址");
             $network_details = AzureApi::getAzureNetworkInterfacesDetails($server->account_id, $server->network_interfaces, $server->resource_group, $server->at_subscription_id);
             $server->network_details    = json_encode($network_details);
             $server->ip_address         = $network_details['properties']['ipConfigurations']['0']['properties']['publicIPAddress']['properties']['ipAddress'] ?? 'null';
