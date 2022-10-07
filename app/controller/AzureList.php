@@ -95,6 +95,13 @@ class AzureList
                 'version' => 'latest',
                 'offer' => '0001-com-ubuntu-server-focal',
             ],
+            'Ubuntu_22_04_gen1' => [
+                'display' => 'Ubuntu 22.04',
+                'sku' => '22_04-lts',
+                'publisher' => 'Canonical',
+                'version' => 'latest',
+                'offer' => '0001-com-ubuntu-server-jammy',
+            ],
             // Centos series
             'Centos_79' => [
                 'display' => 'Centos 7.9 (gen2)',
