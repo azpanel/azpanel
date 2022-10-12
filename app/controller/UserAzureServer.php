@@ -268,7 +268,7 @@ class UserAzureServer extends UserBase
                     }
                 }
                 if ($limit['capabilities']['4']['value'] == 'V1') {
-                    if (Str::contains($images[$vm_image]['sku'], 'gen2')) {
+                    if (Str::contains($images[$vm_image]['sku'], 'gen2') || Str::contains($images[$vm_image]['sku'], 'g2')) {
                         UserTask::end($task_id, true, json_encode(
                             ['msg' => 'The virtual machine model is not compatible with the image.']
                         ), true);
@@ -280,7 +280,7 @@ class UserAzureServer extends UserBase
             }
         }
 
-        if ($create_check == '1' && $account->az_sub_type == 'FreeTrial') {
+        if ($create_check == '1' && ($account->az_sub_type == 'FreeTrial' || $account->az_sub_type == 'Students')) {
             $ip_num = AzureApi::countAzurePublicNetworkIpv4($client, $account, $vm_location);
             $available = 3 - $ip_num;
             if ($vm_number + $ip_num >= 4) {

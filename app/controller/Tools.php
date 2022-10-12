@@ -109,7 +109,9 @@ class Tools
 
     public static function getMailAddress($text)
     {
-        $pattern = "/([a-z0-9]*[-_\.]*[a-z0-9]+)*[-_\.]*@([a-z0-9]*[-_]?[a-z0-9]+)+[\.]([a-z0-9]{2,3}|[a-z0-9]*[-_]?[a-z0-9]+)([\.][a-z0-9]{2})?/i";
+        // https://blog.csdn.net/weixin_39569112/article/details/115825074
+
+        $pattern = "/([a-z0-9\-_\.]+@[a-z0-9]+\.[a-z0-9\-_\.]+)/";
         preg_match($pattern, $text, $matches);
         return $matches[0];
     }

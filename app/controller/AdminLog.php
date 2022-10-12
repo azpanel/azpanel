@@ -66,14 +66,20 @@ class AdminLog extends AdminBase
         $total = json_decode($log->total, true);
         $error = json_decode($log->error);
         $params = json_decode($log->params);
+        $ignore_check = isset($params->account->check) ? $params->account->check : null;
+        $error_code = isset($error->error->code) ? $error->error->code : null;
         $error = json_encode($error, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
         $params = json_encode($params, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
 
-        View::assign('log', $log);
-        View::assign('count', '0');
-        View::assign('total', $total);
-        View::assign('error', $error);
-        View::assign('params', $params);
+        View::assign([
+            'log' => $log,
+            'count' => '0',
+            'total' => $total,
+            'error' => $error,
+            'params' => $params,
+            'error_code' => $error_code,
+            'ignore_check' => $ignore_check,
+        ]);
         return View::fetch('../app/view/admin/log/task_details.html');
     }
 }

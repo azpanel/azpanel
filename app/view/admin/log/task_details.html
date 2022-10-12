@@ -20,6 +20,7 @@
                 <i class="mdui-icon material-icons">event_available</i>&nbsp;任务
               </p>
               <div class="mdui-typo">
+                <!-- display details -->
                 <p>任务编号：<code>{$log.id}</code></p>
                 <p>提交用户：<code>{$log.user_id}</code></p>
                 <p>任务进度：<code>{$log.schedule}</code></p>
@@ -29,14 +30,26 @@
                 {if !empty($log.total_time)}
                 <p>累计耗时：<code>{$log.total_time}</code></p>
                 {/if}
+
+                <!-- key item -->
+                {if isset($ignore_check)}
+                <hr />
+                <p class="mdui-m-t-2">创建检查：<code>{:var_dump($ignore_check)}</code></p>
+                {/if}
+                {if isset($error_code)}
+                <p>错误代码：<code>{$error_code}</code></p>
+                {/if}
+
+                <!-- display button -->
+                <hr />
                 {if $log.status != 'completed' && $error != 'null'}
-                <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-pink mdui-ripple"
+                <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-pink mdui-ripple mdui-m-t-2"
                   mdui-dialog="{target: '#task-error'}">
                   查看错误
                 </button>
                 {/if}
                 {if !empty($params) && $params != 'null'}
-                <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple"
+                <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple mdui-m-t-2"
                   mdui-dialog="{target: '#task-params'}">
                   查看参数
                 </button>
