@@ -14,6 +14,7 @@ use app\model\Azure;
 use app\model\Share;
 use app\model\AzureServer;
 use app\model\AzureRecycle;
+use app\model\Proxy;
 
 class UserAzure extends UserBase
 {
@@ -274,6 +275,12 @@ class UserAzure extends UserBase
         $remark_filling = input('remark_filling/s');
 
         $proxy = input('proxy/s');
+        // proxy归属判断
+        $proxy_model = Proxy::where('id', $proxy)->find();
+        if (intval($proxy) != 0 && ($proxy_model == null || $proxy_model->user_id != session('user_id'))) {
+            return json(Tools::msg('0', '添加失败', '代理设置错误'));
+        }
+
 
         // 如果没填 api 信息
         if ($az_app_id == '' && $az_secret == '' && $az_tenant_id == '' && $az_configs == '') {
@@ -389,6 +396,12 @@ class UserAzure extends UserBase
         $az_email  = input('az_email/s');
         $az_passwd = input('az_passwd/s');
         $proxy = input('proxy/s');
+
+        // proxy归属判断
+        $proxy_model = Proxy::where('id', $proxy)->find();
+        if (intval($proxy) != 0 && ($proxy_model == null || $proxy_model->user_id != session('user_id'))) {
+            return json(Tools::msg('0', '添加失败', '代理设置错误'));
+        }
 
         // 如果邮箱不规范
         if (!filter_var($az_email, FILTER_VALIDATE_EMAIL)) {
