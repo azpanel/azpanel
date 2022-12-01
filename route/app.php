@@ -87,6 +87,9 @@ Route::delete('/user/server/azure/remove/:uuid',  'UserAzureServer/delete');
 Route::delete('/user/server/azure/destroy/:uuid', 'UserAzureServer/destroy');
 Route::get('/user/server/azure/:id/chart/[:gap]', 'UserAzureServer/chart');
 
+// 代理设置
+Route::resource('/user/server/azure/proxy',             'UserAzureProxy');
+
 // 管理员
 Route::get('/admin',                              'AdminDashboard/index');
 Route::resource('/admin/ann',                     'AdminAnn');

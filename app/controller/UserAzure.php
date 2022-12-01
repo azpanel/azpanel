@@ -184,7 +184,12 @@ class UserAzure extends UserBase
             ->field('user_mark')
             ->select();
 
+        $proxies = Db::table('proxy')
+        ->where('user_id', session('user_id'))
+        ->select();
+
         View::assign('notes', $notes);
+        View::assign('proxies', $proxies);
         return View::fetch('../app/view/user/azure/create.html');
     }
 
@@ -220,6 +225,11 @@ class UserAzure extends UserBase
             'password' => $az_api['password'],
             'tenant' => $az_api['tenant']
         ];
+
+        $proxies = Db::table('proxy')
+        ->where('user_id', session('user_id'))
+        ->select();
+        View::assign('proxies', $proxies);
 
         View::assign('az_api', $az_api);
         View::assign('account', $account);
@@ -262,6 +272,8 @@ class UserAzure extends UserBase
         $az_configs   = input('az_configs/s');
         $ignore_status = input('ignore_status/s');
         $remark_filling = input('remark_filling/s');
+
+        $proxy = input('proxy/s');
 
         // 如果没填 api 信息
         if ($az_app_id == '' && $az_secret == '' && $az_tenant_id == '' && $az_configs == '') {
@@ -327,6 +339,7 @@ class UserAzure extends UserBase
         $account->az_api     = json_encode($az_api);
         $account->created_at = time();
         $account->updated_at = time();
+        $account->proxy = $proxy;
         $account->save();
 
         try {
@@ -375,6 +388,7 @@ class UserAzure extends UserBase
         $user_mark = input('user_mark/s');
         $az_email  = input('az_email/s');
         $az_passwd = input('az_passwd/s');
+        $proxy = input('proxy/s');
 
         // 如果邮箱不规范
         if (!filter_var($az_email, FILTER_VALIDATE_EMAIL)) {
@@ -385,6 +399,7 @@ class UserAzure extends UserBase
         $account->az_email   = $az_email;
         $account->az_passwd  = $az_passwd;
         $account->user_mark  = $user_mark;
+        $account->proxy  = $proxy;
         $account->save();
 
         return json(Tools::msg('1', '修改成功', '将返回账户列表'));

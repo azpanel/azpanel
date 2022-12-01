@@ -1,0 +1,70 @@
+{include file="../app/view/user/header.html" title="修改代理" /}
+
+<div class="mdui-container-fluid">
+  <div class="mdui-row">
+    <div
+      class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+      <div class="mdui-container-fluid">
+        <p style="color: #3F51B5; font-size: 34px">修改代理</p>
+      </div>
+
+      <div class="mdui-typo">
+        <p>修改此条请求代理</p>
+        <p>可使用http代理/socks5代理 请按照规范格式填写 "http://username:password@192.168.16.1:10"</p>
+      </div>
+
+      <div class="mdui-card mdui-m-t-2" style="overflow: visible">
+        <div class="mdui-card-content mdui-container">
+          <div class="mdui-col-sm-12 mdui-col-md-6">
+            <div class="mdui-textfield mdui-textfield-floating-label">
+              <i class="mdui-icon material-icons">bookmark</i>
+              <label class="mdui-textfield-label">代理名称</label>
+              <input class="mdui-textfield-input" id="proxy_name" value="{$proxy.name}" required>
+            </div>
+          </div>
+          <div class="mdui-col-sm-12 mdui-col-md-6">
+            <div class="mdui-textfield mdui-textfield-floating-label">
+              <i class="mdui-icon material-icons">network_wifi</i>
+              <label class="mdui-textfield-label">代理</label>
+              <input class="mdui-textfield-input" id="proxy_proxy" value="{$proxy.proxy}" required>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mdui-card mdui-m-t-2">
+        <div class="mdui-card-actions">
+          <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised" id="update">修改</button>
+        </div>
+      </div>
+
+      <div class="mdui-m-t-2"></div>
+
+    </div>
+  </div>
+</div>
+</body>
+
+<script>
+  var $ = mdui.$;
+  $('#update').on('click', function () {
+    $.ajax({
+      method: 'PUT',
+      url: '/user/server/azure/proxy/{$proxy.id}',
+      data: {
+        proxy_name: $('#proxy_name').val(),
+        proxy_proxy: $('#proxy_proxy').val()
+      },
+      dataType: "json",
+      success: function (data) {
+        mdui.alert(data.content, data.title);
+        if (data.status == '1') {
+          setTimeout("window.location = '/user/server/azure/proxy'", 1500);
+        }
+      }
+    });
+  });
+</script>
+{include file="../app/view/user/footer.html" /}
+
+</html>

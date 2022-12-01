@@ -63,6 +63,15 @@
               <textarea class="mdui-textfield-input" disabled>{$az_api.password}</textarea>
             </div>
           </div>
+          <div class="mdui-col-sm-12 mdui-col-md-6">
+            代理：
+            <select id="proxy" class="mdui-select" mdui-select>
+              <option value="0">无</option>
+              {volist name="proxies" id="proxy"}
+              <option value="{$proxy.id}" {if ($account.proxy == $proxy.id)} selected {/if}>{$proxy.name} - {$proxy.proxy}</option>
+              {/volist}
+            </select>
+          </div>
           <div class="mdui-col-sm-12 mdui-col-md-12">
             <p style="color: #3F51B5; font-size: 18px">操作</p>
             <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-blue-grey"
@@ -102,7 +111,8 @@
           data: {
             user_mark: $('#user_mark').val(),
             az_email: $('#az_email').val(),
-            az_passwd: $('#az_passwd').val()
+            az_passwd: $('#az_passwd').val(),
+            proxy: $('#proxy').val()
           },
           dataType: "json",
           success: function (data) {
