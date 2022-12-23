@@ -41,8 +41,14 @@ class Tools extends Command
         {
             try {
                 $statistics = AzureApi::getVirtualMachineStatistics($server, $start_time, $stop_time);
-                $network_in_total  = $statistics['value']['3']['timeseries']['0']['data'];
-                $network_out_total = $statistics['value']['4']['timeseries']['0']['data'];
+                foreach ($statistics['value'] as $key => $value) {
+                    if ($value['name']['value'] == 'Network In Total') {
+                        $network_in_total  = $statistics['value'][$key]['timeseries']['0']['data'];
+                    }
+                    if ($value['name']['value'] == 'Network Out Total') {
+                        $network_out_total = $statistics['value'][$key]['timeseries']['0']['data'];
+                    }
+                }
 
                 $in_total = UserAzureServer::processNetworkData($network_in_total, true);
                 $out_total = UserAzureServer::processNetworkData($network_out_total, true);

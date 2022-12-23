@@ -46,8 +46,14 @@ class trafficControlStop extends Command
                 try {
                     //$pointer = ($rule->index == 'traffic_in') ? '3' : '4';
                     $statistics = AzureApi::getVirtualMachineStatistics($server, $start_time, $stop_time);
-                    $in_indicator_usage_raw = $statistics['value']['3']['timeseries']['0']['data'];
-                    $out_indicator_usage_raw = $statistics['value']['4']['timeseries']['0']['data'];
+                    foreach ($statistics['value'] as $key => $value) {
+                        if ($value['name']['value'] == 'Network In Total') {
+                            $in_indicator_usage_raw  = $statistics['value'][$key]['timeseries']['0']['data'];
+                        }
+                        if ($value['name']['value'] == 'Network Out Total') {
+                            $out_indicator_usage_raw = $statistics['value'][$key]['timeseries']['0']['data'];
+                        }
+                    }
                     $in_indicator_usage = UserAzureServer::processNetworkData($in_indicator_usage_raw, true);
                     $out_indicator_usage = UserAzureServer::processNetworkData($out_indicator_usage_raw, true);
 

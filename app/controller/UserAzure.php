@@ -463,10 +463,10 @@ class UserAzure extends UserBase
                 $stop_time = date('Y-m-d\T H:i:00\Z', time() - 28800);
                 $cumulative_running_time = (time() - $vm_disk_created) / 2592000;
                 $statistics = AzureApi::getVirtualMachineStatistics($server, $start_time, $stop_time);
-                if (!isset($statistics['value']['3']['timeseries']['0']['data'])) {
-                    $network_in_total = $statistics['value']['0']['timeseries']['0']['data'];
-                } else {
-                    $network_in_total = $statistics['value']['3']['timeseries']['0']['data'];
+                foreach ($statistics['value'] as $key => $value) {
+                    if ($value['name']['value'] == 'Network In Total') {
+                        $network_in_total  = $statistics['value'][$key]['timeseries']['0']['data'];
+                    }
                 }
                 $network_in_traffic = UserAzureServer::processNetworkData($network_in_total, true);
                 $traffic_charges += 0.08 * $network_in_traffic;
