@@ -61,7 +61,7 @@ class UserAzureServer extends UserBase
         $ssh_key = SshKey::where('user_id', session('user_id'))->find();
 
         $designated_id = (int) input('id');
-        if ($designated_id != '') {
+        if ($designated_id !== 0) {
             $designated_account = Azure::where('user_id', session('user_id'))->where('id', $designated_id)->find();
             if ($designated_account == null) {
                 return View::fetch('../app/view/user/reject.html');

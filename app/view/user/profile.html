@@ -55,17 +55,17 @@
             <div class="mdui-textfield mdui-textfield-floating-label mdui-col-md-4">
               <i class="mdui-icon material-icons">email</i>
               <label class="mdui-textfield-label">接收邮箱</label>
-              <textarea class="mdui-textfield-input" id="user_email">{$profile.notify_email}</textarea>
+              <textarea class="mdui-textfield-input" id="user_email">{$profile.notify_email ?? ''}</textarea>
             </div>
             <div class="mdui-textfield mdui-textfield-floating-label mdui-col-md-4">
               <i class="mdui-icon material-icons">person</i>
               <label class="mdui-textfield-label">Telegram 用户名</label>
-              <textarea class="mdui-textfield-input" id="user_telegram">{$profile.notify_tg}</textarea>
+              <textarea class="mdui-textfield-input" id="user_telegram">{$profile.notify_tg ?? ''}</textarea>
             </div>
             <div class="mdui-textfield mdui-textfield-floating-label mdui-col-md-4">
               <i class="mdui-icon material-icons">code</i>
               <label class="mdui-textfield-label">Telegram UID</label>
-              <textarea class="mdui-textfield-input" id="user_telegram_id">{$profile.notify_tgid}</textarea>
+              <textarea class="mdui-textfield-input" id="user_telegram_id">{$profile.notify_tgid ?? ''}</textarea>
             </div>
 
             <button id="update_notify"

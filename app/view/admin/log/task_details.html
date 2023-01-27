@@ -42,13 +42,13 @@
 
                 <!-- display button -->
                 <hr />
-                {if $log.status != 'completed' && $error != 'null'}
+                {if $log.status !== 'completed' && $error !== 'null'}
                 <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-pink mdui-ripple mdui-m-t-2"
                   mdui-dialog="{target: '#task-error'}">
                   查看错误
                 </button>
                 {/if}
-                {if !empty($params) && $params != 'null'}
+                {if !empty($params) && $params !== 'null'}
                 <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple mdui-m-t-2"
                   mdui-dialog="{target: '#task-params'}">
                   查看参数

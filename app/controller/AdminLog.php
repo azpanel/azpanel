@@ -64,7 +64,7 @@ class AdminLog extends AdminBase
     {
         $log = Task::find($id);
         $total = json_decode($log->total, true);
-        $error = json_decode($log->error);
+        $error = isset($log->error) ? json_decode($log->error) : null;
         $params = json_decode($log->params);
         $ignore_check = isset($params->account->check) ? $params->account->check : null;
         $error_code = isset($error->error->code) ? $error->error->code : null;
