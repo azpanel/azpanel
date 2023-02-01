@@ -92,6 +92,15 @@
               </label>
             </div>
           </div>
+          <div class="mdui-col-sm-12 mdui-col-md-6">
+            代理：
+            <select id="proxy" class="mdui-select" mdui-select>
+              <option value="0" selected>无</option>
+              {volist name="proxies" id="proxy"}
+              <option value="{$proxy.id}">{$proxy.name} - {$proxy.proxy}</option>
+              {/volist}
+            </select>
+          </div>
           <div class="mdui-col-sm-12 mdui-col-md-12">
             <div class="mdui-textfield mdui-textfield-floating-label">
               <i class="mdui-icon material-icons">link</i>
@@ -143,6 +152,7 @@
             share_link: $('#share_link').val(),
             remark_filling: $('#remark_filling').val(),
             ignore_status: $("#ignore_status").is(":checked"),
+            proxy: $('#proxy').val()
           },
           dataType: "json",
           success: function (data) {
