@@ -1,7 +1,7 @@
 <?php
 
-use think\migration\Migrator;
 use think\migration\db\Column;
+use think\migration\Migrator;
 
 class SshKeyTableIndex extends Migrator
 {
@@ -29,7 +29,6 @@ class SshKeyTableIndex extends Migrator
     public function change()
     {
         $table = $this->table('ssh_key');
-        $table->addIndex(array('user_id'), array('unique' => true, 'name' => 'user_id'))
-            ->update();
+        $table->addIndex(['user_id'], ['unique' => true, 'name' => 'user_id'])->update();
     }
 }

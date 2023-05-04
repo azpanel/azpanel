@@ -1,5 +1,5 @@
 <?php
-declare (strict_types = 1);
+declare(strict_types=1);
 
 namespace app\command;
 
@@ -22,16 +22,15 @@ class closeTimeoutTask extends Command
         $count = 0;
         $time_limit = time() - 3600;
         $tasks = Task::where('status', 'running')
-        ->where('updated_at', '<', $time_limit)
-        ->select();
+            ->where('updated_at', '<', $time_limit)
+            ->select();
 
-        foreach ($tasks as $task)
-        {
+        foreach ($tasks as $task) {
             ++$count;
             $task->status = 'closed';
             $info = [
                 'time' => time(),
-                'info' => '任务被系统标记为关闭'
+                'info' => '任务被系统标记为关闭',
             ];
             $total = json_decode($task->total, true);
             array_push($total, $info);
@@ -40,6 +39,6 @@ class closeTimeoutTask extends Command
             $task->save();
         }
 
-        $output->writeln("<info>A total of $count timeout tasks are closed this time.</info>");
+        $output->writeln("<info>A total of {$count} timeout tasks are closed this time.</info>");
     }
 }

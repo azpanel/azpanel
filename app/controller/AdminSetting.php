@@ -1,4 +1,5 @@
 <?php
+
 namespace app\controller;
 
 use app\controller\Notify;
@@ -10,23 +11,23 @@ class AdminSetting extends AdminBase
 {
     public function baseIndex()
     {
-        View::assign('switch', Config::class('switch'));
-        View::assign('register', Config::class('register'));
-        View::assign('verify', Config::class('verification_code'));
+        View::assign('switch', Config::group('switch'));
+        View::assign('register', Config::group('register'));
+        View::assign('verify', Config::group('verification_code'));
         return View::fetch('../app/view/admin/setting/index.html');
     }
 
     public function baseSave()
     {
-        $class = input('class');
+        $class = input('class/s');
 
-        if ($class == 'notify') {
+        if ($class === 'notify') {
             $list = ['email_notify', 'telegram_notify'];
-        } elseif ($class == 'register') {
+        } elseif ($class === 'register') {
             $list = ['allow_public_reg', 'reg_email_veriy'];
-        } elseif ($class == 'verify') {
+        } elseif ($class === 'verify') {
             $list = ['captcha_provider', 'registration_verification_code', 'login_verification_code', 'reset_password_verification_code', 'create_virtual_machine_verification_code'];
-        } elseif ($class == 'hcaptcha') {
+        } elseif ($class === 'hcaptcha') {
             $list = ['hcaptcha_secret', 'hcaptcha_site_key'];
         }
 
@@ -41,7 +42,7 @@ class AdminSetting extends AdminBase
 
     public function emailIndex()
     {
-        View::assign('smtp', Config::class('smtp'));
+        View::assign('smtp', Config::group('smtp'));
         return View::fetch('../app/view/admin/setting/email.html');
     }
 
@@ -50,7 +51,7 @@ class AdminSetting extends AdminBase
         $list = ['smtp_host', 'smtp_username', 'smtp_password', 'smtp_port', 'smtp_name', 'smtp_sender'];
 
         foreach ($list as $item) {
-            if (input($item) == '') {
+            if ((string) input($item) === '') {
                 return json(Tools::msg('0', '保存失败', '请填写所有项目'));
             }
 
@@ -64,9 +65,9 @@ class AdminSetting extends AdminBase
 
     public function emailPushTest()
     {
-        $recipient = input('recipient');
+        $recipient = input('recipient/s');
 
-        if ($recipient == '') {
+        if ($recipient === '') {
             return json(Tools::msg('0', '发送失败', '请填写收件人'));
         }
 
@@ -85,9 +86,9 @@ class AdminSetting extends AdminBase
 
     public function telegramPushTest()
     {
-        $recipient = (int) input('recipient');
+        $recipient = input('recipient/s');
 
-        if ($recipient == '') {
+        if ($recipient === '') {
             return json(Tools::msg('0', '发送失败', '请填写收信用户 uid'));
         }
 
@@ -102,7 +103,7 @@ class AdminSetting extends AdminBase
 
     public function telegramIndex()
     {
-        View::assign('telegram', Config::class('telegram'));
+        View::assign('telegram', Config::group('telegram'));
         return View::fetch('../app/view/admin/setting/telegram.html');
     }
 
@@ -111,7 +112,7 @@ class AdminSetting extends AdminBase
         $list = ['telegram_account', 'telegram_token'];
 
         foreach ($list as $item) {
-            if (input($item) == '') {
+            if ((string) input($item) === '') {
                 return json(Tools::msg('0', '保存失败', '请填写所有项目'));
             }
 
@@ -125,7 +126,7 @@ class AdminSetting extends AdminBase
 
     public function customIndex()
     {
-        View::assign('custom', Config::class('custom'));
+        View::assign('custom', Config::group('custom'));
         return View::fetch('../app/view/admin/setting/custom.html');
     }
 
@@ -144,7 +145,7 @@ class AdminSetting extends AdminBase
 
     public function resolvIndex()
     {
-        View::assign('config', Config::class('resolv'));
+        View::assign('config', Config::group('resolv'));
         return View::fetch('../app/view/admin/setting/resolv.html');
     }
 

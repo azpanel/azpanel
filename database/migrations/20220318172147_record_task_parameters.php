@@ -1,7 +1,7 @@
 <?php
 
-use think\migration\Migrator;
 use think\migration\db\Column;
+use think\migration\Migrator;
 
 class RecordTaskParameters extends Migrator
 {
@@ -29,11 +29,11 @@ class RecordTaskParameters extends Migrator
     public function change()
     {
         $table = $this->table('task');
-        $table->addColumn('params', 'text', array(
+        $table->addColumn('params', 'text', [
             'comment' => '任务参数',
             'default' => null,
             'null' => true,
-            'after' => 'name'
-            ))->update();
+            'after' => 'name',
+        ])->update();
     }
 }

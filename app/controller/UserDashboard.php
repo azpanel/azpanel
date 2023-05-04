@@ -1,26 +1,26 @@
 <?php
+
 namespace app\controller;
 
-use app\model\User;
+use app\controller\Tools;
 use app\model\Ann;
-use app\model\Share;
-use app\model\Config;
-use app\model\SshKey;
-use app\model\LoginLog;
 use app\model\AutoRefresh;
 use app\model\AzureRecycle;
-use think\facade\Log;
-use think\facade\View;
+use app\model\Config;
+use app\model\LoginLog;
+use app\model\Share;
+use app\model\SshKey;
+use app\model\User;
 use phpseclib3\Crypt\RSA;
-use app\controller\Tools;
+use think\facade\View;
 
 class UserDashboard extends UserBase
 {
     public function index()
     {
         $anns = Ann::where('status', '1')
-        ->order('id', 'desc')
-        ->select();
+            ->order('id', 'desc')
+            ->select();
 
         View::assign('anns', $anns);
         return View::fetch('../app/view/user/index.html');
@@ -64,8 +64,8 @@ class UserDashboard extends UserBase
         $user = User::find(session('user_id'));
 
         $logs = LoginLog::where('email', $user->email)
-        ->order('id', 'desc')
-        ->paginate(30);
+            ->order('id', 'desc')
+            ->paginate(30);
 
         $page = $logs->render();
 
@@ -76,22 +76,22 @@ class UserDashboard extends UserBase
 
     public function profile()
     {
-        $user_id     = session('user_id');
-        $profile     = User::find($user_id);
-        $telegram    = Config::class('telegram');
-        $switch      = Config::class('switch');
+        $user_id = session('user_id');
+        $profile = User::find($user_id);
+        $telegram = Config::group('telegram');
+        $switch = Config::group('switch');
         $personalise = json_decode($profile->personalise, true);
 
         $refresh_setting = AutoRefresh::where('user_id', $user_id)->find();
-        if ($refresh_setting == null) {
-            $auto_refresh = new AutoRefresh;
+        if ($refresh_setting === null) {
+            $auto_refresh = new AutoRefresh();
 
-            $auto_refresh->user_id         = $user_id;
-            $auto_refresh->rate            = '24';
-            $auto_refresh->push_swicth     = '0';
-            $auto_refresh->function_swicth = '0';
-            $auto_refresh->created_at      = time();
-            $auto_refresh->updated_at      = time();
+            $auto_refresh->user_id = $user_id;
+            $auto_refresh->rate = 24;
+            $auto_refresh->push_swicth = 0;
+            $auto_refresh->function_swicth = 0;
+            $auto_refresh->created_at = time();
+            $auto_refresh->updated_at = time();
             $auto_refresh->save();
 
             $refresh_setting = AutoRefresh::where('user_id', $user_id)->find();
@@ -114,21 +114,21 @@ class UserDashboard extends UserBase
 
     public function savePasswd()
     {
-        $passwd       = Tools::encryption(input('now_passwd/s'));
-        $new_passwd   = input('new_passwd/s');
+        $passwd = Tools::encryption(input('now_passwd/s'));
+        $new_passwd = input('new_passwd/s');
         $again_passwd = input('again_passwd/s');
 
-        if ($passwd == '' || $new_passwd == '' || $again_passwd == '') {
+        if ($passwd === '' || $new_passwd === '' || $again_passwd === '') {
             return json(Tools::msg('0', '修改失败', '完成所有必要输入'));
         }
 
-        if ($new_passwd != $again_passwd) {
+        if ($new_passwd !== $again_passwd) {
             return json(Tools::msg('0', '修改失败', '输入的新密码不一致'));
         }
 
         $user = User::find(session('user_id'));
 
-        if ($user->passwd != $passwd) {
+        if ($user->passwd !== $passwd) {
             return json(Tools::msg('0', '修改失败', '当前密码不正确'));
         }
 
@@ -140,17 +140,17 @@ class UserDashboard extends UserBase
 
     public function saveNotify()
     {
-        $user_id    = session('user_id');
+        $user_id = session('user_id');
         $user_email = input('user_email/s');
 
         if (!Tools::emailCheck($user_email)) {
             return json(Tools::msg('0', '保存失败', '邮箱格式不规范'));
         }
 
-        $user               = User::find($user_id);
+        $user = User::find($user_id);
         $user->notify_email = input('user_email/s');
-        $user->notify_tg    = input('user_telegram/s');
-        $user->notify_tgid  = (int) input('user_telegram_id/s');
+        $user->notify_tg = input('user_telegram/s');
+        $user->notify_tgid = (int) input('user_telegram_id/s');
         $user->save();
 
         return json(Tools::msg('1', '保存结果', '保存成功'));
@@ -158,7 +158,7 @@ class UserDashboard extends UserBase
 
     public function savePersonalise()
     {
-        $vm_user   = input('vm_default_identity/s');
+        $vm_user = input('vm_default_identity/s');
         $vm_passwd = input('vm_default_credentials/s');
         $prohibit_user = ['root', 'admin', 'centos', 'debian', 'ubuntu'];
 
@@ -172,19 +172,19 @@ class UserDashboard extends UserBase
 
         $uppercase = preg_match('@[A-Z]@', $vm_passwd);
         $lowercase = preg_match('@[a-z]@', $vm_passwd);
-        $number    = preg_match('@[0-9]@', $vm_passwd);
+        $number = preg_match('@[0-9]@', $vm_passwd);
 
         if (!$uppercase || !$lowercase || !$number || strlen($vm_passwd) < 12 || strlen($vm_passwd) > 72) {
             return json(Tools::msg('0', '保存失败', '密码不符合规范，请阅读创建虚拟机页面的使用说明'));
         }
 
         $personalise = [
-            'vm_size'                => input('vm_size/s'),
-            'vm_image'               => input('vm_image/s'),
-            'vm_location'            => input('vm_location/s'),
-            'vm_disk_size'           => input('vm_disk_size/s'),
-            'vm_default_script'      => input('vm_default_script/s'),
-            'vm_default_identity'    => input('vm_default_identity/s'),
+            'vm_size' => input('vm_size/s'),
+            'vm_image' => input('vm_image/s'),
+            'vm_location' => input('vm_location/s'),
+            'vm_disk_size' => input('vm_disk_size/s'),
+            'vm_default_script' => input('vm_default_script/s'),
+            'vm_default_identity' => input('vm_default_identity/s'),
             'vm_default_credentials' => input('vm_default_credentials/s'),
         ];
 
@@ -197,22 +197,22 @@ class UserDashboard extends UserBase
 
     public function saveRefresh()
     {
-        $user_id                    = session('user_id');
-        $auto_refresh_rate          = input('auto_refresh_rate/s');
-        $auto_refresh_switch        = input('auto_refresh_switch/s');
-        $auto_refresh_telegram_push = input('auto_refresh_telegram_push/s');
+        $user_id = session('user_id');
+        $auto_refresh_rate = input('auto_refresh_rate/d');
+        $auto_refresh_switch = input('auto_refresh_switch/d');
+        $auto_refresh_telegram_push = input('auto_refresh_telegram_push/d');
 
         $user = User::find($user_id);
-        if ($auto_refresh_telegram_push == '1' && $auto_refresh_switch == '1') {
-            if (empty($user->notify_tgid)) {
+        if ($auto_refresh_telegram_push === 1 && $auto_refresh_switch === 1) {
+            if (!isset($user->notify_tgid)) {
                 return json(Tools::msg('0', '保存失败', '请先设置 Telegram 推送接收账户'));
             }
         }
 
         $refresh_setting = AutoRefresh::where('user_id', $user_id)->find();
-        $refresh_setting->rate            = (int) $auto_refresh_rate;
-        $refresh_setting->push_swicth     = (int) $auto_refresh_telegram_push;
-        $refresh_setting->function_swicth = (int) $auto_refresh_switch;
+        $refresh_setting->rate = $auto_refresh_rate;
+        $refresh_setting->push_swicth = $auto_refresh_telegram_push;
+        $refresh_setting->function_swicth = $auto_refresh_switch;
         $refresh_setting->save();
 
         return json(Tools::msg('1', '保存结果', '保存成功'));
@@ -225,7 +225,7 @@ class UserDashboard extends UserBase
         $public = $ssh_key->getPublicKey()->toString('OpenSSH');
         $private = $ssh_key->toString('OpenSSH');
 
-        $key = new SshKey;
+        $key = new SshKey();
         $key->name = $name;
         $key->user_id = session('user_id');
         $key->public_key = $public;

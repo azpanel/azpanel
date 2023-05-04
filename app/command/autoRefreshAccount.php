@@ -1,5 +1,5 @@
 <?php
-declare (strict_types = 1);
+declare(strict_types=1);
 
 namespace app\command;
 
@@ -7,8 +7,8 @@ use app\controller\AzureApi;
 use app\controller\Notify;
 use app\controller\UserAzure;
 use app\model\AutoRefresh;
-use app\model\AzureServer;
 use app\model\Azure;
+use app\model\AzureServer;
 use app\model\Config;
 use app\model\User;
 use think\console\Command;
@@ -33,7 +33,7 @@ class autoRefreshAccount extends Command
         $all_tasks = AutoRefresh::where('function_swicth', '1')->select();
 
         foreach ($all_tasks as $task) {
-            if ($hour % $task->rate == '0') {
+            if ($hour % $task->rate === 0) {
                 $count = 0;
                 $text = '以下账户订阅状态发生了变动：';
 
@@ -52,14 +52,13 @@ class autoRefreshAccount extends Command
                         $account->updated_at = time();
                         $account->save();
 
-                        if ($sub_info['value']['0']['state'] != 'Enabled') {
+                        if ($sub_info['value']['0']['state'] !== 'Enabled') {
                             $count += 1;
                             $text .= PHP_EOL . $account->az_email . ' (' . $account->az_sub_type . ') ' . ' [' . $account->az_sub_status . ']';
                             $text .= PHP_EOL . '└';
 
                             $servers = AzureServer::where('account_id', $account->id)->select();
-                            foreach ($servers as $server)
-                            {
+                            foreach ($servers as $server) {
                                 $text .= $server->name . ',';
                             }
 
@@ -72,9 +71,9 @@ class autoRefreshAccount extends Command
                     }
                 }
 
-                if ($telegram_notify == true && $count != '0' && $task->push_swicth == '1') {
+                if ($telegram_notify === true && $count !== 0 && $task->push_swicth === 1) {
                     $user = User::where('id', $task->user_id)->find();
-                    if (!empty($user->notify_tgid)) {
+                    if (isset($user->notify_tgid)) {
                         try {
                             Notify::telegram($user->notify_tgid, $text);
                         } catch (\Exception $e) {

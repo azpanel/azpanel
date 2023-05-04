@@ -1,7 +1,7 @@
 <?php
 
-use think\migration\Migrator;
 use think\migration\db\Column;
+use think\migration\Migrator;
 
 class SkipTrafficStatistics extends Migrator
 {
@@ -29,10 +29,10 @@ class SkipTrafficStatistics extends Migrator
     public function change()
     {
         $table = $this->table('azure_server');
-        $table->addColumn('skip', 'integer', array(
+        $table->addColumn('skip', 'integer', [
             'comment' => '跳过日流量获取',
             'default' => '0',
-            'after' => 'updated_at'
-            ))->update();
+            'after' => 'updated_at',
+        ])->update();
     }
 }

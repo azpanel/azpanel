@@ -1,7 +1,7 @@
 <?php
 
-use think\migration\Migrator;
 use think\migration\db\Column;
+use think\migration\Migrator;
 
 class SynchronousParsingAfterCreation extends Migrator
 {

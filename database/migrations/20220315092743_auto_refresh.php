@@ -1,7 +1,7 @@
 <?php
 
-use think\migration\Migrator;
 use think\migration\db\Column;
+use think\migration\Migrator;
 
 class AutoRefresh extends Migrator
 {
@@ -29,12 +29,12 @@ class AutoRefresh extends Migrator
     public function change()
     {
         $table = $this->table('auto_refresh');
-        $table->addColumn('user_id', 'integer', array('comment' => '用户'))
-            ->addColumn('rate', 'integer', array('comment' => '刷新频率'))
-            ->addColumn('push_swicth', 'integer', array('comment' => '推送开关'))
-            ->addColumn('function_swicth', 'integer', array('comment' => '刷新功能开关'))
-            ->addColumn('created_at', 'integer', array('comment' => '创建时间'))
-            ->addColumn('updated_at', 'integer', array('comment' => '更新时间'))
+        $table->addColumn('user_id', 'integer', ['comment' => '用户'])
+            ->addColumn('rate', 'integer', ['comment' => '刷新频率'])
+            ->addColumn('push_swicth', 'integer', ['comment' => '推送开关'])
+            ->addColumn('function_swicth', 'integer', ['comment' => '刷新功能开关'])
+            ->addColumn('created_at', 'integer', ['comment' => '创建时间'])
+            ->addColumn('updated_at', 'integer', ['comment' => '更新时间'])
             ->create();
     }
 }

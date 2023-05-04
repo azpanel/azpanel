@@ -1,7 +1,7 @@
 <?php
 
-use think\migration\Migrator;
 use think\migration\db\Column;
+use think\migration\Migrator;
 
 class TrafficControlLog extends Migrator
 {
@@ -29,8 +29,8 @@ class TrafficControlLog extends Migrator
     public function change()
     {
         $table = $this->table('traffic_control_log');
-        $table->addColumn('rule_name', 'text', array('comment' => '规则名称', 'after' => 'rule_id'))
-            ->addColumn('vm_name', 'text', array('comment' => '虚拟机名称', 'after' => 'vm_id'))
+        $table->addColumn('rule_name', 'text', ['comment' => '规则名称', 'after' => 'rule_id'])
+            ->addColumn('vm_name', 'text', ['comment' => '虚拟机名称', 'after' => 'vm_id'])
             ->update();
     }
 }

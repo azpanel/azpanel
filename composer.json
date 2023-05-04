@@ -31,7 +31,8 @@
         "topthink/think-migration": "^3.0",
         "phpseclib/phpseclib": "^3.0",
         "alibabacloud/client": "^1.5",
-        "topthink/think-captcha": "^3.0"
+        "topthink/think-captcha": "^3.0",
+        "nunomaduro/phpinsights": "^2.8"
     },
     "require-dev": {
         "symfony/var-dumper": "^4.2",
@@ -46,7 +47,10 @@
         }
     },
     "config": {
-        "preferred-install": "dist"
+        "preferred-install": "dist",
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     },
     "scripts": {
         "post-autoload-dump": [

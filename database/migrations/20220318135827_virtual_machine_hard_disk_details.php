@@ -1,7 +1,7 @@
 <?php
 
-use think\migration\Migrator;
 use think\migration\db\Column;
+use think\migration\Migrator;
 
 class VirtualMachineHardDiskDetails extends Migrator
 {
@@ -29,11 +29,11 @@ class VirtualMachineHardDiskDetails extends Migrator
     public function change()
     {
         $table = $this->table('azure_server');
-        $table->addColumn('disk_details', 'text', array(
+        $table->addColumn('disk_details', 'text', [
             'comment' => '硬盘详情',
             'default' => null,
             'null' => true,
-            'after' => 'vm_details'
-            ))->update();
+            'after' => 'vm_details',
+        ])->update();
     }
 }

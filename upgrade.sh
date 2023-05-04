@@ -59,11 +59,12 @@ modifyVersion()
     hash=$(git log -1 --format="%h")
 
     # tvl = tpl version line
-    user_tvl=$(cat -n ${dir}/app/view/user/header.html | grep '<span>v.' | awk '{print $1}')
-    admin_tvl=$(cat -n ${dir}/app/view/admin/header.html | grep '<span>v.' | awk '{print $1}')
+    #user_tvl=$(cat -n ${dir}/app/view/user/header.html | grep '<span>v.' | awk '{print $1}')
+    #admin_tvl=$(cat -n ${dir}/app/view/admin/header.html | grep '<span>v.' | awk '{print $1}')
 
-    sed -i "${user_tvl}c\        <span>v.${big_v}.${medium_v}.${small_v} ${hash}</span>" ${dir}/app/view/user/header.html
-    sed -i "${admin_tvl}c\        <span>v.${big_v}.${medium_v}.${small_v} ${hash}</span>" ${dir}/app/view/admin/header.html
+    #sed -i "${user_tvl}c\        <span>v.${big_v}.${medium_v}.${small_v} ${hash}</span>" ${dir}/app/view/user/header.html
+    #sed -i "${admin_tvl}c\        <span>v.${big_v}.${medium_v}.${small_v} ${hash}</span>" ${dir}/app/view/admin/header.html
+    php think tools --action setVersion --newVersion ${big_v}.${medium_v}.${small_v}
 }
 
 databaseMigration()

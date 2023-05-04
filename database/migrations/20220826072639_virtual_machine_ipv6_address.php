@@ -1,7 +1,7 @@
 <?php
 
-use think\migration\Migrator;
 use think\migration\db\Column;
+use think\migration\Migrator;
 
 class VirtualMachineIpv6Address extends Migrator
 {
@@ -30,11 +30,10 @@ class VirtualMachineIpv6Address extends Migrator
     {
         $table = $this->table('azure_server');
         $table->addColumn('ipv6_address', 'text', [
-                'comment' => 'ipv6地址',
-                'default' => null,
-                'null' => true,
-                'after' => 'ip_address',
-            ]
-        )->update();
+            'comment' => 'ipv6地址',
+            'default' => null,
+            'null' => true,
+            'after' => 'ip_address',
+        ])->update();
     }
 }

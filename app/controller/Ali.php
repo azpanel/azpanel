@@ -1,4 +1,5 @@
 <?php
+
 namespace app\controller;
 
 use AlibabaCloud\Client\AlibabaCloud;
@@ -6,9 +7,9 @@ use app\model\Config;
 
 class Ali
 {
-    public static function count($rr)
+    public static function count($rr): int
     {
-        $configs = Config::class('resolv');
+        $configs = Config::group('resolv');
         AlibabaCloud::accessKeyClient($configs['ali_ak'], $configs['ali_sk'])
             ->regionId('cn-hongkong')
             ->asDefaultClient();
@@ -32,11 +33,11 @@ class Ali
 
     public static function createOrUpdate($rr, $ip)
     {
-        if (self::count($rr) == '0') {
+        if (self::count($rr) === 0) {
             return self::create($rr, $ip);
         }
 
-        $configs = Config::class('resolv');
+        $configs = Config::group('resolv');
         AlibabaCloud::accessKeyClient($configs['ali_ak'], $configs['ali_sk'])
             ->regionId('cn-hongkong')
             ->asDefaultClient();
@@ -48,7 +49,7 @@ class Ali
             ->method('POST')
             ->options([
                 'query' => [
-                    'Type' => "A",
+                    'Type' => 'A',
                     'RR' => $rr,
                     'Value' => $ip,
                     'TTL' => $configs['ali_ttl'],
@@ -60,7 +61,7 @@ class Ali
 
     public static function search($rr)
     {
-        $configs = Config::class('resolv');
+        $configs = Config::group('resolv');
         AlibabaCloud::accessKeyClient($configs['ali_ak'], $configs['ali_sk'])
             ->regionId('cn-hongkong')
             ->asDefaultClient();
@@ -88,7 +89,7 @@ class Ali
 
     public static function create($rr, $ip)
     {
-        $configs = Config::class('resolv');
+        $configs = Config::group('resolv');
         AlibabaCloud::accessKeyClient($configs['ali_ak'], $configs['ali_sk'])
             ->regionId('cn-hongkong')
             ->asDefaultClient();
@@ -101,7 +102,7 @@ class Ali
             ->options([
                 'query' => [
                     'RR' => $rr,
-                    'Type' => "A",
+                    'Type' => 'A',
                     'Value' => $ip,
                     'TTL' => $configs['ali_ttl'],
                     'DomainName' => $configs['ali_domain'],

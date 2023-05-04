@@ -1,4 +1,5 @@
 <?php
+
 namespace app\controller;
 
 use app\model\Share as ShareModel;
@@ -11,7 +12,7 @@ class Share
             $token = input('token/s');
             $share = ShareModel::where('token', $token)->find();
             // check
-            if (! isset($share)) {
+            if (!isset($share)) {
                 throw new \Exception('Invalid link credentials.');
             }
             // update

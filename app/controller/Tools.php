@@ -1,17 +1,16 @@
 <?php
+
 namespace app\controller;
 
 use app\controller\Ip;
 use app\model\Config;
 use GuzzleHttp\Client;
-use think\facade\Request;
 
 class Tools
 {
     public static function encryption($text)
     {
-        $hash = hash('sha512', $text, false);
-        return $hash;
+        return hash('sha512', $text, false);
     }
 
     public static function isIpv4($target)
@@ -23,32 +22,29 @@ class Tools
         return false;
     }
 
-    public static function IpInfo($ip_addr)
+    public static function ipInfo($ip_addr)
     {
         if (!self::isIpv4($ip_addr)) {
             return 'null';
         }
 
-        $ip = new Ip;
+        $ip = new Ip();
         $addr = $ip->ip2addr($ip_addr);
-        $result = $addr['country'] . $addr['area'];
-        return $result;
+        return $addr['country'] . $addr['area'];
     }
 
-    public static function Msg($code, $title, $content)
+    public static function msg($code, $title, $content)
     {
-        $body = [
+        return [
             'status' => $code,
             'title' => $title,
             'content' => $content,
         ];
-
-        return $body;
     }
 
     public static function emailCheck($address)
     {
-        return (!filter_var($address, FILTER_VALIDATE_EMAIL)) ? false : true;
+        return !filter_var($address, FILTER_VALIDATE_EMAIL) ? false : true;
     }
 
     public static function getClientIp()
@@ -78,7 +74,7 @@ class Tools
     public static function getUnixTimestamp()
     {
         // http://www.jsphp.net/php/show-12-640-1.html
-        list($s1, $s2) = explode(' ', microtime());
+        [$s1, $s2] = explode(' ', microtime());
         return (float) sprintf('%.0f', (floatval($s1) + floatval($s2)) * 1000);
     }
 

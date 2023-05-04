@@ -1,7 +1,7 @@
 <?php
 
-use think\migration\Migrator;
 use think\migration\db\Column;
+use think\migration\Migrator;
 
 class CustomWebsite extends Migrator
 {
@@ -30,20 +30,20 @@ class CustomWebsite extends Migrator
     {
         $rows = [
             [
-              'id'            => null,
-              'item'          => 'custom_text',
-              'value'         => '<a href="https://github.com/azpanel/azpanel">staff</a>',
-              'class'         => 'custom',
-              'default_value' => '<a href="https://github.com/azpanel/azpanel">staff</a>',
-              'type'          => 'string',
+                'id' => null,
+                'item' => 'custom_text',
+                'value' => '<a href="https://github.com/azpanel/azpanel">staff</a>',
+                'class' => 'custom',
+                'default_value' => '<a href="https://github.com/azpanel/azpanel">staff</a>',
+                'type' => 'string',
             ],
             [
-                'id'            => null,
-                'item'          => 'custom_script',
-                'value'         => '<script></script>',
-                'class'         => 'custom',
+                'id' => null,
+                'item' => 'custom_script',
+                'value' => '<script></script>',
+                'class' => 'custom',
                 'default_value' => '<script></script>',
-                'type'          => 'string',
+                'type' => 'string',
             ],
         ];
 

@@ -1,7 +1,7 @@
 <?php
 
-use think\migration\Migrator;
 use think\migration\db\Column;
+use think\migration\Migrator;
 
 class Quota extends Migrator
 {
@@ -29,10 +29,10 @@ class Quota extends Migrator
     public function change()
     {
         $table = $this->table('azure');
-        $table->addColumn('reg_capacity', 'integer', array(
+        $table->addColumn('reg_capacity', 'integer', [
             'comment' => '是否注册Capacity提供商',
             'default' => '0',
-            'after' => 'providers_register')
-            )->update();
+            'after' => 'providers_register',
+        ])->update();
     }
 }

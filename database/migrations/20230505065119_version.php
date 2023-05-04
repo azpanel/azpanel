@@ -3,7 +3,7 @@
 use think\migration\db\Column;
 use think\migration\Migrator;
 
-class AzureServerTrafficControl extends Migrator
+class Version extends Migrator
 {
     /**
      * Change Method.
@@ -26,13 +26,24 @@ class AzureServerTrafficControl extends Migrator
      * Remember to call "create()" or "update()" and NOT "save()" when working
      * with the Table class.
      */
-    public function change()
+    public function up()
     {
-        $table = $this->table('azure_server');
-        $table->addColumn('rule', 'integer', [
-            'comment' => '流量控制规则',
-            'default' => '0',
-            'after' => 'request_url',
-        ])->update();
+        $rows = [
+            [
+                'id' => null,
+                'item' => 'version',
+                'value' => '1.0.0',
+                'class' => 'system',
+                'default_value' => '1.0.0',
+                'type' => 'string',
+            ],
+        ];
+
+        $this->insert('config', $rows);
+    }
+
+    public function down()
+    {
+        $this->execute("DELETE FROM config WHERE config.item = 'version'");
     }
 }

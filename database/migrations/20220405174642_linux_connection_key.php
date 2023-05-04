@@ -1,7 +1,7 @@
 <?php
 
-use think\migration\Migrator;
 use think\migration\db\Column;
+use think\migration\Migrator;
 
 class LinuxConnectionKey extends Migrator
 {
@@ -29,10 +29,10 @@ class LinuxConnectionKey extends Migrator
     public function change()
     {
         $table = $this->table('ssh_key');
-        $table->addColumn('user_id', 'integer', array('comment' => '创建用户'))
-            ->addColumn('name', 'text', array('comment' => '名称'))
-            ->addColumn('public_key', 'text', array('comment' => '公钥'))
-            ->addColumn('created_at', 'integer', array('comment' => '创建时间'))
+        $table->addColumn('user_id', 'integer', ['comment' => '创建用户'])
+            ->addColumn('name', 'text', ['comment' => '名称'])
+            ->addColumn('public_key', 'text', ['comment' => '公钥'])
+            ->addColumn('created_at', 'integer', ['comment' => '创建时间'])
             ->create();
     }
 }

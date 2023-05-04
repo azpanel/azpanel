@@ -1,36 +1,35 @@
 <?php
+
 namespace app\controller;
 
-use think\helper\Str;
-use think\facade\Log;
-use think\facade\View;
-use Carbon\Carbon;
-use GuzzleHttp\Client;
-use app\model\Azure;
-use app\model\Config;
-use app\model\User;
-use app\model\SshKey;
-use app\model\Traffic;
-use app\model\ControlRule;
-use app\model\AzureServer;
-use app\model\AzureServerResize;
 use app\controller\Ali;
-use app\controller\Tools;
 use app\controller\AzureApi;
 use app\controller\AzureList;
+use app\controller\Tools;
+use app\model\Azure;
+use app\model\AzureServer;
+use app\model\AzureServerResize;
+use app\model\Config;
+use app\model\ControlRule;
+use app\model\SshKey;
+use app\model\Traffic;
+use app\model\User;
+use Carbon\Carbon;
+use GuzzleHttp\Client;
+use think\facade\View;
+use think\helper\Str;
 
 class UserAzureServer extends UserBase
 {
     public function index()
     {
         $servers = AzureServer::where('user_id', session('user_id'))
-        ->order('id', 'desc')
-        ->select();
+            ->order('id', 'desc')
+            ->select();
 
-        foreach($servers as $server)
-        {
+        foreach ($servers as $server) {
             // 刷新服务器状态
-            if ($server->status == 'PowerState/starting' || $server->status == 'PowerState/stopping') {
+            if ($server->status === 'PowerState/starting' || $server->status === 'PowerState/stopping') {
                 $vm_status = AzureApi::getAzureVirtualMachineStatus($server->account_id, $server->request_url);
                 $server->status = $vm_status['statuses']['1']['code'] ?? 'null';
                 $server->save();
@@ -51,36 +50,36 @@ class UserAzureServer extends UserBase
     public function create()
     {
         $accounts = Azure::where('user_id', session('user_id'))
-        ->where('az_sub_status', 'Enabled')
-        ->order('id', 'desc')
-        ->select();
+            ->where('az_sub_status', 'Enabled')
+            ->order('id', 'desc')
+            ->select();
 
         $traffic_rules = ControlRule::where('user_id', session('user_id'))
-        ->select();
+            ->select();
 
         $ssh_key = SshKey::where('user_id', session('user_id'))->find();
 
         $designated_id = (int) input('id');
         if ($designated_id !== 0) {
             $designated_account = Azure::where('user_id', session('user_id'))->where('id', $designated_id)->find();
-            if ($designated_account == null) {
+            if ($designated_account === null) {
                 return View::fetch('../app/view/user/reject.html');
             }
             View::assign('designated_account', $designated_account);
         }
 
-        $user         = User::find(session('user_id'));
-        $personalise  = json_decode($user->personalise, true);
+        $user = User::find(session('user_id'));
+        $personalise = json_decode($user->personalise, true);
 
         View::assign([
-            'ssh_key'       => $ssh_key,
-            'accounts'      => $accounts,
-            'personalise'   => $personalise,
+            'ssh_key' => $ssh_key,
+            'accounts' => $accounts,
+            'personalise' => $personalise,
             'traffic_rules' => $traffic_rules,
-            'sizes'         => AzureList::sizes(),
-            'images'        => AzureList::images(),
-            'disk_sizes'    => AzureList::diskSizes(),
-            'locations'     => AzureList::locations(),
+            'sizes' => AzureList::sizes(),
+            'images' => AzureList::images(),
+            'disk_sizes' => AzureList::diskSizes(),
+            'locations' => AzureList::locations(),
         ]);
         return View::fetch('../app/view/user/azure/server/create.html');
     }
@@ -88,8 +87,8 @@ class UserAzureServer extends UserBase
     public function update($uuid)
     {
         $server = AzureServer::where('user_id', session('user_id'))
-        ->where('vm_id', $uuid)
-        ->find();
+            ->where('vm_id', $uuid)
+            ->find();
 
         $server->rule = input('traffic_rule/s');
         $server->save();
@@ -98,30 +97,30 @@ class UserAzureServer extends UserBase
 
     public function save()
     {
-        $vm_name         = input('vm_name/s');
-        $vm_remark       = input('vm_remark/s');
-        $vm_user         = input('vm_user/s');
-        $vm_passwd       = input('vm_passwd/s');
-        $vm_script       = input('vm_script/s');
-        $vm_location     = input('vm_location/s');
-        $vm_size         = input('vm_size/s');
-        $vm_image        = input('vm_image/s');
-        $task_uuid       = input('task_uuid/s');
+        $vm_name = input('vm_name/s');
+        $vm_remark = input('vm_remark/s');
+        $vm_user = input('vm_user/s');
+        $vm_passwd = input('vm_passwd/s');
+        $vm_script = input('vm_script/s');
+        $vm_location = input('vm_location/s');
+        $vm_size = input('vm_size/s');
+        $vm_image = input('vm_image/s');
+        $task_uuid = input('task_uuid/s');
         //$vm_number       = (int) input('vm_number/s');
-        $vm_account      = (int) input('vm_account/s');
-        $vm_disk_size    = (int) input('vm_disk_size/s');
-        $vm_ssh_key      = (int) input('vm_ssh_key/s');
+        $vm_account = (int) input('vm_account/s');
+        $vm_disk_size = (int) input('vm_disk_size/s');
+        $vm_ssh_key = (int) input('vm_ssh_key/s');
         $vm_traffic_rule = (int) input('vm_traffic_rule/s');
-        $create_check    = (int) input('create_check/s');
-        $create_ipv6     = (bool) input('create_ipv6/s');
+        $create_check = (int) input('create_check/s');
+        $create_ipv6 = (bool) input('create_ipv6/s');
 
         // 创建账户检查
-        if ($vm_account == '') {
+        if ($vm_account === '') {
             return json(Tools::msg('0', '创建失败', '你还没有添加账户'));
         }
 
         $account = Azure::find($vm_account);
-        if ($account->user_id != session('user_id')) {
+        if ($account->user_id !== (int) session('user_id')) {
             return json(Tools::msg('0', '创建失败', '你不是此账户的持有者'));
         }
 
@@ -133,30 +132,29 @@ class UserAzureServer extends UserBase
 
         $uppercase = preg_match('@[A-Z]@', $vm_passwd);
         $lowercase = preg_match('@[a-z]@', $vm_passwd);
-        $number    = preg_match('@[0-9]@', $vm_passwd);
+        $number = preg_match('@[0-9]@', $vm_passwd);
         // $symbol    = preg_match('@[^\w]@', $vm_passwd);
 
         if (!$uppercase || !$lowercase || !$number || strlen($vm_passwd) < 12 || strlen($vm_passwd) > 72) {
             return json(Tools::msg('0', '创建失败', '密码不符合要求，请阅读使用说明'));
         }
 
-        if ($vm_remark == '') {
+        if ($vm_remark === '') {
             $vm_remark = $vm_name;
         }
 
         // 虚拟机名称与备注检查
-        $names   = explode(',', $vm_name);
+        $names = explode(',', $vm_name);
         $remarks = explode(',', $vm_remark);
 
         $vm_number = count($names);
-        if (count($names) != $vm_number || count($remarks) != $vm_number || count($names) != count($remarks)) {
+        if (count($names) !== $vm_number || count($remarks) !== $vm_number || count($names) !== count($remarks)) {
             return json(Tools::msg('0', '创建失败', '请检查创建数量、备注和虚拟机名称是否正确分隔'));
         }
 
         // 虚拟机名称检查
-        foreach ($names as $name)
-        {
-            if ($name == '') {
+        foreach ($names as $name) {
+            if ($name === '') {
                 return json(Tools::msg('0', '创建失败', '虚拟机名称不能为空'));
             }
 
@@ -173,15 +171,14 @@ class UserAzureServer extends UserBase
             }
         }
 
-        foreach ($remarks as $remark)
-        {
-            if ($remark == '') {
+        foreach ($remarks as $remark) {
+            if ($remark === '') {
                 return json(Tools::msg('0', '创建失败', '虚拟机备注不能为空'));
             }
         }
 
         // 其他项目检查
-        $vm_script = ($vm_script == '') ? null : base64_encode($vm_script);
+        $vm_script = $vm_script === '' ? null : base64_encode($vm_script);
 
         $images = AzureList::images();
         if (Str::contains($vm_image, 'Win') && !Str::contains($images[$vm_image]['sku'], 'smalldisk') && $vm_disk_size < '127') {
@@ -191,47 +188,47 @@ class UserAzureServer extends UserBase
         // 记录创建参数
         $params = [
             'account' => [
-                'id'     => $account->id,
+                'id' => $account->id,
                 'status' => $account->az_sub_status,
-                'type'   => $account->az_sub_type,
-                'email'  => $account->az_email,
-                'check'  => ($create_check == '1') ? true : false
+                'type' => $account->az_sub_type,
+                'email' => $account->az_email,
+                'check' => $create_check === 1 ? true : false,
             ],
             'server' => [
-                'name'        => $vm_name,
-                'mark'        => $vm_remark,
-                'count'       => $vm_number,
-                'disk_size'   => $vm_disk_size,
-                'user'        => $vm_user,
-                'image'       => $vm_image,
-                'location'    => $vm_location,
-                'size'        => $vm_size,
-                'script'      => $vm_script,
-                'ipv6'        => $create_ipv6,
-            ]
+                'name' => $vm_name,
+                'mark' => $vm_remark,
+                'count' => $vm_number,
+                'disk_size' => $vm_disk_size,
+                'user' => $vm_user,
+                'image' => $vm_image,
+                'location' => $vm_location,
+                'size' => $vm_size,
+                'script' => $vm_script,
+                'ipv6' => $create_ipv6,
+            ],
         ];
 
         /* if (session('user_id') != 1) {
-            return json(Tools::msg('0', '创建失败', '维护中'));
+        return json(Tools::msg('0', '创建失败', '维护中'));
         } */
 
         // 初始化创建任务
         $progress = 0;
-        $client   = new Client();
-        $steps    = ($vm_number * 6) + 6;
-        $task_id  = UserTask::create(session('user_id'), '创建虚拟机', $params, $task_uuid);
+        $client = new Client();
+        $steps = ($vm_number * 6) + 6;
+        $task_id = UserTask::create(session('user_id'), '创建虚拟机', $params, $task_uuid);
 
         if ($create_ipv6) {
             $steps += 2; // 多了创建ipv6地址和网络安全组的任务
         }
 
-        if ($account->reg_capacity == '0') {
+        if ($account->reg_capacity === 0) {
             ++$steps;
             UserTask::update($task_id, (++$progress / $steps), '正在注册 Microsoft.Capacity');
             AzureApi::registerMainAzureProviders($client, $account, 'Microsoft.Capacity');
         }
 
-        if ($account->providers_register == '0') {
+        if ($account->providers_register === 0) {
             ++$steps;
             UserTask::update($task_id, (++$progress / $steps), '正在注册 Microsoft.Compute 与 Microsoft.Network');
             AzureApi::registerMainAzureProviders($client, $account, 'Microsoft.Compute');
@@ -247,7 +244,7 @@ class UserAzureServer extends UserBase
         } catch (\Exception $e) {
             return json(Tools::msg('0', '创建失败', $e->getMessage()));
         }
-        if ($sub_info['value']['0']['state'] != 'Enabled') {
+        if ($sub_info['value']['0']['state'] !== 'Enabled') {
             UserTask::end($task_id, true, json_encode(
                 ['msg' => 'This subscription is disabled and therefore marked as read only.']
             ), true);
@@ -256,18 +253,17 @@ class UserAzureServer extends UserBase
 
         UserTask::update($task_id, (++$progress / $steps), '正在检查订阅可用资源列表');
         $limits = AzureApi::getResourceSkusList($client, $account, $vm_location);
-        foreach ($limits['value'] as $limit)
-        {
-            if ($limit['name'] == $vm_size) {
-                if (!empty($limit['restrictions']['0']['reasonCode'])) {
-                    if ($limit['restrictions']['0']['reasonCode'] == 'NotAvailableForSubscription' && $create_check == '1') {
+        foreach ($limits['value'] as $limit) {
+            if ($limit['name'] === $vm_size) {
+                if (isset($limit['restrictions']['0']['reasonCode'])) {
+                    if ($limit['restrictions']['0']['reasonCode'] === 'NotAvailableForSubscription' && $create_check === 1) {
                         UserTask::end($task_id, true, json_encode(
                             ['msg' => 'This subscription cannot create VMs of this size in this region.']
                         ), true);
                         return json(Tools::msg('0', '创建失败', '此订阅似乎不能在此区域创建此规格虚拟机。如不信任此检测结果，可以在创建页面将 “检查” 设置为 “忽略” 后重试'));
                     }
                 }
-                if ($limit['capabilities']['4']['value'] == 'V1') {
+                if ($limit['capabilities']['4']['value'] === 'V1') {
                     if (Str::contains($images[$vm_image]['sku'], 'gen2') || Str::contains($images[$vm_image]['sku'], 'g2')) {
                         UserTask::end($task_id, true, json_encode(
                             ['msg' => 'The virtual machine model is not compatible with the image.']
@@ -280,25 +276,24 @@ class UserAzureServer extends UserBase
             }
         }
 
-        if ($create_check == '1' && ($account->az_sub_type == 'FreeTrial' || $account->az_sub_type == 'Students')) {
+        if ($create_check === 1 && ($account->az_sub_type === 'FreeTrial' || $account->az_sub_type === 'Students')) {
             $ip_num = AzureApi::countAzurePublicNetworkIpv4($client, $account, $vm_location);
             $available = 3 - $ip_num;
             if ($vm_number + $ip_num >= 4) {
                 UserTask::end($task_id, true, json_encode(
                     ['msg' => 'FreeTrial subscriptions are only allowed up to 3 IPs per region.']
                 ), true);
-                return json(Tools::msg('0', '创建失败', "试用订阅在每个区域的公网地址数量被限制为不能超过三个，当前区域还有 ${$available} 个公网地址配额。如不信任此检测结果，可以在创建页面将 “检查” 设置为 “忽略” 后重试"));
+                return json(Tools::msg('0', '创建失败', "试用订阅在每个区域的公网地址数量被限制为不能超过三个，当前区域还有 {$available} 个公网地址配额。如不信任此检测结果，可以在创建页面将 “检查” 设置为 “忽略” 后重试"));
             }
         }
 
         // 资源组检查
         UserTask::update($task_id, (++$progress / $steps), '正在检查资源组');
         $resource_groups = AzureApi::getAzureResourceGroupsList($account->id, $account->az_sub_id);
-        foreach ($resource_groups['value'] as $resource_group)
-        {
+        foreach ($resource_groups['value'] as $resource_group) {
             foreach ($names as $name) {
                 $resource_group_name = $name . '_group';
-                if (Str::lower($resource_group['name']) == Str::lower($resource_group_name)) {
+                if (Str::lower($resource_group['name']) === Str::lower($resource_group_name)) {
                     UserTask::end($task_id, true, json_encode(
                         ['msg' => 'A resource group with the same name exists: ' . $name]
                     ), true);
@@ -312,72 +307,70 @@ class UserAzureServer extends UserBase
         try {
             $sizes = AzureList::sizes();
             $quotas = AzureApi::getQuota($account, $vm_location);
-            if (! isset($sizes[$vm_size]['cpu'])) {
+            if (!isset($sizes[$vm_size]['cpu'])) {
                 /* foreach ($limits['value'] as $limit)
                 {
-                    if ($limit['name'] == $vm_size) {
-                        $single_size_core = $limit['capabilities']['2']['value'];
-                        break;
-                    }
+                if ($limit['name'] == $vm_size) {
+                $single_size_core = $limit['capabilities']['2']['value'];
+                break;
+                }
                 } */
                 $cores_total = $single_size_core * $vm_number;
             } else {
                 $cores_total = $sizes[$vm_size]['cpu'] * $vm_number;
             }
 
-            foreach ($quotas['value'] as $quota)
-            {
-                if ($quota['properties']['name']['value'] == 'cores') {
+            foreach ($quotas['value'] as $quota) {
+                if ($quota['properties']['name']['value'] === 'cores') {
                     $quota_usage = $quota['properties']['currentValue'];
                     $quota_limit = $quota['properties']['limit'];
                     $account->reg_capacity = 1;
                     $account->save();
                 }
-                if ($quota['properties']['name']['value'] == $size_family) {
+                if ($quota['properties']['name']['value'] === $size_family) {
                     $size_quota_usage = $quota['properties']['currentValue'];
                     $size_quota_limit = $quota['properties']['limit'];
                 }
             }
 
-            if (!empty($quota_usage) && $cores_total + $quota_usage > $quota_limit) {
+            if (isset($quota_usage) && $cores_total + $quota_usage > $quota_limit) {
                 $available = $quota_limit - $quota_usage;
                 UserTask::end($task_id, true, json_encode(
-                    ['msg' => "The required number of cpu cores is $cores_total, but the subscription only has $available quota."]
+                    ['msg' => "The required number of cpu cores is {$cores_total}, but the subscription only has {$available} quota."]
                 ), true);
-                return json(Tools::msg('0', '创建失败', "所需 CPU 核心数为 $cores_total 个，但订阅仅有 $available 个配额"));
+                return json(Tools::msg('0', '创建失败', "所需 CPU 核心数为 {$cores_total} 个，但订阅仅有 {$available} 个配额"));
             }
-            if (!empty($size_quota_usage) && $cores_total + $size_quota_usage > $size_quota_limit) {
+            if (isset($size_quota_usage) && $cores_total + $size_quota_usage > $size_quota_limit) {
                 $available = $size_quota_limit - $size_quota_usage;
                 UserTask::end($task_id, true, json_encode(
-                    ['msg' => "The required number of cpu cores is $cores_total, but the size only has $available quota."]
+                    ['msg' => "The required number of cpu cores is {$cores_total}, but the size only has {$available} quota."]
                 ), true);
-                return json(Tools::msg('0', '创建失败', "所需 CPU 核心数为 $cores_total 个，但此规格仅有 $available 个配额"));
+                return json(Tools::msg('0', '创建失败', "所需 CPU 核心数为 {$cores_total} 个，但此规格仅有 {$available} 个配额"));
             }
         } catch (\Exception $e) {
-
+            // to do
         }
 
         // return json(Tools::msg('0', '检查结果', '检查完成'));
 
-        foreach ($names as $vm_name)
-        {
+        foreach ($names as $vm_name) {
             // default value
             $ipv6 = false;
             $security_group_id = '';
             // name settings
-            $vm_ipv4_name            = $vm_name . '_ipv4';
-            $vm_ipv6_name            = $vm_name . '_ipv6';
-            $security_group_name     = $vm_name . '_security';
-            $vm_resource_group_name  = $vm_name . '_group';
+            $vm_ipv4_name = $vm_name . '_ipv4';
+            $vm_ipv6_name = $vm_name . '_ipv6';
+            $security_group_name = $vm_name . '_security';
+            $vm_resource_group_name = $vm_name . '_group';
             $vm_virtual_network_name = $vm_name . '_vnet';
 
             $vm_config = [
-                'vm_size'      => $vm_size,
+                'vm_size' => $vm_size,
                 'vm_disk_size' => $vm_disk_size,
-                'vm_user'      => $vm_user,
-                'vm_passwd'    => $vm_passwd,
-                'vm_script'    => $vm_script,
-                'vm_ssh_key'   => $vm_ssh_key,
+                'vm_user' => $vm_user,
+                'vm_passwd' => $vm_passwd,
+                'vm_script' => $vm_script,
+                'vm_ssh_key' => $vm_ssh_key,
             ];
 
             try {
@@ -385,7 +378,10 @@ class UserAzureServer extends UserBase
                 sleep(1);
                 UserTask::update($task_id, (++$progress / $steps), '创建资源组 ' . $vm_resource_group_name);
                 AzureApi::createAzureResourceGroup(
-                    $client, $account, $vm_resource_group_name, $vm_location
+                    $client,
+                    $account,
+                    $vm_resource_group_name,
+                    $vm_location
                 );
 
                 if ($create_ipv6) {
@@ -393,7 +389,11 @@ class UserAzureServer extends UserBase
                     UserTask::update($task_id, (++$progress / $steps), '在资源组 ' . $vm_resource_group_name . ' 中创建网络安全组');
                     sleep(2);
                     $security_group_id = AzureApi::createNetworkSecurityGroups(
-                        $client, $account, $vm_resource_group_name, $vm_location, $security_group_name
+                        $client,
+                        $account,
+                        $vm_resource_group_name,
+                        $vm_location,
+                        $security_group_name
                     );
                 }
 
@@ -401,7 +401,12 @@ class UserAzureServer extends UserBase
                 sleep(2);
                 UserTask::update($task_id, (++$progress / $steps), '在资源组 ' . $vm_resource_group_name . ' 中创建 ipv4 地址');
                 $ipv4 = AzureApi::createAzurePublicNetworkIpv4(
-                    $client, $account, $vm_ipv4_name, $vm_resource_group_name, $vm_location, $create_ipv6
+                    $client,
+                    $account,
+                    $vm_ipv4_name,
+                    $vm_resource_group_name,
+                    $vm_location,
+                    $create_ipv6
                 );
 
                 if ($create_ipv6) {
@@ -409,35 +414,64 @@ class UserAzureServer extends UserBase
                     UserTask::update($task_id, (++$progress / $steps), '在资源组 ' . $vm_resource_group_name . ' 中创建 ipv6 地址');
                     sleep(2);
                     $ipv6 = AzureApi::createAzurePublicNetworkIpv6(
-                        $client, $account, $vm_ipv6_name, $vm_resource_group_name, $vm_location
+                        $client,
+                        $account,
+                        $vm_ipv6_name,
+                        $vm_resource_group_name,
+                        $vm_location
                     );
                 }
 
                 // 创建虚拟网络
                 UserTask::update($task_id, (++$progress / $steps), '在资源组 ' . $vm_resource_group_name . ' 中创建虚拟网络');
                 AzureApi::createAzureVirtualNetwork(
-                    $client, $account, $vm_virtual_network_name, $vm_resource_group_name, $vm_location, $create_ipv6
+                    $client,
+                    $account,
+                    $vm_virtual_network_name,
+                    $vm_resource_group_name,
+                    $vm_location,
+                    $create_ipv6
                 );
 
                 // 创建子网
                 sleep(3);
                 UserTask::update($task_id, (++$progress / $steps), '在虚拟网络 ' . $vm_virtual_network_name . ' 中创建子网');
                 $subnets = AzureApi::createAzureVirtualNetworkSubnets(
-                    $client, $account, $vm_virtual_network_name, $vm_resource_group_name, $vm_location, $create_ipv6
+                    $client,
+                    $account,
+                    $vm_virtual_network_name,
+                    $vm_resource_group_name,
+                    $vm_location,
+                    $create_ipv6
                 );
 
                 // 创建网络接口
                 sleep(6);
                 UserTask::update($task_id, (++$progress / $steps), '在资源组 ' . $vm_resource_group_name . ' 中创建网络接口');
                 $interfaces = AzureApi::createAzureVirtualNetworkInterfaces(
-                    $client, $account, $vm_name, $ipv4, $ipv6, $subnets, $vm_location, $vm_size, $create_ipv6, $security_group_id
+                    $client,
+                    $account,
+                    $vm_name,
+                    $ipv4,
+                    $ipv6,
+                    $subnets,
+                    $vm_location,
+                    $vm_size,
+                    $create_ipv6,
+                    $security_group_id
                 );
 
                 // 创建虚拟机
                 sleep(2);
                 UserTask::update($task_id, (++$progress / $steps), '在资源组 ' . $vm_resource_group_name . ' 中创建虚拟机');
                 $vm_url = AzureApi::createAzureVm(
-                    $client, $account, $vm_name, $vm_config, $vm_image, $interfaces, $vm_location
+                    $client,
+                    $account,
+                    $vm_name,
+                    $vm_config,
+                    $vm_image,
+                    $interfaces,
+                    $vm_location
                 );
             } catch (\Exception $e) {
                 $error = $e->getResponse()->getBody()->getContents();
@@ -455,13 +489,13 @@ class UserAzureServer extends UserBase
             ++$count;
             $vm_status = AzureApi::getAzureVirtualMachineStatus($account->id, $vm_url);
             $status = $vm_status['statuses']['1']['code'] ?? 'null';
-        } while ($status != 'PowerState/running' && $count < 120);
+        } while ($status !== 'PowerState/running' && $count < 120);
 
         // 加载到虚拟机列表
         AzureApi::getAzureVirtualMachines($account->id);
 
         // 同步解析
-        if (session('user_id') == Config::obtain('ali_whitelist')) {
+        if ((int) session('user_id') === (int) Config::obtain('ali_whitelist')) {
             if (Config::obtain('sync_immediately_after_creation')) {
                 foreach ($names as $vm_name) {
                     $server = AzureServer::where('name', $vm_name)->order('id', 'desc')->limit(1)->find();
@@ -476,7 +510,7 @@ class UserAzureServer extends UserBase
 
         // 将设置的备注应用
         $pointer = 0;
-        foreach($names as $name) {
+        foreach ($names as $name) {
             $server = AzureServer::where('name', $name)->order('id', 'desc')->limit(1)->find();
             $server->user_remark = $remarks[$pointer];
             $server->rule = $vm_traffic_rule;
@@ -491,32 +525,32 @@ class UserAzureServer extends UserBase
     public function read($id)
     {
         $server = AzureServer::where('user_id', session('user_id'))->find($id);
-        if ($server == null) {
+        if ($server === null) {
             return View::fetch('../app/view/user/reject.html');
         }
 
-        $vm_sizes      = AzureList::sizes();
-        $disk_sizes    = AzureList::diskSizes();
-        $disk_tiers    = AzureList::diskTiers();
+        $vm_sizes = AzureList::sizes();
+        $disk_sizes = AzureList::diskSizes();
+        $disk_tiers = AzureList::diskTiers();
         $traffic_rules = ControlRule::where('user_id', session('user_id'))->select();
 
-        if ($server->disk_details == null) {
+        if ($server->disk_details === null) {
             $disk_details = json_encode(AzureApi::getDisks($server));
             $server->disk_details = $disk_details;
             $server->save();
         }
 
-        $vm_details       = json_decode($server->vm_details, true);
-        $disk_details     = ($server->disk_details == null) ? $disk_details : json_decode($server->disk_details, true);
-        $network_details  = json_decode($server->network_details, true);
+        $vm_details = json_decode($server->vm_details, true);
+        $disk_details = $server->disk_details === null ? $disk_details : json_decode($server->disk_details, true);
+        $network_details = json_decode($server->network_details, true);
         $instance_details = json_decode($server->instance_details, true);
-        $vm_disk_created  = strtotime($instance_details['disks']['0']['statuses']['0']['time']);
-        $vm_disk_tier     = $disk_details['properties']['tier'] ?? 'P4';
+        $vm_disk_created = strtotime($instance_details['disks']['0']['statuses']['0']['time']);
+        $vm_disk_tier = $disk_details['properties']['tier'] ?? 'P4';
 
-        $vm_dialog       = json_encode($vm_details, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
-        $disk_dialog     = json_encode($disk_details, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
-        $network_dialog  = json_encode($network_details, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
-        $instance_dialog = json_encode($instance_details, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+        $vm_dialog = json_encode($vm_details, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        $disk_dialog = json_encode($disk_details, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        $network_dialog = json_encode($network_details, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        $instance_dialog = json_encode($instance_details, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
         View::assign('server', $server);
         View::assign('vm_sizes', $vm_sizes);
@@ -538,7 +572,7 @@ class UserAzureServer extends UserBase
 
     public function delete($uuid)
     {
-        $server = AzureServer::where('vm_id', $uuid)->delete();
+        AzureServer::where('vm_id', $uuid)->delete();
 
         return json(Tools::msg('1', '移出结果', '移出成功'));
     }
@@ -561,7 +595,7 @@ class UserAzureServer extends UserBase
     public function remark($uuid)
     {
         $remark = input('remark/s');
-        if ($remark == '') {
+        if ($remark === '') {
             return json(Tools::msg('0', '修改结果', '备注不能为空'));
         }
 
@@ -583,12 +617,12 @@ class UserAzureServer extends UserBase
             return json(Tools::msg('0', '变配失败', $e->getMessage()));
         }
 
-        $log = new AzureServerResize;
-        $log->user_id     = session('user_id');
-        $log->vm_id       = $server->vm_id;
+        $log = new AzureServerResize();
+        $log->user_id = session('user_id');
+        $log->vm_id = $server->vm_id;
         $log->before_size = $server->vm_size;
-        $log->after_size  = $new_size;
-        $log->created_at  = time();
+        $log->after_size = $new_size;
+        $log->created_at = time();
         $log->save();
 
         $server->vm_size = $new_size;
@@ -619,7 +653,7 @@ class UserAzureServer extends UserBase
                 sleep(2);
                 $vm_status = AzureApi::getAzureVirtualMachineStatus($server->account_id, $server->request_url);
                 $status = $vm_status['statuses']['1']['code'] ?? 'null';
-            } while ($status != 'PowerState/deallocated');
+            } while ($status !== 'PowerState/deallocated');
 
             UserTask::update($task_id, (++$count / 4), '正在启动虚拟机');
             //AzureApi::virtualMachinesRedisk($new_disk, $new_tier, $server);
@@ -630,7 +664,7 @@ class UserAzureServer extends UserBase
                 sleep(2);
                 $vm_status = AzureApi::getAzureVirtualMachineStatus($server->account_id, $server->request_url);
                 $status = $vm_status['statuses']['1']['code'] ?? 'null';
-            } while ($status != 'PowerState/running');
+            } while ($status !== 'PowerState/running');
 
             sleep(1);
             UserTask::update($task_id, (++$count / 4), '正在获取新的公网地址');
@@ -645,12 +679,12 @@ class UserAzureServer extends UserBase
             $server->save();
 
             // save change log
-            $log = new AzureServerResize;
-            $log->user_id     = session('user_id');
-            $log->vm_id       = $server->vm_id;
+            $log = new AzureServerResize();
+            $log->user_id = session('user_id');
+            $log->vm_id = $server->vm_id;
             $log->before_size = $origin_disk_size;
-            $log->after_size  = $new_disk;
-            $log->created_at  = time();
+            $log->after_size = $new_disk;
+            $log->created_at = time();
             $log->save();
         } catch (\Exception $e) {
             $error = $e->getResponse()->getBody()->getContents();
@@ -713,7 +747,7 @@ class UserAzureServer extends UserBase
 
             UserTask::update($task_id, (++$count / $steps), "正在检查 {$server->name} 归属订阅状态");
             $sub_info = AzureApi::getAzureSubscription($server->account_id); // array
-            if ($sub_info['value']['0']['state'] != 'Enabled') {
+            if ($sub_info['value']['0']['state'] !== 'Enabled') {
                 UserTask::end($task_id, true, json_encode(
                     ['msg' => 'This subscription is disabled and therefore marked as read only.']
                 ), true);
@@ -727,7 +761,7 @@ class UserAzureServer extends UserBase
                 sleep(1);
                 $vm_status = AzureApi::getAzureVirtualMachineStatus($server->account_id, $server->request_url);
                 $status = $vm_status['statuses']['1']['code'] ?? 'null';
-            } while ($status != 'PowerState/deallocated');
+            } while ($status !== 'PowerState/deallocated');
 
             sleep(3);
             UserTask::update($task_id, (++$count / $steps), "正在启动虚拟机 {$server->name}");
@@ -737,27 +771,29 @@ class UserAzureServer extends UserBase
                 sleep(1);
                 $vm_status = AzureApi::getAzureVirtualMachineStatus($server->account_id, $server->request_url);
                 $status = $vm_status['statuses']['1']['code'] ?? 'null';
-            } while ($status != 'PowerState/running');
+            } while ($status !== 'PowerState/running');
 
             UserTask::update($task_id, (++$count / $steps), "正在获取 {$server->name} 新地址");
             $network_details = AzureApi::getAzureNetworkInterfacesDetails($server->account_id, $server->network_interfaces, $server->resource_group, $server->at_subscription_id);
-            $server->network_details    = json_encode($network_details);
-            $server->ip_address         = $network_details['properties']['ipConfigurations']['0']['properties']['publicIPAddress']['properties']['ipAddress'] ?? 'null';
+            $server->network_details = json_encode($network_details);
+            $server->ip_address = $network_details['properties']['ipConfigurations']['0']['properties']['publicIPAddress']['properties']['ipAddress'] ?? 'null';
             $server->save();
         } catch (\Exception $e) {
-            if ($e->getMessage() != null) {
+            if ($e->getMessage() !== null) {
                 $error = $e->getMessage();
             } else {
                 $error = $e->getResponse()->getBody()->getContents();
             }
-            UserTask::end($task_id, true, json_encode(
-                ['msg' => $error])
+            UserTask::end(
+                $task_id,
+                true,
+                json_encode(['msg' => $error])
             );
             return json(Tools::msg('0', '更换失败', $error));
         }
 
         // 同步解析
-        if (session('user_id') == Config::obtain('ali_whitelist')) {
+        if ((int) session('user_id') === (int) Config::obtain('ali_whitelist')) {
             if (Config::obtain('sync_immediately_after_creation')) {
                 try {
                     Ali::createOrUpdate($server->name, $server->ip_address);
@@ -776,14 +812,14 @@ class UserAzureServer extends UserBase
         // http://4563.org/?p=368746
 
         /* try {
-            $result = file_get_contents('https://api-v2.50network.com/modules/ipcheck/icmp?ipv4=' . $ipv4);
-            $result = json_decode($result, true);
-            $cn_net = ($result['firewall-enable'] == true) ? '<p>中国节点 -> <span style="color: green">正常</span>' : '中国节点 -> <span style="color: red">异常</span></p>';
-            $intl_net = ($result['firewall-disable'] == true) ? '<p>外国节点 -> <span style="color: green">正常</span>' : '外国节点 -> <span style="color: red">异常</span></p>';
+        $result = file_get_contents('https://api-v2.50network.com/modules/ipcheck/icmp?ipv4=' . $ipv4);
+        $result = json_decode($result, true);
+        $cn_net = ($result['firewall-enable'] == true) ? '<p>中国节点 -> <span style="color: green">正常</span>' : '中国节点 -> <span style="color: red">异常</span></p>';
+        $intl_net = ($result['firewall-disable'] == true) ? '<p>外国节点 -> <span style="color: green">正常</span>' : '外国节点 -> <span style="color: red">异常</span></p>';
 
-            return json(Tools::msg('1', '检查成功', $cn_net . $intl_net));
+        return json(Tools::msg('1', '检查成功', $cn_net . $intl_net));
         } catch (\Exception $e) {
-            return json(Tools::msg('0', '检查失败', $e->getMessage()));
+        return json(Tools::msg('0', '检查失败', $e->getMessage()));
         } */
 
         try {
@@ -797,11 +833,23 @@ class UserAzureServer extends UserBase
             ]);
             $result = json_decode($response->getBody(), true);
             $r = $result['data']['data'];
-            $text = '<p>国内ICMP <span style="float: right; color: ' . (($r['innerICMP']) ? 'green">正常' : 'red">异常') . '</span></p>' .
-            '<p>国内TCP <span style="float: right; color: ' . (($r['innerTCP']) ? 'green">正常' : 'red">异常') . '</span></p>' .
-            '<div class="mdui-typo"><hr /></div>' .
-            '<p>国外ICMP <span style="float: right; color: ' . (($r['outICMP']) ? 'green">正常' : 'red">异常') . '</span></p>' .
-            '<p>国外TCP <span style="float: right; color: ' . (($r['outTCP']) ? 'green">正常' : 'red">异常' . '</span></p>');
+            $text = vsprintf(
+                '<p>国内ICMP <span style="float: right; color: %s">%s</span></p>
+                <p>国内TCP <span style="float: right; color: %s">%s</span></p>
+                <div class="mdui-typo"><hr /></div>
+                <p>国外ICMP <span style="float: right; color: %s">%s</span></p>
+                <p>国外TCP <span style="float: right; color: %s">%s</span></p>',
+                [
+                    $r['innerICMP'] ? 'green' : 'red',
+                    $r['innerICMP'] ? '正常' : '异常',
+                    $r['innerTCP'] ? 'green' : 'red',
+                    $r['innerTCP'] ? '正常' : '异常',
+                    $r['outICMP'] ? 'green' : 'red',
+                    $r['outICMP'] ? '正常' : '异常',
+                    $r['outTCP'] ? 'green' : 'red',
+                    $r['outTCP'] ? '正常' : '异常',
+                ]
+            );
             return json(Tools::msg('1', '检查结果', $text));
         } catch (\Exception $e) {
             return json(Tools::msg('0', '检查失败', $e->getMessage()));
@@ -810,7 +858,7 @@ class UserAzureServer extends UserBase
 
     public function sync($uuid)
     {
-        if (session('user_id') != Config::obtain('ali_whitelist')) {
+        if ((int) session('user_id') !== (int) Config::obtain('ali_whitelist')) {
             return json(Tools::msg('0', '同步失败', '你不在权限白名单中'));
         }
         $server = AzureServer::where('vm_id', $uuid)->find();
@@ -829,14 +877,12 @@ class UserAzureServer extends UserBase
         $text = '';
 
         if ($convert) {
-            foreach ($array as $data)
-            {
+            foreach ($array as $data) {
                 $date = date('d日H时', strtotime($data['timeStamp']));
-                $text .= '["' . $date . '", ' . round(round($data['average'] ?? '0', 2)  / 1048576) . '],';
+                $text .= '["' . $date . '", ' . round(round($data['average'] ?? '0', 2) / 1048576) . '],';
             }
         } else {
-            foreach ($array as $data)
-            {
+            foreach ($array as $data) {
                 $date = date('d日H时', strtotime($data['timeStamp']));
                 $text .= '["' . $date . '", ' . round($data['average'] ?? '0', 2) . '],';
             }
@@ -850,29 +896,28 @@ class UserAzureServer extends UserBase
         $text = '';
         $usage = 0;
 
-        foreach ($array as $data)
-        {
+        foreach ($array as $data) {
             $date = date('d日H时', strtotime($data['timeStamp']));
             $bytes = round(($data['total'] ?? '0') / 1000000000, 2);
             $text .= '["' . $date . '", ' . $bytes . '],';
             $usage += $bytes;
         }
 
-        return ($total == false) ? $text : $usage;
+        return $total === false ? $text : $usage;
     }
 
     public function chart($id)
     {
         $gap = (int) input('gap');
         $server = AzureServer::find($id);
-        if ($server == null || $server->user_id != session('user_id')) {
+        if ($server === null || $server->user_id !== (int) session('user_id')) {
             return View::fetch('../app/view/user/reject.html');
         }
 
-        if ($gap == '') {
+        if ($gap === '') {
             $statistics = AzureApi::getVirtualMachineStatistics($server);
         } else {
-            $timestamp = strtotime(Carbon::parse("+$gap days ago")->toDateTimeString());
+            $timestamp = strtotime(Carbon::parse("+{$gap} days ago")->toDateTimeString());
             $start_time = date('Y-m-d\T 16:00:00\Z', $timestamp);
             $stop_time = date('Y-m-d\T 16:00:00\Z', $timestamp + 86400);
             $chart_day = date('Y-m-d', $timestamp + 86400);
@@ -883,25 +928,25 @@ class UserAzureServer extends UserBase
         //dump($statistics['value']);
 
         foreach ($statistics['value'] as $key => $value) {
-            if ($value['name']['value'] == 'Network In Total') {
-                $network_in_total  = $statistics['value'][$key]['timeseries']['0']['data'];
+            if ($value['name']['value'] === 'Network In Total') {
+                $network_in_total = $statistics['value'][$key]['timeseries']['0']['data'];
             }
-            if ($value['name']['value'] == 'Network Out Total') {
+            if ($value['name']['value'] === 'Network Out Total') {
                 $network_out_total = $statistics['value'][$key]['timeseries']['0']['data'];
             }
-            if ($value['name']['value'] == 'Percentage CPU') {
-                $percentage_cpu    = $statistics['value'][$key]['timeseries']['0']['data'];
+            if ($value['name']['value'] === 'Percentage CPU') {
+                $percentage_cpu = $statistics['value'][$key]['timeseries']['0']['data'];
             }
-            if ($value['name']['value'] == 'CPU Credits Remaining') {
-                $cpu_credits       = $statistics['value'][$key]['timeseries']['0']['data'];
+            if ($value['name']['value'] === 'CPU Credits Remaining') {
+                $cpu_credits = $statistics['value'][$key]['timeseries']['0']['data'];
             }
-            if ($value['name']['value'] == 'Available Memory Bytes') {
-                $available_memory  = $statistics['value'][$key]['timeseries']['0']['data'];
+            if ($value['name']['value'] === 'Available Memory Bytes') {
+                $available_memory = $statistics['value'][$key]['timeseries']['0']['data'];
             }
         }
 
         $traffic_usage = Traffic::where('uuid', $server->vm_id)->order('id', 'desc')->select();
-        $chart_day = (empty($chart_day)) ? null : $chart_day;
+        $chart_day = $chart_day ?? null;
 
         $total_in_traffic_usage = 0;
         $total_out_traffic_usage = 0;
@@ -930,25 +975,26 @@ class UserAzureServer extends UserBase
 
     public function search()
     {
-        $user_id    = session('user_id');
-        $s_name     = input('s_name/s');
-        $s_mark     = input('s_mark/s');
-        $s_size     = input('s_size/s');
-        $s_public   = input('s_public/s');
-        $s_status   = input('s_status/s');
+        $user_id = session('user_id');
+        $s_name = input('s_name/s');
+        $s_mark = input('s_mark/s');
+        $s_size = input('s_size/s');
+        $s_public = input('s_public/s');
+        $s_status = input('s_status/s');
         $s_location = input('s_location/s');
 
+        $where = [];
         $where[] = ['user_id', '=', $user_id];
-        ($s_name != '')        && $where[] = ['name',        'like', '%'.$s_name.'%'];
-        ($s_mark != '')        && $where[] = ['user_remark', 'like', '%'.$s_mark.'%'];
-        ($s_public != '')      && $where[] = ['ip_address',  'like', '%'.$s_public.'%'];
-        ($s_size != 'all')     && $where[] = ['vm_size',     '=', $s_size];
-        ($s_status != 'all')   && $where[] = ['status',      '=', $s_status];
-        ($s_location != 'all') && $where[] = ['location',    '=', $s_location];
+        ($s_name !== '') && $where[] = ['name', 'like', '%' . $s_name . '%'];
+        ($s_mark !== '') && $where[] = ['user_remark', 'like', '%' . $s_mark . '%'];
+        ($s_public !== '') && $where[] = ['ip_address', 'like', '%' . $s_public . '%'];
+        ($s_size !== 'all') && $where[] = ['vm_size', '=', $s_size];
+        ($s_status !== 'all') && $where[] = ['status', '=', $s_status];
+        ($s_location !== 'all') && $where[] = ['location', '=', $s_location];
 
         $data = AzureServer::where($where)
-        ->field('vm_id')
-        ->select();
+            ->field('vm_id')
+            ->select();
 
         // $sql = Db::getLastSql();
 
@@ -965,11 +1011,10 @@ class UserAzureServer extends UserBase
         $account = Azure::where('user_id', session('user_id'))->find($vm_account);
         $limits = AzureApi::getResourceSkusList($client, $account, $location);
 
-        foreach ($limits['value'] as $limit)
-        {
-            if ($limit['resourceType'] == 'virtualMachines') {
+        foreach ($limits['value'] as $limit) {
+            if ($limit['resourceType'] === 'virtualMachines') {
                 // 若虚拟机规格中包含关键字p 则代表是arm64处理器 与默认镜像不兼容 因此需要过滤掉
-                if (empty($limit['restrictions']['0']['reasonCode']) && !Str::contains($limit['name'], 'p')) {
+                if (!isset($limit['restrictions']['0']['reasonCode']) && !Str::contains($limit['name'], 'p')) {
                     $size = [
                         'name' => $limit['name'],
                         'size_name' => $limit['name'] . ' => ' . $limit['capabilities']['2']['value'] . 'C_' . $limit['capabilities']['5']['value'] . 'GB',

@@ -1,7 +1,7 @@
 <?php
 
-use think\migration\Migrator;
 use think\migration\db\Column;
+use think\migration\Migrator;
 
 class AddTaskUuidField extends Migrator
 {
@@ -29,12 +29,11 @@ class AddTaskUuidField extends Migrator
     public function change()
     {
         $table = $this->table('task');
-        $table->addColumn('task_uuid', 'text', array(
-                'comment' => '任务uuid',
-                'default' => null,
-                'null' => true,
-                'after' => 'user_id'
-            )
-        )->update();
+        $table->addColumn('task_uuid', 'text', [
+            'comment' => '任务uuid',
+            'default' => null,
+            'null' => true,
+            'after' => 'user_id',
+        ])->update();
     }
 }

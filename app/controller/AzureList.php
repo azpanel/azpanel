@@ -1,8 +1,8 @@
 <?php
+
 namespace app\controller;
 
 use think\helper\Str;
-use app\controller\Ip;
 
 class AzureList
 {
@@ -15,7 +15,7 @@ class AzureList
         // az vm image list --publisher MicrosoftWindowsDesktop --offer windows-10 --all --output table
         // az vm image list --publisher MicrosoftWindowsDesktop --offer windows-11 --all --output table
 
-        $images_list = [
+        return [
             // Debian series
             'Debian_9' => [
                 'display' => 'Debian 9',
@@ -176,15 +176,13 @@ class AzureList
                 'offer' => 'Windows-11',
             ],
         ];
-
-        return $images_list;
     }
 
     public static function sizes()
     {
         // https://azureprice.net
 
-        $sizes_list = [
+        return [
             'Standard_B1ls' => [
                 'cpu' => '1',
                 'memory' => '0.5',
@@ -282,60 +280,56 @@ class AzureList
                 'acc' => false,
             ],
         ];
-
-        return $sizes_list;
     }
 
     public static function locations()
     {
         // https://docs.microsoft.com/en-us/rest/api/resources/subscriptions/list-locations
 
-        $locations_list = [
+        return [
             // 常用
-            'eastasia'           => '东亚 中国香港',
-            'southeastasia'      => '东南亚 新加坡',
-            'japaneast'          => '日本东部 东京',
-            'japanwest'          => '日本西部 大阪',
-            'koreacentral'       => '韩国中部 首尔',
+            'eastasia' => '东亚 中国香港',
+            'southeastasia' => '东南亚 新加坡',
+            'japaneast' => '日本东部 东京',
+            'japanwest' => '日本西部 大阪',
+            'koreacentral' => '韩国中部 首尔',
             // 英国
-            'uksouth'            => '英国南部 伦敦',
-            'ukwest'             => '英国西部 加的夫',
+            'uksouth' => '英国南部 伦敦',
+            'ukwest' => '英国西部 加的夫',
             // 美国
-            'eastus'             => '美国东部 弗吉尼亚',
-            'westus'             => '美国西部 加利福尼亚',
-            'eastus2'            => '美国东部2 弗吉尼亚',
-            'westus2'            => '美国西部2 华盛顿',
-            'westus3'            => '美国西部3 凤凰城',
-            'centralus'          => '美国中部 爱荷华州',
-            'southcentralus'     => '美国中南部 德克萨斯州',
-            'westcentralus'      => '美国中西部 怀俄明州',
-            'northcentralus'     => '美国中北部 伊利诺伊州',
+            'eastus' => '美国东部 弗吉尼亚',
+            'westus' => '美国西部 加利福尼亚',
+            'eastus2' => '美国东部2 弗吉尼亚',
+            'westus2' => '美国西部2 华盛顿',
+            'westus3' => '美国西部3 凤凰城',
+            'centralus' => '美国中部 爱荷华州',
+            'southcentralus' => '美国中南部 德克萨斯州',
+            'westcentralus' => '美国中西部 怀俄明州',
+            'northcentralus' => '美国中北部 伊利诺伊州',
             // 澳大利亚
-            'australiaeast'      => '澳大利亚东部 新南威尔士州',
+            'australiaeast' => '澳大利亚东部 新南威尔士州',
             'australiasoutheast' => '澳大利亚东南部 维多利亚',
-            'australiacentral'   => '澳大利亚中部 堪培拉',
+            'australiacentral' => '澳大利亚中部 堪培拉',
             // 加拿大
-            'canadaeast'         => '加拿大东部 魁北克',
-            'canadacentral'      => '加拿大中部 多伦多',
+            'canadaeast' => '加拿大东部 魁北克',
+            'canadacentral' => '加拿大中部 多伦多',
             // 欧洲
-            'westeurope'         => '西欧 荷兰',
-            'northeurope'        => '北欧 爱尔兰',
-            'norwayeast'         => '挪威东部 挪威',
-            'switzerlandnorth'   => '瑞士北部 苏黎世',
-            'francecentral'      => '法国中部 巴黎',
-            'swedencentral'      => '瑞典中部 耶夫勒',
+            'westeurope' => '西欧 荷兰',
+            'northeurope' => '北欧 爱尔兰',
+            'norwayeast' => '挪威东部 挪威',
+            'switzerlandnorth' => '瑞士北部 苏黎世',
+            'francecentral' => '法国中部 巴黎',
+            'swedencentral' => '瑞典中部 耶夫勒',
             'germanywestcentral' => '德国中西部 法兰克福',
             // 印度
-            'southindia'         => '印度南部 钦奈',
-            'jioindiawest'       => '印度西部 贾姆纳格尔',
-            'centralindia'       => '印度中部 浦那',
+            'southindia' => '印度南部 钦奈',
+            'jioindiawest' => '印度西部 贾姆纳格尔',
+            'centralindia' => '印度中部 浦那',
             // 其他
-            'brazilsouth'        => '巴西南部 圣保罗州',
-            'southafricanorth'   => '南非北部 约翰内斯堡',
-            'uaenorth'           => '阿联酋北部 迪拜',
+            'brazilsouth' => '巴西南部 圣保罗州',
+            'southafricanorth' => '南非北部 约翰内斯堡',
+            'uaenorth' => '阿联酋北部 迪拜',
         ];
-
-        return $locations_list;
     }
 
     public static function defaultPersonalise()
@@ -344,12 +338,12 @@ class AzureList
         $user = Str::lower($user);
 
         $personalise = [
-            'vm_size'                => 'Standard_B2s',
-            'vm_image'               => 'Debian_11',
-            'vm_location'            => 'eastasia',
-            'vm_disk_size'           => '32',
-            'vm_default_script'      => '',
-            'vm_default_identity'    => $user,
+            'vm_size' => 'Standard_B2s',
+            'vm_image' => 'Debian_11',
+            'vm_location' => 'eastasia',
+            'vm_disk_size' => '32',
+            'vm_default_script' => '',
+            'vm_default_identity' => $user,
             'vm_default_credentials' => 'Azure123456789',
         ];
 
@@ -358,7 +352,7 @@ class AzureList
 
     public static function diskSizes()
     {
-        $sizes = [
+        return [
             '32',
             '64',
             '128',
@@ -368,15 +362,13 @@ class AzureList
             '2048',
             '4095',
         ];
-
-        return $sizes;
     }
 
     public static function diskTiers()
     {
         // https://azure.microsoft.com/en-us/pricing/details/managed-disks/
 
-        $lists = [
+        return [
             'P4' => [
                 'diskMBpsReadWrite' => 25,
                 'diskIOPSReadWrite' => 120,
@@ -410,7 +402,5 @@ class AzureList
                 'diskIOPSReadWrite' => 7500,
             ],
         ];
-
-        return $lists;
     }
 }

@@ -29,7 +29,6 @@ class StorageTaskError extends Migrator
     public function change()
     {
         $table = $this->table('task');
-        $table->addColumn('error', 'text', array('comment' => '任务报错', 'default' => null, 'null' => true, 'after' => 'current'))
-            ->update();
+        $table->addColumn('error', 'text', ['comment' => '任务报错', 'default' => null, 'null' => true, 'after' => 'current'])->update();
     }
 }
