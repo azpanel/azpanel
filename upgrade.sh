@@ -83,8 +83,8 @@ judgment()
         if [[ -e "/usr/local/bin/composer" ]];then
             composer update
         else
-            echo "composer.json 文件内容有变动, 但没有找到 composer 命令."
-            echo "为确保正常运行, 请稍后在网站根目录下手动执行 composer update"
+            echo -e "${yellow_color}composer.json 文件内容有变动, 但没有找到 composer 命令.${color_end}"
+            echo -e "${yellow_color}为确保正常运行, 请稍后在网站根目录下手动执行 composer update${color_end}"
         fi
     fi
 }
