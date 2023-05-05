@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 dir=$(pwd)
 
@@ -39,6 +39,7 @@ pullUpdate()
 {
     #git fetch
     #git merge origin/master
+    current_composer_json_md5=$(md5sum composer.json | awk '{print $1}')
     git pull
 
     echo -e "${green_color}Update to the latest version is complete.${color_end}"
@@ -64,7 +65,7 @@ modifyVersion()
 
     #sed -i "${user_tvl}c\        <span>v.${big_v}.${medium_v}.${small_v} ${hash}</span>" ${dir}/app/view/user/header.html
     #sed -i "${admin_tvl}c\        <span>v.${big_v}.${medium_v}.${small_v} ${hash}</span>" ${dir}/app/view/admin/header.html
-    php think tools --action setVersion --newVersion ${big_v}.${medium_v}.${small_v}
+    php think tools --action setVersion --newVersion "${big_v}.${medium_v}.${small_v} ${hash}"
 }
 
 databaseMigration()
@@ -75,11 +76,25 @@ databaseMigration()
     fi
 }
 
+judgment()
+{
+    new_composer_json_md5=$(md5sum composer.json | awk '{print $1}')
+    if [[ "${current_composer_json_md5}" != "${new_composer_json_md5}" ]];then
+        if [[ -e "/usr/local/bin/composer" ]];then
+            composer update
+        else
+            echo "composer.json 文件内容有变动, 但没有找到 composer 命令."
+            echo "为确保正常运行, 请稍后在网站根目录下手动执行 composer update"
+        fi
+    fi
+}
+
 main()
 {
     checkGit
     checkoutConfirm
     pullUpdate
+    judgment
     databaseMigration
     modifyVersion
 }
