@@ -15,7 +15,7 @@ class AdminDashboard extends AdminBase
             //服务器ip
             'server_ip' => gethostbyname($_SERVER['SERVER_NAME']),
             //磁盘空间
-            'disk_space' => round((disk_free_space('.') / 1073741824), 2) . ' GB',
+            'disk_space' => round(disk_free_space('.') / 1e9, 2) . ' GB',
             //php版本
             'php_version' => PHP_VERSION,
             //运行内存限制
