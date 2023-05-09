@@ -40,6 +40,7 @@ class autoRefreshAccount extends Command
                 $accounts = Azure::where('user_id', $task->user_id)
                     ->where('az_sub_status', '<>', 'Disabled')
                     ->where('az_sub_status', '<>', 'Warned')
+                    ->where('az_sub_status', '<>', 'Invalid')
                     ->select();
 
                 foreach ($accounts as $account) {

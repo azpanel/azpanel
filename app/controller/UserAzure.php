@@ -511,6 +511,11 @@ class UserAzure extends UserBase
         try {
             $sub_info = AzureApi::getAzureSubscription($id); // array
         } catch (\Exception $e) {
+            if (Str::contains($e->getMessage(), '401 Unauthorized')) {
+                $account->az_sub_status = 'Invalid';
+                $account->save();
+                return json(Tools::msg('0', '刷新失败', $e->getMessage()));
+            }
             return json(Tools::msg('0', '刷新失败', $e->getMessage()));
         }
 
@@ -550,6 +555,7 @@ class UserAzure extends UserBase
 
         $accounts = Azure::where('user_id', $user_id)
             ->where('az_sub_status', '<>', 'Disabled')
+            ->where('az_sub_status', '<>', 'Invalid')
             ->whereIn('az_sub_type', $query_set)
             ->select();
 
@@ -571,8 +577,14 @@ class UserAzure extends UserBase
                     AzureApi::getAzureVirtualMachines($account->id);
                 }
             } catch (\Exception $e) {
-                UserTask::end($task_id, true);
-                return json(Tools::msg('0', '刷新失败', $e->getMessage()));
+                if (Str::contains($e->getMessage(), '401 Unauthorized')) {
+                    $account->az_sub_status = 'Invalid';
+                    $account->save();
+                    continue;
+                } else {
+                    UserTask::end($task_id, true);
+                    return json(Tools::msg('0', '刷新失败', $e->getMessage()));
+                }
             }
 
             $account->az_sub = json_encode($sub_info);
