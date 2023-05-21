@@ -27,6 +27,7 @@
                 </li>
                 <li>创建 <code>D,F</code> 系列虚拟机时，默认启用 <code>Accelerated Networking</code></li>
                 <li>密码必须包含小写字母、大写字母、数字和特殊符号这四个组成部分中的三个，长度大于 12 且小于 72</li>
+                <li>查询价格功能用于获取当前选择地区和规格的虚拟机价格</li>
               </ul>
             </div>
           </div>
@@ -280,6 +281,57 @@
       ipv6_inst.open();
     }
   });
+//查询价格
+$('#query_price').on('click', function () {
+      mdui.snackbar({
+        message: '查询价格中...',
+        position: 'top',
+        timeout: '500',
+      });
+
+      $.ajax({
+        method: 'POST',
+        url: "/user/server/azure/price",
+        data: {
+            vm_size: $('#vm_size').val(),
+            location: $('#vm_location').val(),
+        },
+        dataType: "json",
+        success: function (priceData) {
+          if (priceData === null) {
+            mdui.snackbar({
+              message: '查询不到价格：网络连接错误',
+              position: 'top'
+            });
+          } else {
+          var decodedData = JSON.parse(priceData.replace(/\\\"/g, '"'));
+          var prices = decodedData.prices;
+            if (prices.length === 0) {
+              mdui.snackbar({
+                message: '查询不到价格：该地域似乎无此型号',
+                position: 'top'
+              });
+            } else {
+                //Linux价格一般比Windows低
+              var linuxPrice, windowsPrice;
+              if (prices[0] < prices[1]) {
+                linuxPrice = prices[0].toFixed(4);
+                windowsPrice = prices[1].toFixed(4);
+              } else {
+                linuxPrice = prices[1].toFixed(4);
+                windowsPrice = prices[0].toFixed(4);
+              }
+            
+              mdui.snackbar({
+                message: '查询到每小时价格：Linux: $' + linuxPrice + ', Windows: $' + windowsPrice,
+                position: 'top',
+                timeout: '3000'
+              });
+            }
+          }
+        },
+      });
+    });
 
   $('#create').on('click', function () {
     mdui.confirm('创建过程中请不要离开本页面', '创建确认',

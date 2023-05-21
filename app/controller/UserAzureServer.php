@@ -1026,4 +1026,39 @@ class UserAzureServer extends UserBase
 
         return json($set);
     }
+    public function price() {
+        $location = input('location/s');
+        $vm_size = input('vm_size/s');
+        $vm_sku = str_replace('Standard_', '', $vm_size);
+    
+    $apiUrl = "https://prices.azure.com/api/retail/prices?api-version=2021-10-01-preview";
+    $query = "armRegionName eq '$location' and SkuName eq '$vm_sku' and priceType eq 'Consumption' and serviceName eq 'Virtual Machines' ";
+
+    $params = ['$filter' => $query];
+    $url = $apiUrl . '&' . http_build_query($params);
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HEADER, false);
+
+    $response = curl_exec($ch);
+
+    if ($response === false) {
+        // 请求失败处理
+        return null;
+    }
+
+    curl_close($ch);
+
+    $json_data = json_decode($response, true);
+
+    $prices = array();
+
+    foreach ($json_data['Items'] as $item) {
+        $prices[] = $item['retailPrice'];
+    }
+
+    return json_encode(['prices' => $prices]);
+    }
 }
