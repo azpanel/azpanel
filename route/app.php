@@ -74,6 +74,7 @@ Route::get('/user/server/azure/rule/log',         'UserAzureServerRule/log');
 Route::resource('/user/server/azure',             'UserAzureServer');
 Route::post('/user/server/azure/search',          'UserAzureServer/search');
 Route::post('/user/server/azure/available',       'UserAzureServer/available');
+Route::post('/user/server/azure/price',           'UserAzureServer/price');
 Route::patch('/user/server/azure/:action/:uuid',  'UserAzureServer/status');
 Route::put('/user/server/azure/resize/:uuid',     'UserAzureServer/resize');
 Route::put('/user/server/azure/redisk/:uuid',     'UserAzureServer/redisk');
