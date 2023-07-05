@@ -1026,39 +1026,30 @@ class UserAzureServer extends UserBase
 
         return json($set);
     }
-    public function price() {
-        $location = input('location/s');
+
+    public function price()
+    {
         $vm_size = input('vm_size/s');
+        $location = input('location/s');
         $vm_sku = str_replace('Standard_', '', $vm_size);
-    
-    $apiUrl = "https://prices.azure.com/api/retail/prices?api-version=2021-10-01-preview";
-    $query = "armRegionName eq '$location' and SkuName eq '$vm_sku' and priceType eq 'Consumption' and serviceName eq 'Virtual Machines' ";
 
-    $params = ['$filter' => $query];
-    $url = $apiUrl . '&' . http_build_query($params);
+        try {
+            $client = new Client();
+            $addr = "https://prices.azure.com/api/retail/prices?api-version=2021-10-01-preview";
+            $query = "armRegionName eq '$location' and SkuName eq '$vm_sku' and priceType eq 'Consumption' and serviceName eq 'Virtual Machines' ";
+            $url = $addr . '&' . http_build_query(['$filter' => $query]);
+            $response = $client->request('GET', $url);
+            $json_data = json_decode($response->getBody(), true);
 
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HEADER, false);
-
-    $response = curl_exec($ch);
-
-    if ($response === false) {
-        // 请求失败处理
-        return null;
-    }
-
-    curl_close($ch);
-
-    $json_data = json_decode($response, true);
-
-    $prices = array();
-
-    foreach ($json_data['Items'] as $item) {
-        $prices[] = $item['retailPrice'];
-    }
-
-    return json_encode(['prices' => $prices]);
+            $prices = [];
+            foreach ($json_data['Items'] as $item) {
+                $prices[] = $item['retailPrice'];
+            }
+            return json([
+                'prices' => $prices,
+            ]);
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 }
