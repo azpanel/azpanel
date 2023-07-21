@@ -198,14 +198,14 @@ class Auth extends BaseController
             if (Config::obtain('captcha_provider') === 'hcaptcha') {
                 $code = input('hcaptcha_result/s');
                 if ($code === '') {
-                    return json(Tools::msg('0', '登录失败', '请完成验证码'));
+                    return json(Tools::msg('0', '注册失败', '请完成图像验证码填写'));
                 }
                 if (!Tools::verifyHcaptcha($code)) {
-                    return json(Tools::msg('0', '登录失败', '验证码错误'));
+                    return json(Tools::msg('0', '注册失败', '图像验证码错误'));
                 }
             }
             if (!captcha_check($code) && Config::obtain('captcha_provider') === 'think-captcha') {
-                return json(Tools::msg('0', '登录失败', '验证码错误'));
+                return json(Tools::msg('0', '注册失败', '图像验证码错误'));
             }
         }
 

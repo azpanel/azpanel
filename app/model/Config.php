@@ -15,17 +15,17 @@ class Config extends Model
 
     public static function obtain($key)
     {
-        $item = self::where('item', $key)->find();
+        $item = self::where('item', $key)->find()->toArray();
 
         // 网站目录下执行 php think migrate:run 修复
 
-        switch ($item->type) {
+        switch ($item['type']) {
             case 'bool':
-                return (bool) $item->value;
+                return (bool) $item['value'];
             case 'int':
-                return (int) $item->value;
+                return (int) $item['value'];
             default:
-                return (string) $item->value;
+                return (string) $item['value'];
         }
     }
 
