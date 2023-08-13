@@ -34,7 +34,7 @@
         "topthink/think-captcha": "^3.0",
         "nunomaduro/phpinsights": "^2.8",
         "aws/aws-sdk-php": "^3.277",
-        "s1lentium/iptools": "^1.2"
+        "s1lentium/iptools": "1.1.1"
     },
     "require-dev": {
         "symfony/var-dumper": "^4.2",
