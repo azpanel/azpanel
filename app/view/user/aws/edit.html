@@ -1,0 +1,106 @@
+{include file="../app/view/user/header.html" title="编辑账户" /}
+
+<div class="mdui-container-fluid">
+    <div class="mdui-row">
+        <div
+            class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+            <div class="mdui-container-fluid">
+                <p style="color: #3F51B5; font-size: 34px">编辑账户</p>
+            </div>
+
+            <div class="mdui-typo">
+                <p>你可以在这里编辑此账户的部分信息</p>
+            </div>
+
+            <div class="mdui-card mdui-m-t-2" style="overflow: visible">
+                <div class="mdui-card-content mdui-container">
+                    <div class="mdui-col-sm-12 mdui-col-md-4">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">mail</i>
+                            <label class="mdui-textfield-label">登录邮箱</label>
+                            <textarea class="mdui-textfield-input" id="email" required>{$account.email}</textarea>
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-4">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">lock</i>
+                            <label class="mdui-textfield-label">登录密码（选填）</label>
+                            <textarea class="mdui-textfield-input" id="passwd">{$account.passwd}</textarea>
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-4">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">bookmark</i>
+                            <label class="mdui-textfield-label">备注</label>
+                            <textarea class="mdui-textfield-input" id="mark">{$account.mark}</textarea>
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-6">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">apps</i>
+                            <label class="mdui-textfield-label">Access Key</label>
+                            <textarea class="mdui-textfield-input" id="ak">{$account.ak}</textarea>
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-6">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">location_city</i>
+                            <label class="mdui-textfield-label">Secret Key</label>
+                            <textarea class="mdui-textfield-input" id="sk">{$account.sk}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mdui-card mdui-m-t-2">
+                <div class="mdui-card-actions">
+                    <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised"
+                        id="update">修改</button>
+                </div>
+            </div>
+
+            <div class="mdui-m-t-2"></div>
+
+        </div>
+    </div>
+</div>
+</body>
+
+<script>
+    $('#update').on('click', function () {
+        mdui.confirm('确认更新此账户资料么', '更新确认',
+            function () {
+                $.ajax({
+                    method: 'PUT',
+                    url: "/user/aws/{$account.id}",
+                    data: {
+                        email: $('#email').val(),
+                        passwd: $('#passwd').val(),
+                        mark: $('#mark').val(),
+                        ak: $('#ak').val(),
+                        sk: $('#sk').val(),
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.status == '0') {
+                            mdui.alert(data.content, data.title);
+                        }
+                        else {
+                            mdui.alert(data.content, data.title);
+                            setTimeout("window.location = '/user/aws'", 1500);
+                        }
+                    }
+                });
+            },
+            function () {
+            },
+            {
+                confirmText: "确定",
+                cancelText: "取消"
+            }
+        );
+    });
+</script>
+{include file="../app/view/user/footer.html" /}
+
+</html>

@@ -61,7 +61,7 @@ class UserAzureServer extends UserBase
 
         $designated_id = (int) input('id');
         if ($designated_id !== 0) {
-            $designated_account = Azure::where('user_id', session('user_id'))->where('id', $designated_id)->find();
+            $designated_account = Azure::where('user_id', session('user_id'))->find($designated_id);
             if ($designated_account === null) {
                 return View::fetch('../app/view/user/reject.html');
             }

@@ -1,0 +1,88 @@
+{include file="../app/view/user/header.html" title="AWS 区域配额" /}
+
+<div class="mdui-container-fluid">
+    <div class="mdui-row">
+        <div
+            class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+            <div class="mdui-container-fluid">
+                <p style="color: #3F51B5; font-size: 34px">AWS 区域配额</p>
+            </div>
+
+            <div class="mdui-typo">
+                <p>你可以在这里查看此账户每个区域的配额</p>
+            </div>
+
+            <div class="card-body mdui-table-fluid-fixed mdui-m-t-2">
+                <table class="mdui-table" style="border: none;">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>区域</th>
+                            <th>配额</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {volist name="locations" id="location"}
+                        <tr>
+                            <td>{++$count}</td>
+                            <td>{$location}</td>
+                            <td>null</td>
+                            <td>
+                                <button data-region="{$key}" data-line="{$count}"
+                                    class="query-quota mdui-btn mdui-btn-raised mdui-btn-dense mdui-ripple mdui-color-blue-grey">
+                                    查看
+                                </button>
+                            </td>
+                        </tr>
+                        {/volist}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mdui-m-t-2"></div>
+
+        </div>
+    </div>
+</div>
+</body>
+
+<script>
+    $('.query-quota').click(function () {
+        var line = $(this).data('line');
+        var region = $(this).data('region');
+        $.ajax({
+            method: 'GET',
+            url: "/user/aws/{$account.id}",
+            data: {
+                action: 'queryQuota',
+                region: region,
+            },
+            dataType: "json",
+            success: function (data) {
+                console.log(data);
+                document.querySelector('.mdui-table tr:nth-child(' + line + ') td:nth-child(3)').textContent = data;
+                document.querySelectorAll('td').forEach(function (td) {
+                    if (td.textContent.includes('null')) {
+                        td.style.fontStyle = 'italic';
+                    }
+                });
+                mdui.snackbar({
+                    message: '已查询成功，请查看按钮左侧',
+                    position: 'top',
+                    timeout: '1000'
+                });
+            },
+        });
+    });
+
+    document.querySelectorAll('td').forEach(function (td) {
+        if (td.textContent.includes('null')) {
+            td.style.fontStyle = 'italic';
+        }
+    });
+</script>
+
+{include file="../app/view/user/footer.html" /}
+
+</html>

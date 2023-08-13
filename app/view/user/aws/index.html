@@ -1,0 +1,327 @@
+{include file="../app/view/user/header.html" title="AWS 账户列表" /}
+
+<div class="mdui-container-fluid">
+    <div class="mdui-row">
+        <div
+            class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+            <div class="mdui-container-fluid">
+                <p style="color: #3F51B5; font-size: 34px">AWS 账户列表</p>
+            </div>
+
+            <div class="mdui-typo">
+                <p>你可以在这里查看所有 AWS 账户，鼠标放在状态栏会显示具体的配额信息</p>
+            </div>
+
+            <div class="card-body mdui-table-fluid-fixed mdui-m-t-2">
+                <table class="mdui-table" style="border: none;">
+                    <thead>
+                        <tr>
+                            <th>操作</th>
+                            <th>#</th>
+                            <th>账户</th>
+                            <th>备注</th>
+                            <th>状态</th>
+                            <th>添加时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {volist name="accounts" id="account"}
+                        <tr id="{$account.id}" data-id="{$account.id}" class="hid">
+                            <td>
+                                <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-ripple mdui-color-blue-grey"
+                                    mdui-menu="{target: '#action-{$account.id}', fixed: true}">操作</button>
+                                <ul class="mdui-menu" id="action-{$account.id}">
+                                    <li class="mdui-menu-item">
+                                        <a target="_blank" class="mdui-ripple" href="/user/aws/{$account.id}/edit">
+                                            <i class="mdui-menu-item-icon mdui-icon material-icons">edit</i>编辑信息
+                                        </a>
+                                    </li>
+                                    {if $account->judgmentState() === 'Enabled'}
+                                    <li class="mdui-menu-item">
+                                        <a target="_blank" class="mdui-ripple" href="/user/aws/{$account.id}">
+                                            <i
+                                                class="mdui-menu-item-icon mdui-icon material-icons">add_shopping_cart</i>查看配额
+                                        </a>
+                                    </li>
+                                    {/if}
+                                    <li class="mdui-menu-item">
+                                        <a class="mdui-ripple" onclick="refresh(this)" data-id="{$account.id}">
+                                            <i class="mdui-menu-item-icon mdui-icon material-icons">refresh</i>刷新状态
+                                        </a>
+                                    </li>
+                                    {if $account->judgmentState() === 'Enabled'}
+                                    <li class="mdui-menu-item">
+                                        <a target="_blank" class="mdui-ripple"
+                                            href="/user/server/aws/create?id={$account.id}">
+                                            <i
+                                                class="mdui-menu-item-icon mdui-icon material-icons">create_new_folder</i>创建实例
+                                        </a>
+                                    </li>
+                                    {/if}
+                                    <li class="mdui-menu-item">
+                                        <a class="mdui-ripple" onclick="remove(this)" data-id="{$account.id}">
+                                            <i
+                                                class="mdui-menu-item-icon mdui-icon material-icons">delete_forever</i>删除账户
+                                        </a>
+                                    </li>
+                                </ul>
+                            </td>
+                            <td>{$total--}</td>
+                            <td>{$account.email}</td>
+                            <td>{$account.mark}</td>
+                            <td class="disable-replication"
+                                mdui-tooltip="{content: '{$account->getQuotaText()}', position: 'top'}">
+                                {$account->judgmentState()}
+                            </td>
+                            <td>{:date('Y-m-d H:i:s', $account.created_at)}</td>
+                        </tr>
+                        {/volist}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mdui-dialog" id="search" style="overflow: visible">
+                <div class="mdui-dialog-content" style="overflow: visible">
+                    <div class="mdui-col-sm-12 mdui-col-md-6">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">flag</i>
+                            <label class="mdui-textfield-label">账户名称（模糊匹配）</label>
+                            <input class="mdui-textfield-input" id="s_name">
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-6">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">bookmark</i>
+                            <label class="mdui-textfield-label">备注</label>
+                            <input class="mdui-textfield-input" id="s_mark">
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-12">
+                        <div class="mdui-m-t-2">
+                            状态：<select id="s_status" class="mdui-select" mdui-select>
+                                <option value="all">不限</option>
+                                <option value="0">Enabled</option>
+                                <option value="1">Disabled</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-12">
+                        <p></p>
+                    </div>
+                </div>
+                <div class="mdui-dialog-actions">
+                    <button id="cancel-search" class="mdui-btn mdui-ripple" mdui-dialog-close>取消</button>
+                    <button id="submit-search" class="mdui-btn mdui-ripple" mdui-dialog-confirm>搜索</button>
+                </div>
+            </div>
+
+            <div class="mdui-dialog" id="refresh" style="overflow: visible">
+                <div class="mdui-dialog-content" style="overflow: visible">
+                    <h3>选择刷新内容</h3>
+                    <div class="mdui-col-sm-12 mdui-col-md-3">
+                        <label class="mdui-checkbox">
+                            <input name="refresh_action" value="status" type="checkbox" disabled checked />
+                            <i class="mdui-checkbox-icon"></i>
+                            账户状态
+                        </label>
+                    </div>
+                </div>
+                <div class="mdui-dialog-actions">
+                    <button id="cancel-refresh" class="mdui-btn mdui-ripple" mdui-dialog-close>取消</button>
+                    <button id="submit-refresh" class="mdui-btn mdui-ripple" mdui-dialog-confirm>执行</button>
+                </div>
+            </div>
+
+            <div class="mdui-container">
+                <div class="mdui-fab-wrapper" id="fab">
+                    <button class="mdui-fab mdui-ripple mdui-color-pink-accent">
+                        <i class="mdui-icon material-icons">build</i>
+                    </button>
+                    <div class="mdui-fab-dial">
+                        <button class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-red"
+                            onclick="deletedAllDisabledAccount()">
+                            <i class="mdui-icon material-icons">delete</i>
+                        </button>
+                        <button class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-teal"
+                            mdui-dialog="{target: '#search'}">
+                            <i class="mdui-icon material-icons">search</i>
+                        </button>
+                        <button class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-blue-grey"
+                            mdui-dialog="{target: '#refresh'}">
+                            <i class="mdui-icon material-icons">autorenew</i>
+                        </button>
+                        <a class="mdui-fab mdui-fab-mini mdui-ripple mdui-color-indigo" href="/user/aws/create">
+                            <i class="mdui-icon material-icons">add</i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mdui-m-t-2"></div>
+
+        </div>
+    </div>
+    </br />
+</div>
+</body>
+
+<script>
+    var inst = new mdui.Fab('#fab');
+
+    $('#submit-search').click(function () {
+        $.ajax({
+            method: 'POST',
+            url: "/user/aws/search",
+            data: {
+                s_name: $('#s_name').val(),
+                s_mark: $('#s_mark').val(),
+                s_type: $('#s_type').val(),
+                s_status: $('#s_status').val(),
+            },
+            dataType: "json",
+            success: function (data) {
+                $("tr[class='hid']").hide();
+                for (var i = 0; i < data.result.length; i++) {
+                    $("tr[id='" + data.result[i].id + "']").show();
+                }
+                // console.log(data.sql);
+            }
+        });
+    });
+
+    $('#submit-refresh').click(function () {
+        var load = new mdui.alert('<p id=\"hint\">准备中</p><div class=\"mdui-progress\"><div class=\"mdui-progress-determinate\"></div></div>', '进行中');
+        var cycle = setInterval(getProgress, 500);
+        uuid = guid();
+
+        $.ajax({
+            method: 'PUT',
+            url: "/user/aws/0",
+            data: {
+                action: 'refreshAll',
+                task_uuid: uuid,
+            },
+            dataType: "json",
+            success: function (data) {
+                load.close();
+                clearInterval(cycle);
+                if (data.status == '0') {
+                    mdui.alert(data.content, data.title);
+                } else {
+                    mdui.alert(data.content, data.title);
+                    setTimeout("window.location = '/user/aws'", 1500);
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                clearInterval(cycle);
+                console.log('false');
+            }
+        });
+    });
+
+    function guid() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
+
+    function remove(that) {
+        let id = $(that).data('id');
+        mdui.confirm('是否要删除此账户？', '删除确认',
+            function () {
+                $.ajax({
+                    method: 'DELETE',
+                    url: "/user/aws/" + id,
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.status == '0') {
+                            mdui.alert(data.content, data.title);
+                        } else {
+                            mdui.alert(data.content, data.title);
+                            $(that).closest('tr').remove();
+                        }
+                    }
+                });
+            },
+            function () { },
+            {
+                confirmText: "确定",
+                cancelText: "取消"
+            }
+        );
+    };
+
+    function refresh(that) {
+        let id = $(that).data('id');
+        mdui.confirm('确认刷新此账户状态么？', '刷新确认',
+            function () {
+                var load = new mdui.alert('<div class=\"mdui-progress\"><div class=\"mdui-progress-indeterminate\"></div></div>', '进行中');
+                $.ajax({
+                    method: 'PUT',
+                    url: "/user/aws/" + id,
+                    data: {
+                        action: 'refresh'
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        load.close();
+                        if (data.status == '0') {
+                            mdui.alert(data.content, data.title);
+                        } else {
+                            mdui.alert(data.content, data.title);
+                            setTimeout("window.location = '/user/aws'", 1500);
+                        }
+                    }
+                });
+            },
+            function () { },
+            {
+                confirmText: "确定",
+                cancelText: "取消"
+            }
+        );
+    };
+
+    function deletedAllDisabledAccount() {
+        mdui.confirm('此操作将移除所有 <span class="mdui-typo"><code>Disabled</code></span> 状态的账户。是否继续？', '批量删除确认',
+            function () {
+                $.ajax({
+                    method: 'DELETE',
+                    url: "/user/aws/0",
+                    dataType: "json",
+                    success: function (data) {
+                        mdui.alert(data.content, data.title);
+                        if (data.status == '1') {
+                            setTimeout("window.location = '/user/aws'", 1500);
+                        }
+                    }
+                });
+            },
+            function () { },
+            {
+                confirmText: "确定",
+                cancelText: "取消"
+            }
+        );
+    };
+
+    function getProgress() {
+        $.ajax({
+            method: 'GET',
+            url: "/user/progress/" + uuid,
+            dataType: "json",
+            success: function (data) {
+                var width = data.schedule + '%';
+                $('.mdui-progress-determinate').css('width', width);
+                $('#hint').replaceWith("<p id=\"hint\">" + data.current + "</p>");
+            }
+        });
+    }
+
+    $("td:contains('Enabled')").css("color", "green");
+    $("td:contains('Disabled')").css("color", "red");
+</script>
+{include file="../app/view/user/footer.html" /}
+
+</html>

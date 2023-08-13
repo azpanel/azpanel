@@ -70,6 +70,13 @@ Route::get('/user/azure/resources/:id/:name',     'UserAzure/readResourceGroup')
 Route::resource('/user/server/azure/rule',        'UserAzureServerRule');
 Route::get('/user/server/azure/rule/log',         'UserAzureServerRule/log');
 
+// Aws 账户
+Route::resource('/user/aws',                      'UserAws');
+Route::post('/user/aws/search',                   'UserAws/searchAccount');
+
+// Aws 服务器
+Route::resource('/user/server/aws',               'UserAwsServer');
+
 // Azure 服务器
 Route::resource('/user/server/azure',             'UserAzureServer');
 Route::post('/user/server/azure/search',          'UserAzureServer/search');

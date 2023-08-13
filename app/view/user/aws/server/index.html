@@ -1,0 +1,216 @@
+{include file="../app/view/user/header.html" title="AWS 虚拟机列表" /}
+
+<div class="mdui-container-fluid">
+    <div class="mdui-row">
+        <div
+            class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+            <div class="mdui-container-fluid">
+                <p style="color: #3F51B5; font-size: 34px">AWS 虚拟机列表</p>
+            </div>
+
+            <!-- <div class="mdui-typo">
+                <p>你可以在这里查看 AWS 账户下每个区域的虚拟机</p>
+            </div> -->
+
+            <div class="mdui-rows">
+                <div class="mdui-col-sm-12 mdui-col-md-4">
+                    <div class="mdui-m-t-2">
+                        归属：<select id="account" class="mdui-select" mdui-select>
+                            {volist name="accounts" id="account"}
+                            <option value="{$account->id}">{$account->email}</option>
+                            {/volist}
+                        </select>
+                    </div>
+                </div>
+                <div class="mdui-col-sm-12 mdui-col-md-4">
+                    <div class="mdui-m-t-2">
+                        地区：<select id="location" class="mdui-select" mdui-select>
+                            {volist name="locations" id="location"}
+                            <option value="{$key}">{$location}</option>
+                            {/volist}
+                        </select>
+                    </div>
+                </div>
+                <div class="mdui-col-sm-12 mdui-col-md-4">
+                    <div class="mdui-m-t-2">
+                        状态：<select id="status" class="mdui-select" mdui-select>
+                            <option value="all">所有</option>
+                            <option value="running">仅运行</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <button id="view"
+                class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-ripple mdui-color-blue-grey">
+                <i class="mdui-icon material-icons" style="color:white;">file_download</i>&nbsp;载入表格
+            </button>
+            <button id="startInstances"
+                class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-ripple mdui-color-blue-grey">
+                <i class="mdui-icon material-icons" style="color:white;">power_settings_new</i>&nbsp;启动
+            </button>
+            <button id="stopInstances"
+                class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-ripple mdui-color-blue-grey">
+                <i class="mdui-icon material-icons" style="color:white;">flash_off</i>&nbsp;停止
+            </button>
+            <button id="rebootInstances"
+                class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-ripple mdui-color-blue-grey">
+                <i class="mdui-icon material-icons" style="color:white;">refresh</i>&nbsp;重启
+            </button>
+            <button id="terminateInstances"
+                class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-ripple mdui-color-blue-grey">
+                <i class="mdui-icon material-icons" style="color:white;">delete_forever</i>&nbsp;销毁
+            </button>
+            <div class="mdui-m-t-2"></div>
+            <div class="mdui-table-fluid-fixed">
+                <table id="list" class="mdui-table mdui-table-selectable" style="border: none;">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>名称</th>
+                            <th>规格</th>
+                            <th>状态</th>
+                            <th>IPv4</th>
+                            <th>IPv6</th>
+                            <th>类型</th>
+                            <th>创建于</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mdui-m-t-2"></div>
+
+        </div>
+    </div>
+</div>
+</body>
+
+<script>
+    function markColor() {
+        var tds = document.getElementsByTagName('td');
+        for (var i = 0; i < tds.length; i++) {
+            if (tds[i].textContent.indexOf('running') !== -1) {
+                tds[i].style.color = 'green';
+            }
+            if (tds[i].textContent.indexOf('stopping') !== -1 || tds[i].textContent.indexOf('pending') !== -1 || tds[i].textContent.indexOf('shutting-down') !== -1) {
+                tds[i].style.color = 'orange';
+            }
+            if (tds[i].textContent.indexOf('stopped') !== -1 || tds[i].textContent.indexOf('terminated') !== -1) {
+                tds[i].style.color = 'red';
+            }
+        }
+    }
+
+    function getSelectedIds() {
+        var set = [];
+        $('.mdui-table-row-selected').each(function () {
+            var id = $(this).attr('data-id');
+            set.push(id);
+        });
+        return set;
+    }
+
+    $('#view').on('click', function (e) {
+        // 获取账户
+        var status = $('#status').val();
+        var account = $('#account').val();
+        // 配置格式化时间
+        var options = {
+            timeZone: "Asia/Shanghai",
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        };
+        // ajax请求
+        $.ajax({
+            method: 'GET',
+            url: "/user/server/aws/" + account,
+            dataType: "json",
+            data: {
+                location: $('#location').val(),
+            },
+            success: function (response) {
+                if (response.ret == 0) {
+                    return mdui.alert(response.msg)
+                }
+                // 清空当前的 tbody
+                var tbody = $('#list tbody');
+                tbody.empty();
+                // 生成表格
+                var reservations = response.Reservations;
+                for (var i = 0; i < reservations.length; i++) {
+                    var instances = reservations[i].Instances;
+                    for (var j = 0; j < instances.length; j++) {
+                        var instance = instances[j];
+                        if ((status == 'running' && instance.State.Name == 'running') || status == 'all') {
+                            // 时间格式转化
+                            var dateObj = new Date(instance.LaunchTime);
+                            var formattedDate = dateObj.toLocaleString("zh-CN", options);
+                            // 为tr加上实例id
+                            var row = $('<tr data-id="' + instance.InstanceId + '"></tr>');
+                            // 其他元素
+                            row.append($('<td></td>').text(i * instances.length + j + 1));  // 序号
+                            row.append($('<td></td>').text(instance.Tags.find(tag => tag.Key === 'Name').Value));  // 虚拟机名称
+                            row.append($('<td></td>').text(instance.InstanceType));  // 虚拟机规格
+                            row.append($('<td></td>').text(instance.State.Name));  // 虚拟机状态
+                            row.append($('<td></td>').text(instance.PublicIpAddress));  // 虚拟机 ipv4 地址
+                            row.append($('<td></td>').text(instance?.Ipv6Address ?? ''));  // 虚拟机 ipv6 地址
+                            row.append($('<td></td>').text(instance.PlatformDetails));  // 虚拟机类别
+                            row.append($('<td></td>').text(formattedDate));  // 虚拟机创建时间
+                            tbody.append(row);
+                        }
+                    }
+                }
+                mdui.snackbar({
+                    message: '已刷新表格，找到 ' + reservations.length + ' 个虚拟机',
+                    position: 'top',
+                    timeout: '1000'
+                });
+                mdui.updateTables();
+                // 标记颜色
+                markColor();
+            }
+        });
+    });
+
+    var ids = ['#startInstances', '#stopInstances', '#rebootInstances', '#terminateInstances'];
+    var handler = function (event) {
+        var account = $('#account').val();
+        var instances = getSelectedIds();
+        if (instances.length == 0) {
+            return mdui.alert('请先勾选一个或多个虚拟机', '操作失败');
+        }
+        $.ajax({
+            method: 'PUT',
+            url: "/user/server/aws/" + account,
+            dataType: "json",
+            data: {
+                action: this.id,
+                instances: instances,
+                location: $('#location').val(),
+            },
+            success: function (response) {
+                if (response.ret == 0) {
+                    return mdui.alert(response.msg)
+                }
+                mdui.snackbar({
+                    message: '操作成功',
+                    position: 'top',
+                    timeout: '1000'
+                });
+            }
+        });
+    };
+    ids.forEach(function (id) {
+        mdui.$(id).on('click', handler);
+    });
+</script>
+
+{include file="../app/view/user/footer.html" /}
+
+</html>

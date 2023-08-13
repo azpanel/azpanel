@@ -42,9 +42,9 @@ class UserTask
             ->find();
 
         $data = [
-            'status' => $task->status,
-            'schedule' => $task->schedule,
-            'current' => $task->current,
+            'status' => $task->status ?? 'WaitForResponse',
+            'schedule' => $task->schedule ?? 0,
+            'current' => $task->current ?? '等待任务创建',
         ];
 
         return json($data);

@@ -1,0 +1,174 @@
+{include file="../app/view/user/header.html" title="AWS 账户添加" /}
+
+<div class="mdui-container-fluid">
+    <div class="mdui-row">
+        <div
+            class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+            <div class="mdui-container-fluid">
+                <p style="color: #3F51B5; font-size: 34px">AWS 账户添加</p>
+            </div>
+
+            <div class="mdui-typo">
+                <p>你可以在这里添加 AWS 账户</p>
+            </div>
+
+            <div class="mdui-card mdui-m-t-2" style="overflow: visible">
+                <div class="mdui-card-content mdui-container">
+                    <div class="mdui-col-12">
+                        <label class="mdui-switch">
+                            单个添加&nbsp;
+                            <input type="checkbox" class="exclude" />
+                            <i class="mdui-switch-icon"></i>
+                            &nbsp;批量添加
+                        </label>
+                    </div>
+                    <div class="mdui-col-12">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">bookmark</i>
+                            <label class="mdui-textfield-label">备注</label>
+                            <textarea class="mdui-textfield-input" id="user_mark"></textarea>
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-6" id="email_element">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">mail</i>
+                            <label class="mdui-textfield-label">登录邮箱</label>
+                            <textarea class="mdui-textfield-input" id="email" required></textarea>
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-6" id="passwd_element">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">lock</i>
+                            <label class="mdui-textfield-label">登录密码（选填）</label>
+                            <textarea class="mdui-textfield-input" id="passwd"></textarea>
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-6" id="aws_ak_element">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">apps</i>
+                            <label class="mdui-textfield-label">Access Key</label>
+                            <textarea class="mdui-textfield-input" id="aws_ak" required></textarea>
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-6" id="aws_sk_element">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">vpn_key</i>
+                            <label class="mdui-textfield-label">Secret Key</label>
+                            <textarea class="mdui-textfield-input" id="aws_sk" required></textarea>
+                        </div>
+                    </div>
+                    <div class="mdui-col-12" id="batch_addition_element">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">vpn_key</i>
+                            <label class="mdui-textfield-label">批量添加。账户, 密码, ak, sk各占一行填写, 四行为一组</label>
+                            <textarea rows="5" class="mdui-textfield-input" id="batch_addition"></textarea>
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-12 mdui-m-t-2">
+                        <p style="color: #3F51B5; font-size: 18px">更多</p>
+                    </div>
+                    <div class="mdui-col-12">
+                        备注填充：
+                        <select id="remark_filling" class="mdui-select" mdui-select>
+                            <option value="input">使用输入框值</option>
+                            <option value="{:date('md')}">{:date('md')}</option>
+                            {volist name="notes" id="note"}
+                            <option value="{$note['mark']}">{$note['mark']}</option>
+                            {/volist}
+                        </select>
+                    </div>
+                    <div class="mdui-col-12 mdui-m-t-2">
+                        加载配额区域（面板将仅获取被勾选区域的账户配额）：<br />
+                        {volist name="regions" id="region"}
+                        <div class="mdui-col-sm-6 mdui-col-md-4 mdui-m-t-2">
+                            <label class="mdui-checkbox">
+                                <input value="{$key}" type="checkbox" />
+                                <i class="mdui-checkbox-icon"></i>
+                                {$key} {$region}
+                            </label>
+                        </div>
+                        {/volist}
+                    </div>
+                </div>
+            </div>
+
+            <div class="mdui-card mdui-m-t-2">
+                <div class="mdui-card-actions">
+                    <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised"
+                        id="add">添加</button>
+                </div>
+            </div>
+
+            <div class="mdui-m-t-2"></div>
+
+        </div>
+    </div>
+</div>
+</body>
+
+<script>
+    var add_mode = 'single'; // multiple
+    $("#batch_addition_element").hide();
+    $('input[type="checkbox"][value="ap-northeast-1"]').prop('checked', true);
+    $('input[type="checkbox"][value="ap-northeast-1"]').prop('disabled', true);
+
+    $('.mdui-switch input').on('change', function () {
+        add_mode = $(this).is(':checked') ? 'multiple' : 'single';
+        $("#email_element").toggle();
+        $("#passwd_element").toggle();
+        $("#aws_ak_element").toggle();
+        $("#aws_sk_element").toggle();
+        $("#batch_addition_element").toggle();
+    });
+
+    $('#add').on('click', function () {
+        mdui.confirm('添加账户时，面板需要获取此账户的配额，这将花费 3~5 秒，等待期间请勿重复点击添加按钮', '添加确认',
+            function () {
+                var load = new mdui.alert('<div class=\"mdui-progress\"><div class=\"mdui-progress-indeterminate\"></div></div>', '进行中');
+                var regions = [];
+                $('input[type="checkbox"]:not(.exclude):checked').each(function () {
+                    regions.push($(this).val());
+                });
+                console.log(regions);
+                // ajax
+                $.ajax({
+                    method: 'POST',
+                    url: '/user/aws',
+                    data: {
+                        add_mode: add_mode,
+                        regions: regions,
+                        email: $('#email').val(),
+                        passwd: $('#passwd').val(),
+                        aws_ak: $('#aws_ak').val(),
+                        aws_sk: $('#aws_sk').val(),
+                        user_mark: $('#user_mark').val(),
+                        batch_addition: $('#batch_addition').val(),
+                        remark_filling: $('#remark_filling').val(),
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        load.close();
+                        if (data.status == '0') {
+                            mdui.alert(data.content, data.title);
+                        } else {
+                            mdui.alert(data.content, data.title);
+                            setTimeout("window.location = '/user/aws'", 1500);
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        mdui.alert(errorThrown, '出错了...');
+                        load.close();
+                    }
+                });
+            },
+            function () { },
+            {
+                confirmText: "确定",
+                cancelText: "取消"
+            }
+        );
+    });
+</script>
+{include file="../app/view/user/footer.html" /}
+
+</html>

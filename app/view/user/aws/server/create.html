@@ -1,11 +1,11 @@
-{include file="../app/view/user/header.html" title="Azure 创建虚拟机" /}
+{include file="../app/view/user/header.html" title="AWS 创建虚拟机" /}
 
 <div class="mdui-container-fluid">
     <div class="mdui-row">
         <div
             class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
             <div class="mdui-container-fluid">
-                <p style="color: #3F51B5; font-size: 34px">Azure 创建虚拟机</p>
+                <p style="color: #3F51B5; font-size: 34px">AWS 创建虚拟机</p>
             </div>
 
             <div class="mdui-typo">
@@ -19,16 +19,8 @@
                         <div class="mdui-panel-item-body">
                             <ul>
                                 <li>归属账户默认使用最新添加的</li>
-                                <li>只显示订阅状态为 <code>Enabled</code> 的账户</li>
-                                <li>你可以在 <a href="/user/profile">个人资料</a> 页设置各项开机默认参数</li>
+                                <li>只显示状态为 <code>Enabled</code> 的账户</li>
                                 <li>创建多个虚拟机时，备注和名称的填写需使用英文逗号分隔</li>
-                                <li>不能使用这些用户名：<code>root</code>, <code>admin</code>, <code>centos</code>,
-                                    <code>debian</code>,
-                                    <code>ubuntu</code>
-                                </li>
-                                <li>创建 <code>D,F</code> 系列虚拟机时，默认启用 <code>Accelerated Networking</code></li>
-                                <li>密码必须包含小写字母、大写字母、数字和特殊符号这四个组成部分中的三个，长度大于 12 且小于 72</li>
-                                <li>查询价格功能用于获取当前选择地区和规格的虚拟机价格</li>
                             </ul>
                         </div>
                     </div>
@@ -51,14 +43,14 @@
                             <input class="mdui-textfield-input" id="vm_remark">
                         </div>
                     </div>
-                    <div class="mdui-col-sm-12 mdui-col-md-6">
+                    <div class="mdui-col-sm-12 mdui-col-md-4">
                         <div class="mdui-textfield mdui-textfield-floating-label">
                             <i class="mdui-icon material-icons">assignment_ind</i>
                             <label class="mdui-textfield-label">用户名</label>
-                            <input class="mdui-textfield-input" id="vm_user" value="{$personalise.vm_default_identity}">
+                            <input class="mdui-textfield-input" value="root" disabled />
                         </div>
                     </div>
-                    <div class="mdui-col-sm-12 mdui-col-md-6">
+                    <div class="mdui-col-sm-12 mdui-col-md-4">
                         <div class="mdui-textfield mdui-textfield-floating-label">
                             <i class="mdui-icon material-icons">vpn_key</i>
                             <label class="mdui-textfield-label">密码</label>
@@ -66,12 +58,18 @@
                                 value="{$personalise.vm_default_credentials}">
                         </div>
                     </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-4">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">code</i>
+                            <label class="mdui-textfield-label">指定规格（选填）</label>
+                            <input class="mdui-textfield-input" id="specified_size">
+                        </div>
+                    </div>
                     <div class="mdui-col-sm-12 mdui-col-md-6">
                         <div class="mdui-textfield mdui-textfield-floating-label">
                             <i class="mdui-icon material-icons">code</i>
-                            <label class="mdui-textfield-label">bash 脚本（可不填）</label>
-                            <textarea class="mdui-textfield-input" id="vm_script"
-                                rows="15">{$personalise.vm_default_script ?? ''}</textarea>
+                            <label class="mdui-textfield-label">bash 脚本（可不填，不需要包含 #!/bin/bash）</label>
+                            <textarea class="mdui-textfield-input" id="vm_script" rows="10"></textarea>
                         </div>
                         <p class="mdui-col-md-12 mdui-typo">
                             * 默认脚本的运行身份是普通用户，部分命令需要加上 <code>sudo</code> 才能成功执行。
@@ -87,12 +85,10 @@
                             </select>
                         </div>
                         <div class="mdui-m-t-2">
-                            规格：<select id="vm_size">
+                            规格：<select id="vm_size" class="mdui-select" mdui-select>
                                 {volist name="sizes" id="size"}
                                 <option value="{$key}">
-                                    {:str_replace('Standard_', '', $key)} {$size.cpu}C_{$size.memory}G
-                                    ({:round($size.cost, 1)} USD /
-                                    Month)
+                                    {$key} ({$size})
                                 </option>
                                 {/volist}
                             </select>
@@ -101,7 +97,7 @@
                         <div class="mdui-m-t-2">
                             归属：<select id="vm_account" class="mdui-select" mdui-select>
                                 {volist name="accounts" id="account"}
-                                <option value="{$account->id}">{$account->az_email}</option>
+                                <option value="{$account->id}">{$account->email}</option>
                                 {/volist}
                             </select>
                         </div>
@@ -109,13 +105,13 @@
                         <div>
                             <p class="mdui-typo">
                                 <span style="color: red">你正在使用指定账户创建模式，该模式下无法选择其他账户</span>。退出模式请 <a
-                                    href="/user/server/azure/create">点击此处</a>
+                                    href="/user/server/aws/create">点击此处</a>
                             </p>
                         </div>
                         <div class="mdui-m-t-2">
                             归属：
                             <select id="vm_account" class="mdui-select" mdui-select>
-                                <option value="{$designated_account->id}">{$designated_account->az_email}</option>
+                                <option value="{$designated_account->id}">{$designated_account->email}</option>
                             </select>
                         </div>
                         {/if}
@@ -124,7 +120,7 @@
                                 <div class="mdui-m-t-2">
                                     镜像：<select id="vm_image" class="mdui-select" mdui-select>
                                         {volist name="images" id="image"}
-                                        <option value="{$key}">{$image.display}</option>
+                                        <option value="{$key}">{$key}</option>
                                         {/volist}
                                     </select>
                                 </div>
@@ -142,45 +138,19 @@
                             </div>
                         </div>
                         <div class="mdui-row">
-                            <div class="mdui-col-sm-12 mdui-col-md-12">
-                                <div class="mdui-m-t-2">
-                                    流控：
-                                    <select id="vm_traffic_rule" class="mdui-select" mdui-select>
-                                        <option value="0">不使用</option>
-                                        {volist name="traffic_rules" id="traffic_rule"}
-                                        <option value="{$traffic_rule->id}">{$traffic_rule->name}</option>
-                                        {/volist}
-                                    </select>
-                                </div>
+                            <div class="mdui-col-sm-6 mdui-col-md-3 mdui-m-t-2">
+                                <label class="mdui-checkbox">
+                                    <input value="ap-northeast-1" type="checkbox" disabled="" checked>
+                                    <i class="mdui-checkbox-icon"></i>
+                                    IPv4 网络
+                                </label>
                             </div>
-                            <div class="mdui-col-sm-12 mdui-col-md-12">
-                                <div class="mdui-m-t-2">
-                                    密钥：
-                                    <select id="vm_ssh_key" class="mdui-select" mdui-select>
-                                        <option value="0">不使用</option>
-                                        {if !empty($ssh_key)}
-                                        <option value="{$ssh_key->id}">{$ssh_key->name}</option>
-                                        {/if}
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="mdui-col-sm-12 mdui-col-md-4">
-                                <div class="mdui-m-t-2">
-                                    检查：
-                                    <select id="create_check" class="mdui-select" mdui-select>
-                                        <option value="1">执行</option>
-                                        <option value="0">忽略</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="mdui-col-sm-12 mdui-col-md-8">
-                                <div class="mdui-m-t-2">
-                                    IPv6：
-                                    <select id="create_ipv6" class="mdui-select" mdui-select>
-                                        <option value="0">不创建</option>
-                                        <option value="1">创建</option>
-                                    </select>
-                                </div>
+                            <div class="mdui-col-sm-6 mdui-col-md-3 mdui-m-t-2">
+                                <label class="mdui-checkbox">
+                                    <input value="ap-northeast-1" type="checkbox" disabled="" checked>
+                                    <i class="mdui-checkbox-icon"></i>
+                                    IPv6 网络
+                                </label>
                             </div>
                         </div>
                     </div>
@@ -189,22 +159,10 @@
 
             <div class="mdui-card mdui-m-t-2">
                 <div class="mdui-card-actions">
-                    <div class="mdui-row-xs-3">
-                        <div class="mdui-col">
-                            <button id="load_available_models"
-                                class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-btn-block mdui-color-indigo">
-                                加载可用型号
-                            </button>
-                        </div>
-                        <div class="mdui-col">
-                            <button id="query_price"
-                                class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-btn-block mdui-color-indigo">
-                                查询价格
-                            </button>
-                        </div>
+                    <div class="mdui-row-12">
                         <div class="mdui-col">
                             <button id="create"
-                                class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-btn-block mdui-color-pink">
+                                class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-btn-block mdui-color-indigo">
                                 创建虚拟机
                             </button>
                         </div>
@@ -217,7 +175,7 @@
                     <div class="mdui-dialog-title">创建确认</div>
                     <div class="mdui-dialog-content mdui-typo">若创建 IPv6 地址，这些虚拟机将无法更换 IPv4 地址，请按需选择。分配的 IPv6
                         地址可以在虚拟机详情查看，也可以使用
-                        IPv4 地址链接服务器后，执行 <code>curl ipv6.ip.sb</code> 获取</div>
+                        IPv4 地址链接服务器后，执行 <code>curl ip.sb</code> 获取</div>
                     <div class="mdui-dialog-actions">
                         <button class="mdui-btn mdui-ripple" mdui-dialog-confirm>确认</button>
                     </div>
@@ -231,7 +189,6 @@
 
 <script>
     var $ = mdui.$;
-    var inst = new mdui.Select('#vm_size');
 
     function getProgress() {
         $.ajax({
@@ -253,96 +210,6 @@
         });
     }
 
-    $('#load_available_models').on('click', function () {
-        mdui.snackbar({
-            message: '加载中...',
-            position: 'top',
-            timeout: '500',
-        });
-
-        $.ajax({
-            method: 'POST',
-            url: "/user/server/azure/available",
-            data: {
-                vm_account: $('#vm_account').val(),
-                location: $('#vm_location').val(),
-            },
-            dataType: "json",
-            success: function (data) {
-                // clear
-                $('#vm_size').empty();
-                // load
-                for (var i = 0; i < data.length; i++) {
-                    $('#vm_size').append('<option value="' + data[i].name + '">' + data[i].size_name + '</option>');
-                }
-                inst.handleUpdate();
-                // return
-                mdui.snackbar({
-                    message: '已加载 ' + data.length + ' 个可用规格',
-                    position: 'top',
-                })
-            }
-        });
-    });
-
-    $('#create_ipv6').on('change', function () {
-        var create_switch = $('#create_ipv6').val();
-        if (create_switch == '1') {
-            var ipv6_inst = new mdui.Dialog('#create-ipv6-confirm-dialog');
-            ipv6_inst.open();
-        }
-    });
-
-    $('#query_price').on('click', function () {
-        mdui.snackbar({
-            message: '查询价格中...',
-            position: 'top',
-            timeout: '500',
-        });
-
-        $.ajax({
-            method: 'POST',
-            url: "/user/server/azure/price",
-            data: {
-                vm_size: $('#vm_size').val(),
-                location: $('#vm_location').val(),
-            },
-            dataType: "json",
-            success: function (priceData) {
-                if (priceData === null) {
-                    mdui.snackbar({
-                        message: '查询不到价格：网络连接错误',
-                        position: 'top'
-                    });
-                } else {
-                    var prices = priceData.prices;
-                    if (prices.length === 0) {
-                        mdui.snackbar({
-                            message: '查询不到价格：该地域似乎无此型号',
-                            position: 'top'
-                        });
-                    } else {
-                        //Linux价格一般比Windows低
-                        var linuxPrice, windowsPrice;
-                        if (prices[0] < prices[1]) {
-                            linuxPrice = prices[0].toFixed(4);
-                            windowsPrice = prices[1].toFixed(4);
-                        } else {
-                            linuxPrice = prices[1].toFixed(4);
-                            windowsPrice = prices[0].toFixed(4);
-                        }
-
-                        mdui.snackbar({
-                            message: '查询到每小时价格: Linux: $' + linuxPrice + ', Windows: $' + windowsPrice,
-                            position: 'top',
-                            timeout: '3000'
-                        });
-                    }
-                }
-            },
-        });
-    });
-
     $('#create').on('click', function () {
         mdui.confirm('创建过程中请不要离开本页面', '创建确认',
             function () {
@@ -351,33 +218,27 @@
                 uuid = guid();
                 $.ajax({
                     method: 'POST',
-                    url: "/user/server/azure",
+                    url: "/user/server/aws",
                     data: {
-                        vm_remark: $('#vm_remark').val(),
                         vm_name: $('#vm_name').val(),
-                        vm_user: $('#vm_user').val(),
+                        vm_remark: $('#vm_remark').val(),
                         vm_passwd: $('#vm_passwd').val(),
+                        specified_size: $('#specified_size').val(),
                         vm_script: $('#vm_script').val(),
                         vm_location: $('#vm_location').val(),
                         vm_size: $('#vm_size').val(),
                         vm_account: $('#vm_account').val(),
                         vm_disk_size: $('#vm_disk_size').val(),
                         vm_image: $('#vm_image').val(),
-                        vm_traffic_rule: $('#vm_traffic_rule').val(),
-                        vm_ssh_key: $('#vm_ssh_key').val(),
-                        create_check: $('#create_check').val(),
-                        create_ipv6: $('#create_ipv6').val(),
                         task_uuid: uuid,
                     },
                     dataType: "json",
                     success: function (data) {
                         load.close();
                         clearInterval(cycle);
-                        if (data.status == '0') {
-                            mdui.alert(data.content, data.title);
-                        } else {
-                            mdui.alert(data.content, data.title);
-                            setTimeout("window.location = '/user/server/azure'", 1500);
+                        mdui.alert(data.content, data.title);
+                        if (data.status == '1') {
+                            setTimeout("window.location = '/user/server/aws'", 1500);
                         }
                     },
                     error: function (data) {
@@ -394,14 +255,6 @@
             }
         );
     });
-
-    $("#vm_size").prop('value', '{$personalise.vm_size}');
-    inst.handleUpdate();
-    $("#vm_image").prop('value', '{$personalise.vm_image}');
-    $("#vm_location").prop('value', '{$personalise.vm_location}');
-    $("#vm_disk_size").prop('value', '{$personalise.vm_disk_size}');
-    $("#vm_default_identity").prop('value', '{$personalise.vm_default_identity}');
-    $("#vm_default_credentials").prop('value', '{$personalise.vm_default_credentials}');
 </script>
 {include file="../app/view/user/footer.html" /}
 

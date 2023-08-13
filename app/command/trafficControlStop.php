@@ -116,7 +116,7 @@ class trafficControlStop extends Command
                         $task->save();
                     }
                 } catch (\Exception $e) {
-                    Log::write($e->getMessage(), 'traffic_control_error');
+                    Log::write($e->getLine() . ':' . $e->getMessage(), 'traffic_control_stop_error');
                 }
             }
         }
