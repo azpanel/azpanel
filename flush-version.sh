@@ -2,8 +2,8 @@
 
 version=$(git log --format="%ct" | wc -l)
 big_v='1'
-medium_v='1'
-small_v=$(expr ${version} - 105)
+medium_v='2'
+small_v=$(expr ${version} - 211)
 hash=$(git log -1 --format="%h")
 
 if [[ -e "/usr/local/php8.1/bin/php" ]];then

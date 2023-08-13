@@ -88,6 +88,19 @@ class UserAws extends UserBase
 
         try {
             if ($add_mode === 'single') {
+                $batch_addition = $email . PHP_EOL . $passwd . PHP_EOL . $aws_ak . PHP_EOL . $aws_sk;
+            }
+            $accounts = explode(PHP_EOL, $batch_addition);
+            if (count($accounts) % 4 !== 0) {
+                throw new \Exception("内容与数量不匹配");
+            }
+            $array = [];
+            $pointer = 0;
+            while ($pointer < count($accounts) - 1) {
+                $email = $accounts[$pointer++];
+                $passwd = $accounts[$pointer++];
+                $aws_ak = $accounts[$pointer++];
+                $aws_sk = $accounts[$pointer++];
                 // check format
                 self::awsCertificateVerify([
                     $email,
@@ -101,56 +114,19 @@ class UserAws extends UserBase
                     $quota[$region] = AwsApi::getQuota($region, $aws_ak, $aws_sk);
                 }
                 // save data
-                $add = new Aws();
-                $add->email = $email;
-                $add->passwd = $passwd;
-                $add->ak = $aws_ak;
-                $add->sk = $aws_sk;
-                $add->mark = $remark_filling === 'input' ? $user_mark : $remark_filling;
-                $add->quota = $quota;
-                $add->disable = $quota['ap-northeast-1'] === 'null' ? 1 : 0;
-                $add->user_id = session('user_id');
-                $add->created_at = time();
-                $add->save();
-            } else {
-                $accounts = explode(PHP_EOL, $batch_addition);
-                if (count($accounts) % 4 !== 0) {
-                    throw new \Exception("内容与数量不匹配");
-                }
-                $array = [];
-                $pointer = 0;
-                while ($pointer < count($accounts) - 1) {
-                    $email = $accounts[$pointer++];
-                    $passwd = $accounts[$pointer++];
-                    $aws_ak = $accounts[$pointer++];
-                    $aws_sk = $accounts[$pointer++];
-                    // check format
-                    self::awsCertificateVerify([
-                        $email,
-                        $passwd,
-                        $aws_ak,
-                        $aws_sk,
-                    ]);
-                    // query quota
-                    $quota = [];
-                    foreach ($regions as $region) {
-                        $quota[$region] = AwsApi::getQuota($region, $aws_ak, $aws_sk);
-                    }
-                    // save data
-                    $array[] = [
-                        'email' => $email,
-                        'passwd' => $passwd,
-                        'ak' => $aws_ak,
-                        'sk' => $aws_sk,
-                        'mark' => $remark_filling === 'input' ? $user_mark : $remark_filling,
-                        'quota' => $quota,
-                        'disable' => $quota['ap-northeast-1'] === 'null' ? 1 : 0,
-                        'user_id' => session('user_id'),
-                        'created_at' => time(),
-                    ];
-                }
-                Aws::insertAll($array);
+                $array[] = [
+                    'email' => $email,
+                    'passwd' => $passwd,
+                    'ak' => $aws_ak,
+                    'sk' => $aws_sk,
+                    'mark' => $remark_filling === 'input' ? $user_mark : $remark_filling,
+                    'quota' => $quota,
+                    'disable' => $quota['ap-northeast-1'] === 'null' ? 1 : 0,
+                    'user_id' => session('user_id'),
+                    'created_at' => time(),
+                ];
             }
+            Aws::insertAll($array);
             return json(Tools::msg('1', '保存结果', '保存成功'));
         } catch (\Exception $e) {
             return json(Tools::msg('0', '保存失败', $e->getMessage()));
@@ -182,9 +158,7 @@ class UserAws extends UserBase
             return View::fetch('../app/view/user/reject.html');
         }
 
-        View::assign([
-            'account' => $account,
-        ]);
+        View::assign('account', $account);
         return View::fetch('../app/view/user/aws/edit.html');
     }
 

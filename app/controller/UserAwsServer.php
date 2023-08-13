@@ -49,7 +49,7 @@ class UserAwsServer extends UserBase
         View::assign([
             'accounts' => $accounts,
             'personalise' => $personalise,
-            'disk_sizes' => [32, 64, 128],
+            'disk_sizes' => [16, 32, 64, 128],
             'sizes' => AwsList::instanceSizes(),
             'images' => AwsList::instanceImage(),
             'locations' => AwsList::instanceRegion(),
