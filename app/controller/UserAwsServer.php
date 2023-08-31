@@ -410,7 +410,7 @@ class UserAwsServer extends UserBase
                 ]);
             } catch (\Exception $e) {
                 $error = $e->getLine() . ':' . $e->getMessage();
-                UserTask::end($task_id, true, $error);
+                UserTask::end($task_id, true, ['msg' => $error]);
                 return json(Tools::msg('0', '创建失败', $error));
             }
         }
