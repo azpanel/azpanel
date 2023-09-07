@@ -31,6 +31,7 @@ return [
         PHP_CodeSniffer\Standards\Generic\Sniffs\Formatting\SpaceAfterNotSniff::class,
         PHP_CodeSniffer\Standards\Generic\Sniffs\Strings\UnnecessaryStringConcatSniff::class,
         PHP_CodeSniffer\Standards\Squiz\Sniffs\PHP\GlobalKeywordSniff::class,
+        PHP_CodeSniffer\Standards\Zend\Sniffs\Debug\CodeAnalyzerSniff::class,
         PhpCsFixer\Fixer\StringNotation\SingleQuoteFixer::class,
         PhpCsFixer\Fixer\FunctionNotation\VoidReturnFixer::class,
         SlevomatCodingStandard\Sniffs\Classes\ForbiddenPublicPropertySniff::class,

@@ -109,7 +109,7 @@ class UserAwsServer extends UserBase
 
     private static function getAWSClient(string $region, string $access_key, string $secret_key): object
     {
-        $client = new Ec2Client([
+        return new Ec2Client([
             'region' => $region,
             'version' => 'latest',
             'credentials' => [
@@ -117,7 +117,6 @@ class UserAwsServer extends UserBase
                 'secret' => $secret_key,
             ],
         ]);
-        return $client;
     }
 
     private static function generateScriptContent(string $name, string $passwd, string $custom_script): string
@@ -299,7 +298,7 @@ class UserAwsServer extends UserBase
                 $result = $client->allocateAddress([
                     'Domain' => 'vpc',
                 ]);
-                $public_ip = $result['PublicIp'];
+                //$public_ip = $result['PublicIp'];
                 $allocation_id = $result['AllocationId'];
                 // 等待虚拟机正常运行
                 UserTask::update($task_id, (++$progress / $steps), '正在等待虚拟机运行状态');
@@ -375,7 +374,7 @@ class UserAwsServer extends UserBase
                     'NetworkInterfaceId' => $network_interface_id,
                     'Ipv6AddressCount' => 1,
                 ]);
-                $ipv6_addr = $result['AssignedIpv6Addresses'][0];
+                //$ipv6_addr = $result['AssignedIpv6Addresses'][0];
                 // 获取Amazon VPC中的一个或多个路由表的详细信息
                 UserTask::update($task_id, (++$progress / $steps), '正在处理路由表');
                 $result = $client->describeRouteTables([
@@ -436,7 +435,7 @@ class UserAwsServer extends UserBase
 
     public function edit()
     {
-
+        return false;
     }
 
     public function update($id)
@@ -447,8 +446,8 @@ class UserAwsServer extends UserBase
             $location = input('location/s');
             $instances = input('instances/a');
 
-            $client = $this->getAWSClient(input('location/s'), $account->ak, $account->sk);
-            return json($client->$action(['InstanceIds' => $instances,])->toArray());
+            $client = $this->getAWSClient($location, $account->ak, $account->sk);
+            return json($client->$action(['InstanceIds' => $instances])->toArray());
         } catch (\Exception $e) {
             return json([
                 'ret' => 0,
@@ -459,6 +458,6 @@ class UserAwsServer extends UserBase
 
     public function delete()
     {
-
+        return false;
     }
 }

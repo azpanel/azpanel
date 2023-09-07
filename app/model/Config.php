@@ -5,9 +5,6 @@ namespace app\model;
 
 use think\Model;
 
-/**
- * @mixin \think\Model
- */
 class Config extends Model
 {
     protected $pk = 'id';

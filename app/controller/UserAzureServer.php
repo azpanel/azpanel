@@ -1036,7 +1036,7 @@ class UserAzureServer extends UserBase
         try {
             $client = new Client();
             $addr = "https://prices.azure.com/api/retail/prices?api-version=2021-10-01-preview";
-            $query = "armRegionName eq '$location' and SkuName eq '$vm_sku' and priceType eq 'Consumption' and serviceName eq 'Virtual Machines' ";
+            $query = "armRegionName eq '{$location}' and SkuName eq '{$vm_sku}' and priceType eq 'Consumption' and serviceName eq 'Virtual Machines' ";
             $url = $addr . '&' . http_build_query(['$filter' => $query]);
             $response = $client->request('GET', $url);
             $json_data = json_decode($response->getBody(), true);

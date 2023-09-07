@@ -581,10 +581,9 @@ class UserAzure extends UserBase
                     $account->az_sub_status = 'Invalid';
                     $account->save();
                     continue;
-                } else {
-                    UserTask::end($task_id, true);
-                    return json(Tools::msg('0', '刷新失败', $e->getMessage()));
                 }
+                UserTask::end($task_id, true);
+                return json(Tools::msg('0', '刷新失败', $e->getMessage()));
             }
 
             $account->az_sub = json_encode($sub_info);
