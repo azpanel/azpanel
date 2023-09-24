@@ -47,7 +47,8 @@ class CustomWebsite extends Migrator
             ],
         ];
 
-        $this->insert('config', $rows);
+        $this->insert('config', $rows)->saveData();
+        // https://book.cakephp.org/phinx/0/en/seeding.html#inserting-data
     }
 
     public function down()
