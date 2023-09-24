@@ -1,34 +1,20 @@
 <?php
 
-use think\migration\db\Column;
-use think\migration\Migrator;
+use think\migration\Seeder;
 
-class resolveConfig extends Migrator
+class DomainResolveConfigItem extends Seeder
 {
     /**
-     * Change Method.
+     * Run Method.
      *
-     * Write your reversible migrations using this method.
+     * Write your database seeder using this method.
      *
-     * More information on writing migrations is available here:
-     * http://docs.phinx.org/en/latest/migrations.html#the-abstractmigration-class
-     *
-     * The following commands can be used in this method and Phinx will
-     * automatically reverse them when rolling back:
-     *
-     *    createTable
-     *    renameTable
-     *    addColumn
-     *    renameColumn
-     *    addIndex
-     *    addForeignKey
-     *
-     * Remember to call "create()" or "update()" and NOT "save()" when working
-     * with the Table class.
+     * More information on writing seeders is available here:
+     * http://docs.phinx.org/en/latest/seeding.html
      */
-    public function up()
+    public function run(): void
     {
-        $rows = [
+        $data = [
             [
                 'id' => null,
                 'item' => 'ali_whitelist',
@@ -76,20 +62,10 @@ class resolveConfig extends Migrator
                 'class' => 'resolv',
                 'default_value' => '600',
                 'type' => 'string',
-            ],
+            ]
         ];
 
-        // this is a handy shortcut
-        $this->insert('config', $rows);
-    }
-
-    public function down()
-    {
-        $this->execute('DELETE FROM config WHERE config.item = \'ali_whitelist\'');
-        $this->execute('DELETE FROM config WHERE config.item = \'resolv_sync\'');
-        $this->execute('DELETE FROM config WHERE config.item = \'ali_domain\'');
-        $this->execute('DELETE FROM config WHERE config.item = \'ali_ak\'');
-        $this->execute('DELETE FROM config WHERE config.item = \'ali_sk\'');
-        $this->execute('DELETE FROM config WHERE config.item = \'ali_ttl\'');
+        $conn = $this->table('config');
+        $conn->insert($data)->saveData();
     }
 }
