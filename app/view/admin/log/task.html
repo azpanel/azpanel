@@ -45,7 +45,7 @@
               <!-- <td>{$log.current}</td> -->
               <td>{:date('Y-m-d H:i:s', $log.created_at)}</td>
               <td>{:date('Y-m-d H:i:s', $log.updated_at)}</td>
-              <td>{$log.total_time}</td>
+              <td>{$log.total_time ?? 'null'}</td>
             </tr>
             {/volist}
           </tbody>

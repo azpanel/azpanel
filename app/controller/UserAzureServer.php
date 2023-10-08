@@ -125,7 +125,7 @@ class UserAzureServer extends UserBase
         }
 
         // 虚拟机用户名与密码检查
-        $prohibit_user = ['root', 'admin', 'centos', 'debian', 'ubuntu', 'administrator', 'test'];
+        $prohibit_user = ['root', 'Admin', 'admin', 'centos', 'debian', 'ubuntu', 'administrator', 'test'];
         if (!preg_match('/^[a-zA-Z0-9]+$/', $vm_user) || in_array($vm_user, $prohibit_user)) {
             return json(Tools::msg('0', '创建失败', '用户名只允许使用大小写字母与数字的组合，且不能使用常见用户名'));
         }

@@ -3,6 +3,7 @@
 namespace app\controller;
 
 use app\controller\AwsList;
+use app\controller\AwsApi;
 use app\controller\Tools;
 use app\controller\UserTask;
 use app\model\Aws;
@@ -202,211 +203,234 @@ class UserAwsServer extends UserBase
         ];
         // 初始化创建任务
         $progress = 0;
-        $steps = $vm_number * 13;
+        $steps = $vm_number * 3;
         $task_id = UserTask::create(session('user_id'), '创建AWS虚拟机', $params, $task_uuid);
         // 开始创建
         foreach ($names as $vm_name) {
             $name = $vm_name . date('YmdHis', time());
+            // try {
+            //     // 创建会话
+            //     UserTask::update($task_id, (++$progress / $steps), '正在创建会话');
+            //     $client = $this->getAWSClient($vm_location, $account->ak, $account->sk);
+            //     // 创建 VPC
+            //     UserTask::update($task_id, (++$progress / $steps), '正在创建 VPC');
+            //     $result = $client->createVpc([
+            //         'CidrBlock' => '172.31.0.0/16', // VPC的CIDR块
+            //         'AmazonProvidedIpv6CidrBlock' => true, // 是否请求Amazon提供IPv6 CIDR块
+            //     ]);
+            //     $vpc_id = $result['Vpc']['VpcId'];
+            //     // 创建子网
+            //     UserTask::update($task_id, (++$progress / $steps), '正在创建子网');
+            //     $result = $client->createSubnet([
+            //         'VpcId' => $vpc_id,
+            //         'CidrBlock' => '172.31.0.0/16',
+            //     ]);
+            //     $subnet_id = $result['Subnet']['SubnetId'];
+            //     // 获取镜像 ID
+            //     UserTask::update($task_id, (++$progress / $steps), '正在获取镜像 ID');
+            //     $result = $client->describeImages([
+            //         'Filters' => [
+            //             [
+            //                 'Name' => 'name',
+            //                 'Values' => [
+            //                     AwsList::instanceImage()[$vm_image]['imageName'],
+            //                 ],
+            //             ],
+            //         ],
+            //         'Owners' => [
+            //             AwsList::instanceImage()[$vm_image]['imageOwner'],
+            //         ],
+            //     ]);
+            //     $image_id = $result['Images'][0]['ImageId'];
+            //     // 创建密钥对
+            //     UserTask::update($task_id, (++$progress / $steps), '正在创建密钥对');
+            //     $client->createKeyPair([
+            //         'KeyName' => $name,
+            //     ]);
+            //     // 创建安全组
+            //     UserTask::update($task_id, (++$progress / $steps), '正在创建安全组');
+            //     $result = $client->createSecurityGroup([
+            //         'Description' => $name,
+            //         'GroupName' => $name,
+            //         'VpcId' => $vpc_id,
+            //     ]);
+            //     $group_id = $result['GroupId'];
+            //     // 向指定的安全组添加入站规则
+            //     UserTask::update($task_id, (++$progress / $steps), '正在向指定的安全组添加入站规则');
+            //     $client->authorizeSecurityGroupIngress([
+            //         'GroupId' => $group_id,
+            //         'IpPermissions' => $this->getIpPermissions(),
+            //     ]);
+            //     // 执行开机指令
+            //     UserTask::update($task_id, (++$progress / $steps), '正在创建虚拟机');
+            //     $result = $client->runInstances([
+            //         'BlockDeviceMappings' => [
+            //             [
+            //                 'DeviceName' => '/dev/xvda',
+            //                 'Ebs' => [
+            //                     'VolumeSize' => $vm_disk_size,
+            //                 ],
+            //             ],
+            //         ],
+            //         'ImageId' => $image_id,
+            //         'InstanceType' => $specified_size === '' ? $vm_size : $specified_size,
+            //         'KeyName' => $name,
+            //         'MinCount' => 1,
+            //         'MaxCount' => 1,
+            //         'SecurityGroupIds' => [
+            //             $group_id,
+            //         ],
+            //         'SubnetId' => $subnet_id,
+            //         'UserData' => base64_encode($this->generateScriptContent($vm_name, $vm_passwd, $vm_script)),
+            //         'TagSpecifications' => [
+            //             [
+            //                 'ResourceType' => 'instance',
+            //                 'Tags' => [
+            //                     [
+            //                         'Key' => 'Name',
+            //                         'Value' => $vm_name,
+            //                     ],
+            //                 ],
+            //             ],
+            //         ],
+            //     ]);
+            //     $instance_id = $result['Instances'][0]['InstanceId'];
+            //     // 为 VPC 申请 IP 地址
+            //     $result = $client->allocateAddress([
+            //         'Domain' => 'vpc',
+            //     ]);
+            //     //$public_ip = $result['PublicIp'];
+            //     $allocation_id = $result['AllocationId'];
+            //     // 等待虚拟机正常运行
+            //     UserTask::update($task_id, (++$progress / $steps), '正在等待虚拟机运行状态');
+            //     while (true) {
+            //         $result = $client->describeInstances([
+            //             'Filters' => [
+            //                 [
+            //                     'Name' => 'instance-id',
+            //                     'Values' => [
+            //                         $instance_id,
+            //                     ],
+            //                 ],
+            //             ],
+            //         ]);
+            //         if ($result['Reservations'][0]['Instances'][0]['State']['Name'] !== 'pending') {
+            //             break;
+            //         }
+            //     }
+            //     // 创建 Internet Gateway
+            //     UserTask::update($task_id, (++$progress / $steps), '正在处理 IPv4 网络');
+            //     $result = $client->createInternetGateway();
+            //     $internet_gateway_id = $result['InternetGateway']['InternetGatewayId'];
+            //     // 关联 Internet Gateway 和 VPC
+            //     $client->attachInternetGateway([
+            //         'InternetGatewayId' => $internet_gateway_id,
+            //         'VpcId' => $vpc_id,
+            //     ]);
+            //     // 启用 VPC 的 DNS 主机名
+            //     $client->modifyVpcAttribute([
+            //         'VpcId' => $vpc_id,
+            //         'EnableDnsHostnames' => [
+            //             'Value' => true,
+            //         ],
+            //     ]);
+            //     // 将 EIP 关联到子网
+            //     $client->associateAddress([
+            //         'AllocationId' => $allocation_id,
+            //         'SubnetId' => $subnet_id,
+            //         'InstanceId' => $instance_id,
+            //     ]);
+            //     // 获取网络接口 ID
+            //     UserTask::update($task_id, (++$progress / $steps), '正在处理 IPv6 网络');
+            //     $result = $client->describeInstances([
+            //         'Filters' => [
+            //             [
+            //                 'Name' => 'instance-id',
+            //                 'Values' => [
+            //                     $instance_id,
+            //                 ],
+            //             ],
+            //         ],
+            //     ]);
+            //     $network_interface_id = $result['Reservations'][0]['Instances'][0]['NetworkInterfaces'][0]['NetworkInterfaceId'];
+            //     // 获取 IPv6 CIDR
+            //     $result = $client->describeVpcs([
+            //         'VpcIds' => [$vpc_id],
+            //     ]);
+            //     $ipv6_cidr = $result['Vpcs'][0]['Ipv6CidrBlockAssociationSet'][0]['Ipv6CidrBlock'];
+            //     // 计算子网
+            //     $subnets_64 = [];
+            //     $networks = \IPTools\Network::parse($ipv6_cidr)->moveTo('64');
+            //     foreach ($networks as $network) {
+            //         $subnets_64[] = (string) $network;
+            //     }
+            //     $use_subnet = $subnets_64[array_rand($subnets_64)];
+            //     // 将一个新的IPv6 CIDR地址块关联到你的现有子网
+            //     $client->associateSubnetCidrBlock([
+            //         'Ipv6CidrBlock' => $use_subnet,
+            //         'SubnetId' => $subnet_id,
+            //     ]);
+            //     // 将一个或多个IPv6地址分配给在Amazon VPC中运行的网络接口或实例
+            //     $result = $client->assignIpv6Addresses([
+            //         'NetworkInterfaceId' => $network_interface_id,
+            //         'Ipv6AddressCount' => 1,
+            //     ]);
+            //     //$ipv6_addr = $result['AssignedIpv6Addresses'][0];
+            //     // 获取Amazon VPC中的一个或多个路由表的详细信息
+            //     UserTask::update($task_id, (++$progress / $steps), '正在处理路由表');
+            //     $result = $client->describeRouteTables([
+            //         'Filters' => [
+            //             [
+            //                 'Name' => 'vpc-id',
+            //                 'Values' => [$vpc_id],
+            //             ],
+            //         ],
+            //     ]);
+            //     $route_table_id = $result['RouteTables'][0]['Associations'][0]['RouteTableId'];
+            //     // 获取一个或多个互联网网关的详细信息
+            //     $result = $client->describeInternetGateways([
+            //         'Filters' => [
+            //             [
+            //                 'Name' => 'attachment.vpc-id',
+            //                 'Values' => [$vpc_id],
+            //             ],
+            //         ],
+            //     ]);
+            //     $internet_gateway_id = $result['InternetGateways'][0]['InternetGatewayId'];
+            //     // 在Amazon VPC的路由表中创建一条新的路由
+            //     $client->createRoute([
+            //         'DestinationIpv6CidrBlock' => '::/0',
+            //         'GatewayId' => $internet_gateway_id,
+            //         'RouteTableId' => $route_table_id,
+            //     ]);
+            //     $client->createRoute([
+            //         'DestinationCidrBlock' => '0.0.0.0/0',
+            //         'GatewayId' => $internet_gateway_id,
+            //         'RouteTableId' => $route_table_id,
+            //     ]);
+            // } catch (\Exception $e) {
+            //     $error = $e->getLine() . ':' . $e->getMessage();
+            //     UserTask::end($task_id, true, ['msg' => $error]);
+            //     return json(Tools::msg('0', '创建失败', $error));
+            // }
             try {
-                // 创建会话
-                UserTask::update($task_id, (++$progress / $steps), '正在创建会话');
-                $client = $this->getAWSClient($vm_location, $account->ak, $account->sk);
-                // 创建 VPC
-                UserTask::update($task_id, (++$progress / $steps), '正在创建 VPC');
-                $result = $client->createVpc([
-                    'CidrBlock' => '172.31.0.0/16', // VPC的CIDR块
-                    'AmazonProvidedIpv6CidrBlock' => true, // 是否请求Amazon提供IPv6 CIDR块
-                ]);
-                $vpc_id = $result['Vpc']['VpcId'];
-                // 创建子网
-                UserTask::update($task_id, (++$progress / $steps), '正在创建子网');
-                $result = $client->createSubnet([
-                    'VpcId' => $vpc_id,
-                    'CidrBlock' => '172.31.0.0/16',
-                ]);
-                $subnet_id = $result['Subnet']['SubnetId'];
-                // 获取镜像 ID
-                UserTask::update($task_id, (++$progress / $steps), '正在获取镜像 ID');
-                $result = $client->describeImages([
-                    'Filters' => [
-                        [
-                            'Name' => 'name',
-                            'Values' => [
-                                AwsList::instanceImage()[$vm_image]['imageName'],
-                            ],
-                        ],
-                    ],
-                    'Owners' => [
-                        AwsList::instanceImage()[$vm_image]['imageOwner'],
-                    ],
-                ]);
-                $image_id = $result['Images'][0]['ImageId'];
-                // 创建密钥对
-                UserTask::update($task_id, (++$progress / $steps), '正在创建密钥对');
-                $client->createKeyPair([
-                    'KeyName' => $name,
-                ]);
-                // 创建安全组
-                UserTask::update($task_id, (++$progress / $steps), '正在创建安全组');
-                $result = $client->createSecurityGroup([
-                    'Description' => $name,
-                    'GroupName' => $name,
-                    'VpcId' => $vpc_id,
-                ]);
-                $group_id = $result['GroupId'];
-                // 向指定的安全组添加入站规则
-                UserTask::update($task_id, (++$progress / $steps), '正在向指定的安全组添加入站规则');
-                $client->authorizeSecurityGroupIngress([
-                    'GroupId' => $group_id,
+                $controller_params = [
+                    'name' => $name,
+                    'size' => $vm_size,
+                    'userDataRaw' => $this->generateScriptContent($vm_name, $vm_passwd, $vm_script),
+                    'imageName' => AwsList::instanceImage()[$vm_image]['imageName'],
+                    'imageOwner' => AwsList::instanceImage()[$vm_image]['imageOwner'],
                     'IpPermissions' => $this->getIpPermissions(),
-                ]);
-                // 执行开机指令
-                UserTask::update($task_id, (++$progress / $steps), '正在创建虚拟机');
-                $result = $client->runInstances([
-                    'BlockDeviceMappings' => [
-                        [
-                            'DeviceName' => '/dev/xvda',
-                            'Ebs' => [
-                                'VolumeSize' => $vm_disk_size,
-                            ],
-                        ],
-                    ],
-                    'ImageId' => $image_id,
-                    'InstanceType' => $specified_size === '' ? $vm_size : $specified_size,
-                    'KeyName' => $name,
-                    'MinCount' => 1,
-                    'MaxCount' => 1,
-                    'SecurityGroupIds' => [
-                        $group_id,
-                    ],
-                    'SubnetId' => $subnet_id,
-                    'UserData' => base64_encode($this->generateScriptContent($vm_name, $vm_passwd, $vm_script)),
-                    'TagSpecifications' => [
-                        [
-                            'ResourceType' => 'instance',
-                            'Tags' => [
-                                [
-                                    'Key' => 'Name',
-                                    'Value' => $vm_name,
-                                ],
-                            ],
-                        ],
-                    ],
-                ]);
-                $instance_id = $result['Instances'][0]['InstanceId'];
-                // 为 VPC 申请 IP 地址
-                $result = $client->allocateAddress([
-                    'Domain' => 'vpc',
-                ]);
-                //$public_ip = $result['PublicIp'];
-                $allocation_id = $result['AllocationId'];
-                // 等待虚拟机正常运行
-                UserTask::update($task_id, (++$progress / $steps), '正在等待虚拟机运行状态');
-                while (true) {
-                    $result = $client->describeInstances([
-                        'Filters' => [
-                            [
-                                'Name' => 'instance-id',
-                                'Values' => [
-                                    $instance_id,
-                                ],
-                            ],
-                        ],
-                    ]);
-                    if ($result['Reservations'][0]['Instances'][0]['State']['Name'] !== 'pending') {
-                        break;
-                    }
-                }
-                // 创建 Internet Gateway
-                UserTask::update($task_id, (++$progress / $steps), '正在处理 IPv4 网络');
-                $result = $client->createInternetGateway();
-                $internet_gateway_id = $result['InternetGateway']['InternetGatewayId'];
-                // 关联 Internet Gateway 和 VPC
-                $client->attachInternetGateway([
-                    'InternetGatewayId' => $internet_gateway_id,
-                    'VpcId' => $vpc_id,
-                ]);
-                // 启用 VPC 的 DNS 主机名
-                $client->modifyVpcAttribute([
-                    'VpcId' => $vpc_id,
-                    'EnableDnsHostnames' => [
-                        'Value' => true,
-                    ],
-                ]);
-                // 将 EIP 关联到子网
-                $client->associateAddress([
-                    'AllocationId' => $allocation_id,
-                    'SubnetId' => $subnet_id,
-                    'InstanceId' => $instance_id,
-                ]);
-                // 获取网络接口 ID
-                UserTask::update($task_id, (++$progress / $steps), '正在处理 IPv6 网络');
-                $result = $client->describeInstances([
-                    'Filters' => [
-                        [
-                            'Name' => 'instance-id',
-                            'Values' => [
-                                $instance_id,
-                            ],
-                        ],
-                    ],
-                ]);
-                $network_interface_id = $result['Reservations'][0]['Instances'][0]['NetworkInterfaces'][0]['NetworkInterfaceId'];
-                // 获取 IPv6 CIDR
-                $result = $client->describeVpcs([
-                    'VpcIds' => [$vpc_id],
-                ]);
-                $ipv6_cidr = $result['Vpcs'][0]['Ipv6CidrBlockAssociationSet'][0]['Ipv6CidrBlock'];
-                // 计算子网
-                $subnets_64 = [];
-                $networks = \IPTools\Network::parse($ipv6_cidr)->moveTo('64');
-                foreach ($networks as $network) {
-                    $subnets_64[] = (string) $network;
-                }
-                $use_subnet = $subnets_64[array_rand($subnets_64)];
-                // 将一个新的IPv6 CIDR地址块关联到你的现有子网
-                $client->associateSubnetCidrBlock([
-                    'Ipv6CidrBlock' => $use_subnet,
-                    'SubnetId' => $subnet_id,
-                ]);
-                // 将一个或多个IPv6地址分配给在Amazon VPC中运行的网络接口或实例
-                $result = $client->assignIpv6Addresses([
-                    'NetworkInterfaceId' => $network_interface_id,
-                    'Ipv6AddressCount' => 1,
-                ]);
-                //$ipv6_addr = $result['AssignedIpv6Addresses'][0];
-                // 获取Amazon VPC中的一个或多个路由表的详细信息
-                UserTask::update($task_id, (++$progress / $steps), '正在处理路由表');
-                $result = $client->describeRouteTables([
-                    'Filters' => [
-                        [
-                            'Name' => 'vpc-id',
-                            'Values' => [$vpc_id],
-                        ],
-                    ],
-                ]);
-                $route_table_id = $result['RouteTables'][0]['Associations'][0]['RouteTableId'];
-                // 获取一个或多个互联网网关的详细信息
-                $result = $client->describeInternetGateways([
-                    'Filters' => [
-                        [
-                            'Name' => 'attachment.vpc-id',
-                            'Values' => [$vpc_id],
-                        ],
-                    ],
-                ]);
-                $internet_gateway_id = $result['InternetGateways'][0]['InternetGatewayId'];
-                // 在Amazon VPC的路由表中创建一条新的路由
-                $client->createRoute([
-                    'DestinationIpv6CidrBlock' => '::/0',
-                    'GatewayId' => $internet_gateway_id,
-                    'RouteTableId' => $route_table_id,
-                ]);
-                $client->createRoute([
-                    'DestinationCidrBlock' => '0.0.0.0/0',
-                    'GatewayId' => $internet_gateway_id,
-                    'RouteTableId' => $route_table_id,
-                ]);
+                ];
+                UserTask::update($task_id, (++$progress / $steps), '正在创建会话');
+                $client = AwsApi::createAWSClient($vm_location, $account->ak, $account->sk, false, 'ec2');
+                UserTask::update($task_id, (++$progress / $steps), '正在创建 EC2');
+                // if (AwsApi::countRegionVpc($client, $vm_location) <= 4) {
+                //     $ec2_details = AwsApi::createIpv6EC2($client, $controller_params);
+                // } else {
+                //     $ec2_details = AwsApi::createOnlyIpv4EC2($client, $controller_params);
+                // }
+                AwsApi::createOnlyIpv4EC2($client, $controller_params);
             } catch (\Exception $e) {
                 $error = $e->getLine() . ':' . $e->getMessage();
                 UserTask::end($task_id, true, ['msg' => $error]);
