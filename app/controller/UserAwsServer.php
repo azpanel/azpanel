@@ -2,8 +2,8 @@
 
 namespace app\controller;
 
-use app\controller\AwsList;
 use app\controller\AwsApi;
+use app\controller\AwsList;
 use app\controller\Tools;
 use app\controller\UserTask;
 use app\model\Aws;
@@ -143,6 +143,7 @@ class UserAwsServer extends UserBase
         $vm_disk_size = input('vm_disk_size/d');
         $vm_image = input('vm_image/s');
         $task_uuid = input('task_uuid/s');
+        $ipv6_network = input('ipv6_network/s');
 
         // 空账户检查
         if ($vm_account === '') {
@@ -424,13 +425,14 @@ class UserAwsServer extends UserBase
                 ];
                 UserTask::update($task_id, (++$progress / $steps), '正在创建会话');
                 $client = AwsApi::createAWSClient($vm_location, $account->ak, $account->sk, false, 'ec2');
-                UserTask::update($task_id, (++$progress / $steps), '正在创建 EC2');
-                // if (AwsApi::countRegionVpc($client, $vm_location) <= 4) {
-                //     $ec2_details = AwsApi::createIpv6EC2($client, $controller_params);
-                // } else {
-                //     $ec2_details = AwsApi::createOnlyIpv4EC2($client, $controller_params);
-                // }
-                AwsApi::createOnlyIpv4EC2($client, $controller_params);
+                if ($ipv6_network === 'true' && AwsApi::countRegionVpc($client, $vm_location) <= 4) {
+                    UserTask::update($task_id, (++$progress / $steps), '正在创建具有 IPv6 的 EC2');
+                    $ec2_details = AwsApi::createIpv6EC2($client, $controller_params);
+                } else {
+                    UserTask::update($task_id, (++$progress / $steps), '正在创建 EC2');
+                    $ec2_details = AwsApi::createOnlyIpv4EC2($client, $controller_params);
+                }
+                //AwsApi::createOnlyIpv4EC2($client, $controller_params);
             } catch (\Exception $e) {
                 $error = $e->getLine() . ':' . $e->getMessage();
                 UserTask::end($task_id, true, ['msg' => $error]);

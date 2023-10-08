@@ -140,14 +140,14 @@
                         <div class="mdui-row">
                             <div class="mdui-col-sm-6 mdui-col-md-3 mdui-m-t-2">
                                 <label class="mdui-checkbox">
-                                    <input value="ap-northeast-1" type="checkbox" disabled="" checked>
+                                    <input id="ipv4_network" value="ap-northeast-1" type="checkbox" disabled="" checked>
                                     <i class="mdui-checkbox-icon"></i>
                                     IPv4 网络
                                 </label>
                             </div>
                             <div class="mdui-col-sm-6 mdui-col-md-3 mdui-m-t-2">
                                 <label class="mdui-checkbox">
-                                    <input value="ap-northeast-1" type="checkbox" disabled="" checked>
+                                    <input id="ipv6_network" value="ap-northeast-1" type="checkbox">
                                     <i class="mdui-checkbox-icon"></i>
                                     IPv6 网络
                                 </label>
@@ -214,7 +214,7 @@
         mdui.confirm('创建过程中请不要离开本页面', '创建确认',
             function () {
                 var load = new mdui.alert('<p id=\"hint\">准备中</p><div class=\"mdui-progress\"><div class=\"mdui-progress-determinate\"></div></div>', '进行中');
-                var cycle = setInterval(getProgress, 500);
+                var cycle = setInterval(getProgress, 1500);
                 uuid = guid();
                 $.ajax({
                     method: 'POST',
@@ -230,6 +230,7 @@
                         vm_account: $('#vm_account').val(),
                         vm_disk_size: $('#vm_disk_size').val(),
                         vm_image: $('#vm_image').val(),
+                        ipv6_network: $('#ipv6_network').prop('checked'),
                         task_uuid: uuid,
                     },
                     dataType: "json",

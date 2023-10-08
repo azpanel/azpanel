@@ -89,8 +89,10 @@ class UserTask
             $task->current = '任务已完成';
         }
 
-        if ($error !== null) {
-            $task->error = $error;
+        if (isset($error)) {
+            if (is_array($error) && isset($error['msg'])) {
+                $task->error = $error['msg'];
+            }
         }
 
         $info = [
