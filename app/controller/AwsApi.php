@@ -31,7 +31,11 @@ class AwsApi extends BaseController
     }
 
     public static function createAWSClient(
-        string $region, string $access_key, string $secret_key, bool $use_proxy = false, string $mode = 'quota'
+        string $region,
+        string $access_key,
+        string $secret_key,
+        bool $use_proxy = false,
+        string $mode = 'quota'
     ) {
         $request_params = [
             'region' => $region,
@@ -109,7 +113,7 @@ class AwsApi extends BaseController
         ]);
     }
 
-    public static function createSecurityGroup(object $session, string $name, string $vpc_id = null): string
+    public static function createSecurityGroup(object $session, string $name, ?string $vpc_id = null): string
     {
         $params = [
             'Description' => $name,
@@ -131,7 +135,11 @@ class AwsApi extends BaseController
     }
 
     public static function runInstances(
-        object $session, string $imageId, array $params, string $groupId, string $subnet_id = null
+        object $session,
+        string $imageId,
+        array $params,
+        string $groupId,
+        ?string $subnet_id = null
     ): string {
         $params = [
             'BlockDeviceMappings' => [
