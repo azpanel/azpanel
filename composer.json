@@ -24,7 +24,7 @@
         "topthink/framework": "^6.0.0",
         "topthink/think-orm": "^2.0",
         "topthink/think-view": "^1.0",
-        "guzzlehttp/guzzle": "~6.0",
+        "guzzlehttp/guzzle": "~7.0",
         "phpmailer/phpmailer": "^6.5",
         "topthink/think-helper": "^3.1",
         "nesbot/carbon": "^2.57",

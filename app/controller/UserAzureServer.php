@@ -212,9 +212,21 @@ class UserAzureServer extends UserBase
         return json(Tools::msg('0', '创建失败', '维护中'));
         } */
 
+        // 创建http会话
+        if (input('socks5_switch') === 'true') {
+            $socks5_addr = input('socks5_address/s');
+            $socks5_port = input('socks5_port/d');
+
+            $client = new Client([
+                'proxy' => "socks5://{$socks5_addr}:{$socks5_port}",
+                'timeout' => 5,
+            ]);
+        } else {
+            $client = new Client();
+        }
+
         // 初始化创建任务
         $progress = 0;
-        $client = new Client();
         $steps = ($vm_number * 6) + 6;
         $task_id = UserTask::create(session('user_id'), '创建虚拟机', $params, $task_uuid);
 
@@ -474,7 +486,7 @@ class UserAzureServer extends UserBase
                     $vm_location
                 );
             } catch (\Exception $e) {
-                $error = $e->getResponse()->getBody()->getContents();
+                $error = $e->getMessage();
                 UserTask::end($task_id, true, $error);
                 return json(Tools::msg('0', '创建失败', $error));
             }
@@ -498,7 +510,11 @@ class UserAzureServer extends UserBase
         if ((int) session('user_id') === (int) Config::obtain('ali_whitelist')) {
             if (Config::obtain('sync_immediately_after_creation')) {
                 foreach ($names as $vm_name) {
-                    $server = AzureServer::where('name', $vm_name)->order('id', 'desc')->limit(1)->find();
+                    $server = AzureServer::where('user_id', session('user_id'))
+                        ->where('name', $vm_name)
+                        ->order('id', 'desc')
+                        ->limit(1)
+                        ->find();
                     try {
                         Ali::createOrUpdate($server->name, $server->ip_address);
                     } catch (\Exception $e) {
@@ -511,7 +527,11 @@ class UserAzureServer extends UserBase
         // 将设置的备注应用
         $pointer = 0;
         foreach ($names as $name) {
-            $server = AzureServer::where('name', $name)->order('id', 'desc')->limit(1)->find();
+            $server = AzureServer::where('user_id', session('user_id'))
+                ->where('name', $name)
+                ->order('id', 'desc')
+                ->limit(1)
+                ->find();
             $server->user_remark = $remarks[$pointer];
             $server->rule = $vm_traffic_rule;
             $server->save();

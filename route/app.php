@@ -136,3 +136,6 @@ Route::get('/admin/log/task/:id',                 'AdminLog/taskDetails');
 // 其他
 Route::get('/share',                              'Share/getShare');
 Route::get('/user/progress/:uuid',                'UserTask/ajaxQuery')->json();
+
+// 代理测试
+Route::post('/proxy/test',                        'ProxyController/test');

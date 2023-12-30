@@ -10,7 +10,6 @@
 
             <div class="mdui-typo">
                 <div class="mdui-panel" mdui-panel>
-
                     <div class="mdui-panel-item">
                         <div class="mdui-panel-item-header">
                             <div class="mdui-panel-item-title">使用说明</div>
@@ -185,6 +184,42 @@
                         </div>
                     </div>
                 </div>
+                <div class="mdui-typo">
+                    <div class="mdui-panel" mdui-panel>
+                        <div class="mdui-panel-item">
+                            <div class="mdui-panel-item-header">
+                                <div class="mdui-panel-item-title">SOCKS5代理</div>
+                                <i class="mdui-panel-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
+                            </div>
+                            <div class="mdui-panel-item-body">
+                                <div class="mdui-col-sm-12 mdui-col-md-12">
+                                    <div class="mdui-switch mdui-m-t-2">
+                                        <label>
+                                            创建时使用以下代理&nbsp;&nbsp;
+                                            <input type="checkbox" id="socks5_switch" />
+                                            <i class="mdui-switch-icon"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="mdui-col-sm-12 mdui-col-md-6">
+                                    <div class="mdui-textfield">
+                                        <label class="mdui-textfield-label">地址</label>
+                                        <input class="mdui-textfield-input" type="text" id="socks5_address" required />
+                                    </div>
+                                </div>
+                                <div class="mdui-col-sm-12 mdui-col-md-6">
+                                    <div class="mdui-textfield">
+                                        <label class="mdui-textfield-label">端口</label>
+                                        <input class="mdui-textfield-input" type="number" id="socks5_port" min="1"
+                                            max="65535" step="1" required />
+                                    </div>
+                                </div>
+                                <button id="test_socks5"
+                                    class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-indigo mdui-m-p-2">测试</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="mdui-card mdui-m-t-2">
@@ -233,6 +268,18 @@
     var $ = mdui.$;
     var inst = new mdui.Select('#vm_size');
 
+    document.addEventListener('DOMContentLoaded', function () {
+        var cache_socks5_port = localStorage.getItem('socks5_port');
+        var cache_socks5_address = localStorage.getItem('socks5_address');
+
+        if (cache_socks5_port !== null) {
+            document.getElementById('socks5_port').value = cache_socks5_port;
+        }
+        if (cache_socks5_address !== null) {
+            document.getElementById('socks5_address').value = cache_socks5_address;
+        }
+    });
+
     function getProgress() {
         $.ajax({
             method: 'GET',
@@ -252,6 +299,34 @@
             return v.toString(16);
         });
     }
+
+    $('#test_socks5').on('click', function () {
+        mdui.snackbar({
+            message: '正在测试代理可用性中...',
+            position: 'top',
+            timeout: '500',
+        });
+
+        localStorage.setItem('socks5_port', $('#socks5_port').val());
+        localStorage.setItem('socks5_address', $('#socks5_address').val());
+
+        $.ajax({
+            method: 'POST',
+            url: "/proxy/test",
+            data: {
+                socks5_port: $('#socks5_port').val(),
+                socks5_address: $('#socks5_address').val(),
+            },
+            dataType: "json",
+            success: function (data) {
+                mdui.snackbar({
+                    message: data.status ? data.msg : "代理不可用，请检查后重试：" + data.msg,
+                    position: 'top',
+                    timeout: data.status ? 1500 : 2500,
+                });
+            }
+        });
+    });
 
     $('#load_available_models').on('click', function () {
         mdui.snackbar({
@@ -367,6 +442,9 @@
                         vm_ssh_key: $('#vm_ssh_key').val(),
                         create_check: $('#create_check').val(),
                         create_ipv6: $('#create_ipv6').val(),
+                        socks5_port: $('#socks5_port').val(),
+                        socks5_address: $('#socks5_address').val(),
+                        socks5_switch: $("#socks5_switch").prop("checked"),
                         task_uuid: uuid,
                     },
                     dataType: "json",
