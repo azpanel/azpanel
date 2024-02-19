@@ -62,48 +62,17 @@ class UserAwsServer extends UserBase
     {
         return [
             [
-                'FromPort' => 0,
-                'IpProtocol' => 'tcp',
+                'IpProtocol' => -1,
                 'IpRanges' => [
                     [
                         'CidrIp' => '0.0.0.0/0',
-                        'Description' => 'All TCP',
                     ],
                 ],
-                'ToPort' => 65535,
-            ],
-            [
-                'FromPort' => 0,
-                'IpProtocol' => 'udp',
-                'IpRanges' => [
+                'Ipv6Ranges' => [
                     [
-                        'CidrIp' => '0.0.0.0/0',
-                        'Description' => 'All UDP',
+                        'CidrIpv6' => '::/0',
                     ],
                 ],
-                'ToPort' => 65535,
-            ],
-            [
-                'FromPort' => -1,
-                'IpProtocol' => 'icmp',
-                'IpRanges' => [
-                    [
-                        'CidrIp' => '0.0.0.0/0',
-                        'Description' => 'All ICMP',
-                    ],
-                ],
-                'ToPort' => -1,
-            ],
-            [
-                'FromPort' => -1,
-                'IpProtocol' => 'icmpv6',
-                'IpRanges' => [
-                    [
-                        'CidrIp' => '0.0.0.0/0',
-                        'Description' => 'All ICMPV6',
-                    ],
-                ],
-                'ToPort' => -1,
             ],
         ];
     }
