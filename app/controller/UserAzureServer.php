@@ -208,7 +208,7 @@ class UserAzureServer extends UserBase
             ],
         ];
 
-        /* if (session('user_id') != 1) {
+        /* if (session('user_id') !== 1) {
         return json(Tools::msg('0', '创建失败', '维护中'));
         } */
 
@@ -216,11 +216,19 @@ class UserAzureServer extends UserBase
         if (input('socks5_switch') === 'true') {
             $socks5_addr = input('socks5_address/s');
             $socks5_port = input('socks5_port/d');
+            $socks5_user = input('socks5_user/s');
+            $socks5_passwd = input('socks5_passwd/s');
 
-            $client = new Client([
-                'proxy' => "socks5://{$socks5_addr}:{$socks5_port}",
-                'timeout' => 5,
-            ]);
+            $create_params = [];
+            $create_params['timeout'] = 5;
+
+            if ($socks5_user !== '' && $socks5_passwd !== '') {
+                $create_params['proxy']['socks5'] = "{$socks5_user}:{$socks5_passwd}@{$socks5_addr}:{$socks5_port}";
+            } else {
+                $create_params['proxy'] = "socks5://{$socks5_addr}:{$socks5_port}";
+            }
+
+            $client = new Client($create_params);
         } else {
             $client = new Client();
         }

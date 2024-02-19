@@ -214,6 +214,18 @@
                                             max="65535" step="1" required />
                                     </div>
                                 </div>
+                                <div class="mdui-col-sm-12 mdui-col-md-6">
+                                    <div class="mdui-textfield">
+                                        <label class="mdui-textfield-label">用户（可省略）</label>
+                                        <input class="mdui-textfield-input" type="text" id="socks5_user" />
+                                    </div>
+                                </div>
+                                <div class="mdui-col-sm-12 mdui-col-md-6">
+                                    <div class="mdui-textfield">
+                                        <label class="mdui-textfield-label">密码（可省略）</label>
+                                        <input class="mdui-textfield-input" type="text" id="socks5_passwd" />
+                                    </div>
+                                </div>
                                 <button id="test_socks5"
                                     class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-indigo mdui-m-p-2">测试</button>
                             </div>
@@ -269,15 +281,14 @@
     var inst = new mdui.Select('#vm_size');
 
     document.addEventListener('DOMContentLoaded', function () {
-        var cache_socks5_port = localStorage.getItem('socks5_port');
-        var cache_socks5_address = localStorage.getItem('socks5_address');
+        const fields = ['socks5_port', 'socks5_address', 'socks5_user', 'socks5_passwd'];
 
-        if (cache_socks5_port !== null) {
-            document.getElementById('socks5_port').value = cache_socks5_port;
-        }
-        if (cache_socks5_address !== null) {
-            document.getElementById('socks5_address').value = cache_socks5_address;
-        }
+        fields.forEach(function (field) {
+            const value = localStorage.getItem(field);
+            if (value !== null) {
+                document.getElementById(field).value = value;
+            }
+        });
     });
 
     function getProgress() {
@@ -309,6 +320,8 @@
 
         localStorage.setItem('socks5_port', $('#socks5_port').val());
         localStorage.setItem('socks5_address', $('#socks5_address').val());
+        localStorage.setItem('socks5_user', $('#socks5_user').val());
+        localStorage.setItem('socks5_passwd', $('#socks5_passwd').val());
 
         $.ajax({
             method: 'POST',
@@ -316,6 +329,9 @@
             data: {
                 socks5_port: $('#socks5_port').val(),
                 socks5_address: $('#socks5_address').val(),
+                socks5_user: $('#socks5_user').val(),
+                socks5_passwd: $('#socks5_passwd').val(),
+
             },
             dataType: "json",
             success: function (data) {
@@ -443,6 +459,8 @@
                         create_check: $('#create_check').val(),
                         create_ipv6: $('#create_ipv6').val(),
                         socks5_port: $('#socks5_port').val(),
+                        socks5_user: $('#socks5_user').val(),
+                        socks5_passwd: $('#socks5_passwd').val(),
                         socks5_address: $('#socks5_address').val(),
                         socks5_switch: $("#socks5_switch").prop("checked"),
                         task_uuid: uuid,
