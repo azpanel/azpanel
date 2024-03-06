@@ -130,21 +130,25 @@ class AdminUser extends AdminBase
 
     public function userReport()
     {
-        $valid_user_number = Db::table('azure_server')->distinct(true)->field('user_id')->select();
+        $valid_user_number = Db::table('azure_server')
+            ->distinct(true)
+            ->count('user_id');
+
+        $azureEnabledQuery = Azure::where('az_sub_status', 'Enabled')->select(['az_sub_type']);
+
+        $valid_account_number = $azureEnabledQuery->count();
+        $valid_payasyougo_account_number = $azureEnabledQuery->where('az_sub_type', 'PayAsYouGo')->count();
+        $valid_students_account_number = $azureEnabledQuery->where('az_sub_type', 'Students')->count();
+        $valid_freetrial_account_number = $azureEnabledQuery->where('az_sub_type', 'FreeTrial')->count();
+
         $data = [
             'user_number' => User::count(),
-            'valid_user_number' => count($valid_user_number),
+            'valid_user_number' => $valid_user_number,
             'account_number' => Azure::count(),
-            'valid_account_number' => Azure::where('az_sub_status', 'Enabled')->count(),
-            'valid_payasyougo_account_number' => Azure::where('az_sub_status', 'Enabled')
-                ->where('az_sub_type', 'PayAsYouGo')
-                ->count(),
-            'valid_students_account_number' => Azure::where('az_sub_status', 'Enabled')
-                ->where('az_sub_type', 'Students')
-                ->count(),
-            'valid_freetrial_account_number' => Azure::where('az_sub_status', 'Enabled')
-                ->where('az_sub_type', 'FreeTrial')
-                ->count(),
+            'valid_account_number' => $valid_account_number,
+            'valid_payasyougo_account_number' => $valid_payasyougo_account_number,
+            'valid_students_account_number' => $valid_students_account_number,
+            'valid_freetrial_account_number' => $valid_freetrial_account_number,
             'server_number' => AzureServer::count(),
             'valid_server_number' => AzureServer::where('status', 'PowerState/running')
                 ->where('skip', '<>', 1)
