@@ -1,367 +1,377 @@
 {include file="../app/view/user/header.html" title="账户资料" /}
 
 <div class="mdui-container-fluid">
-  <div class="mdui-row">
-    <div
-      class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
-      <div class="mdui-container-fluid">
-        <p style="color: #3F51B5; font-size: 34px">账户资料</p>
-      </div>
-
-      <div class="mdui-typo">
-        <p>可在此设置推送接收，修改密码，以及个人偏好</p>
-      </div>
-
-      <div class="mdui-card mdui-col-md-12 mdui-m-t-2" style="overflow: visible">
-        <div class="mdui-card-content">
-          <!-- 导航栏开始 -->
-          <div class="mdui-tab" mdui-tab>
-            <a href="#timed-refresh" class="mdui-ripple">
-              <i class="mdui-icon material-icons">refresh</i>
-              <label>定时刷新</label>
-            </a>
-            <a href="#personalize-config" class="mdui-ripple">
-              <i class="mdui-icon material-icons">perm_contact_calendar</i>
-              <label>个人偏好</label>
-            </a>
-            <a href="#push-receive" class="mdui-ripple">
-              <i class="mdui-icon material-icons">message</i>
-              <label>推送接收</label>
-            </a>
-            <a href="#change-password" class="mdui-ripple">
-              <i class="mdui-icon material-icons">lock</i>
-              <label>密码修改</label>
-            </a>
-            <a href="#ssh-key" class="mdui-ripple">
-              <i class="mdui-icon material-icons">vpn_key</i>
-              <label>连接密钥</label>
-            </a>
-          </div>
-          <!-- 推送接收 -->
-          <div id="push-receive">
-            <div class="mdui-typo mdui-m-t-2">
-              <ul>
-                {if $telegram.telegram_account != '' && $switch.telegram_notify == true}
-                <li>如需使用 Telegram Bot 推送服务，请先向机器人 <a
-                    href="https://telegram.me/{:app\\model\\Config::obtain('telegram_account')}"
-                    target="view_window">@{:app\\model\\Config::obtain('telegram_account')}</a> 发送 <code>/start</code>
-                  启用</li>
-                <li>Telegram UID 可通过与 <a href="https://telegram.me/userinfobot" target="view_window">@userinfobot</a>
-                  互动获取
-                </li>
-                {/if}
-              </ul>
-            </div>
-            <div class="mdui-textfield mdui-textfield-floating-label mdui-col-md-4">
-              <i class="mdui-icon material-icons">email</i>
-              <label class="mdui-textfield-label">接收邮箱</label>
-              <textarea class="mdui-textfield-input" id="user_email">{$profile.notify_email ?? ''}</textarea>
-            </div>
-            <div class="mdui-textfield mdui-textfield-floating-label mdui-col-md-4">
-              <i class="mdui-icon material-icons">person</i>
-              <label class="mdui-textfield-label">Telegram 用户名</label>
-              <textarea class="mdui-textfield-input" id="user_telegram">{$profile.notify_tg ?? ''}</textarea>
-            </div>
-            <div class="mdui-textfield mdui-textfield-floating-label mdui-col-md-4">
-              <i class="mdui-icon material-icons">code</i>
-              <label class="mdui-textfield-label">Telegram UID</label>
-              <textarea class="mdui-textfield-input" id="user_telegram_id">{$profile.notify_tgid ?? ''}</textarea>
+    <div class="mdui-row">
+        <div
+            class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+            <div class="mdui-container-fluid">
+                <p style="color: #3F51B5; font-size: 34px">账户资料</p>
             </div>
 
-            <button id="update_notify"
-              class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">保存
-            </button>
-          </div>
-          <!-- 密码修改 -->
-          <div id="change-password">
-            <div class="mdui-textfield mdui-textfield-floating-label mdui-col-md-4">
-              <i class="mdui-icon material-icons">vpn_key</i>
-              <label class="mdui-textfield-label">当前的登录密码</label>
-              <input class="mdui-textfield-input" type="password" id="now_passwd" required>
-            </div>
-            <div class="mdui-textfield mdui-textfield-floating-label mdui-col-md-4">
-              <i class="mdui-icon material-icons">assistant</i>
-              <label class="mdui-textfield-label">想要设置的新密码</label>
-              <input class="mdui-textfield-input" type="password" id="new_passwd" required>
-            </div>
-            <div class="mdui-textfield mdui-textfield-floating-label mdui-col-md-4">
-              <i class="mdui-icon material-icons">assignment_turned_in</i>
-              <label class="mdui-textfield-label">再次输入新密码</label>
-              <input class="mdui-textfield-input" type="password" id="again_passwd" required>
+            <div class="mdui-typo">
+                <p>可在此设置推送接收，修改密码，以及个人偏好</p>
             </div>
 
-            <button id="update_passwd"
-              class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">修改
-            </button>
-          </div>
-          <!-- 个性化设置 -->
-          <div id="personalize-config">
-            <div class="mdui-textfield mdui-textfield-floating-label mdui-col-md-6">
-              <i class="mdui-icon material-icons">assignment_ind</i>
-              <label class="mdui-textfield-label">默认登录账户</label>
-              <input class="mdui-textfield-input" id="vm_default_identity" value="{$personalise.vm_default_identity}">
-            </div>
-            <div class="mdui-textfield mdui-textfield-floating-label mdui-col-md-6">
-              <i class="mdui-icon material-icons">vpn_key</i>
-              <label class="mdui-textfield-label">默认登录密码</label>
-              <input class="mdui-textfield-input" id="vm_default_credentials"
-                value="{$personalise.vm_default_credentials}">
-            </div>
-            <div class="mdui-textfield mdui-textfield-floating-label mdui-col-md-6">
-              <i class="mdui-icon material-icons">code</i>
-              <label class="mdui-textfield-label">Linux 默认脚本</label>
-              <textarea class="mdui-textfield-input" id="vm_default_script"
-                rows="11">{$personalise.vm_default_script ?? ''}</textarea>
-            </div>
-            <div class="mdui-m-t-2 mdui-col-md-6">
-              地区：<select id="vm_location" class="mdui-select" mdui-select>
-                {volist name="locations" id="location"}
-                <option value="{$key}">{$location}</option>
-                {/volist}
-              </select>
-            </div>
-            <div class="mdui-m-t-2 mdui-col-md-6">
-              规格：<select id="vm_size" class="mdui-select" mdui-select>
-                {volist name="sizes" id="size"}
-                <option value="{$key}">
-                  {:str_replace('Standard_', '', $key)} {$size.cpu}C_{$size.memory}G ({:round($size.cost, 1)} USD /
-                  Month)
-                </option>
-                {/volist}
-              </select>
-            </div>
-            <div class="mdui-m-t-2 mdui-col-md-6">
-              存储：<select id="vm_disk_size" class="mdui-select" mdui-select>
-                {foreach $disk_sizes as $disk_size}
-                <option value="{$disk_size}">{$disk_size} GB</option>
-                {/foreach}
-              </select>
-            </div>
-            <div class="mdui-m-t-2 mdui-col-md-6">
-              镜像：<select id="vm_image" class="mdui-select" mdui-select>
-                {volist name="images" id="image"}
-                <option value="{$key}">{$image.display}</option>
-                {/volist}
-              </select>
-            </div>
-            <div class="mdui-col-md-12">
-              <p class="mdui-col-md-12 mdui-typo">* 默认脚本的运行身份是普通用户，部分命令需要加上 <code>sudo</code> 才能成功执行</p>
+            <div class="mdui-card mdui-col-md-12 mdui-m-t-2" style="overflow: visible">
+                <div class="mdui-card-content">
+                    <!-- 导航栏开始 -->
+                    <div class="mdui-tab" mdui-tab>
+                        <a href="#timed-refresh" class="mdui-ripple">
+                            <i class="mdui-icon material-icons">refresh</i>
+                            <label>定时刷新</label>
+                        </a>
+                        <a href="#personalize-config" class="mdui-ripple">
+                            <i class="mdui-icon material-icons">perm_contact_calendar</i>
+                            <label>个人偏好</label>
+                        </a>
+                        <a href="#push-receive" class="mdui-ripple">
+                            <i class="mdui-icon material-icons">message</i>
+                            <label>推送接收</label>
+                        </a>
+                        <a href="#change-password" class="mdui-ripple">
+                            <i class="mdui-icon material-icons">lock</i>
+                            <label>密码修改</label>
+                        </a>
+                        <a href="#ssh-key" class="mdui-ripple">
+                            <i class="mdui-icon material-icons">vpn_key</i>
+                            <label>连接密钥</label>
+                        </a>
+                    </div>
+                    <!-- 推送接收 -->
+                    <div id="push-receive">
+                        <div class="mdui-typo mdui-m-t-2">
+                            <ul>
+                                {if $telegram.telegram_account != '' && $switch.telegram_notify == true}
+                                <li>如需使用 Telegram Bot 推送服务，请先向机器人 <a
+                                        href="https://telegram.me/{:app\\model\\Config::obtain('telegram_account')}"
+                                        target="view_window">@{:app\\model\\Config::obtain('telegram_account')}</a> 发送
+                                    <code>/start</code>
+                                    启用
+                                </li>
+                                <li>Telegram UID 可通过与 <a href="https://telegram.me/userinfobot"
+                                        target="view_window">@userinfobot</a>
+                                    互动获取
+                                </li>
+                                {/if}
+                            </ul>
+                        </div>
+                        <div class="mdui-textfield mdui-textfield-floating-label mdui-col-md-4">
+                            <i class="mdui-icon material-icons">email</i>
+                            <label class="mdui-textfield-label">接收邮箱</label>
+                            <textarea class="mdui-textfield-input"
+                                id="user_email">{$profile.notify_email ?? ''}</textarea>
+                        </div>
+                        <div class="mdui-textfield mdui-textfield-floating-label mdui-col-md-4">
+                            <i class="mdui-icon material-icons">person</i>
+                            <label class="mdui-textfield-label">Telegram 用户名</label>
+                            <textarea class="mdui-textfield-input"
+                                id="user_telegram">{$profile.notify_tg ?? ''}</textarea>
+                        </div>
+                        <div class="mdui-textfield mdui-textfield-floating-label mdui-col-md-4">
+                            <i class="mdui-icon material-icons">code</i>
+                            <label class="mdui-textfield-label">Telegram UID</label>
+                            <textarea class="mdui-textfield-input"
+                                id="user_telegram_id">{$profile.notify_tgid ?? ''}</textarea>
+                        </div>
+
+                        <button id="update_notify"
+                            class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">保存
+                        </button>
+                    </div>
+                    <!-- 密码修改 -->
+                    <div id="change-password">
+                        <div class="mdui-textfield mdui-textfield-floating-label mdui-col-md-4">
+                            <i class="mdui-icon material-icons">vpn_key</i>
+                            <label class="mdui-textfield-label">当前的登录密码</label>
+                            <input class="mdui-textfield-input" type="password" id="now_passwd" required>
+                        </div>
+                        <div class="mdui-textfield mdui-textfield-floating-label mdui-col-md-4">
+                            <i class="mdui-icon material-icons">assistant</i>
+                            <label class="mdui-textfield-label">想要设置的新密码</label>
+                            <input class="mdui-textfield-input" type="password" id="new_passwd" required>
+                        </div>
+                        <div class="mdui-textfield mdui-textfield-floating-label mdui-col-md-4">
+                            <i class="mdui-icon material-icons">assignment_turned_in</i>
+                            <label class="mdui-textfield-label">再次输入新密码</label>
+                            <input class="mdui-textfield-input" type="password" id="again_passwd" required>
+                        </div>
+
+                        <button id="update_passwd"
+                            class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">修改
+                        </button>
+                    </div>
+                    <!-- 个性化设置 -->
+                    <div id="personalize-config">
+                        <div class="mdui-textfield mdui-textfield-floating-label mdui-col-md-6">
+                            <i class="mdui-icon material-icons">assignment_ind</i>
+                            <label class="mdui-textfield-label">默认登录账户</label>
+                            <input class="mdui-textfield-input" id="vm_default_identity"
+                                value="{$personalise.vm_default_identity}">
+                        </div>
+                        <div class="mdui-textfield mdui-textfield-floating-label mdui-col-md-6">
+                            <i class="mdui-icon material-icons">vpn_key</i>
+                            <label class="mdui-textfield-label">默认登录密码</label>
+                            <input class="mdui-textfield-input" id="vm_default_credentials"
+                                value="{$personalise.vm_default_credentials}">
+                        </div>
+                        <div class="mdui-textfield mdui-textfield-floating-label mdui-col-md-6">
+                            <i class="mdui-icon material-icons">code</i>
+                            <label class="mdui-textfield-label">Linux 默认脚本</label>
+                            <textarea class="mdui-textfield-input" id="vm_default_script"
+                                rows="11">{$personalise.vm_default_script ?? ''}</textarea>
+                        </div>
+                        <div class="mdui-m-t-2 mdui-col-md-6">
+                            地区：<select id="vm_location" class="mdui-select" mdui-select>
+                                {volist name="locations" id="location"}
+                                <option value="{$key}">{$location}</option>
+                                {/volist}
+                            </select>
+                        </div>
+                        <div class="mdui-m-t-2 mdui-col-md-6">
+                            规格：<select id="vm_size" class="mdui-select" mdui-select>
+                                {volist name="sizes" id="size"}
+                                <option value="{$key}">
+                                    {:str_replace('Standard_', '', $key)} {$size.cpu}C_{$size.memory}G
+                                    ({:round($size.cost, 1)} USD /
+                                    Month)
+                                </option>
+                                {/volist}
+                            </select>
+                        </div>
+                        <div class="mdui-m-t-2 mdui-col-md-6">
+                            存储：<select id="vm_disk_size" class="mdui-select" mdui-select>
+                                {foreach $disk_sizes as $disk_size}
+                                <option value="{$disk_size}">{$disk_size} GB</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                        <div class="mdui-m-t-2 mdui-col-md-6">
+                            镜像：<select id="vm_image" class="mdui-select" mdui-select>
+                                {volist name="images" id="image"}
+                                <option value="{$key}">{$image.display}</option>
+                                {/volist}
+                            </select>
+                        </div>
+                        <div class="mdui-col-md-12">
+                            <p class="mdui-col-md-12 mdui-typo">* 默认脚本的运行身份是普通用户，部分命令需要加上 <code>sudo</code> 才能成功执行</p>
+                        </div>
+
+                        <button id="update_personalise"
+                            class="mdui-m-t-3 mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">提交
+                        </button>
+                    </div>
+                    <!-- 定时刷新 -->
+                    <div id="timed-refresh">
+                        <div class="mdui-m-t-2">
+                            频率：<select id="auto_refresh_rate" class="mdui-select" mdui-select>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="6">6</option>
+                                <option value="8">8</option>
+                                <option value="12">12</option>
+                                <option value="24">24</option>
+                            </select>
+                        </div>
+                        <div class="mdui-m-t-2">
+                            开关：<select id="auto_refresh_switch" class="mdui-select" mdui-select>
+                                <option value="0">关闭</option>
+                                <option value="1" {if $refresh_setting.function_swicth=='1' }selected{/if}>开启</option>
+                            </select>
+                        </div>
+                        <div class="mdui-m-t-2">
+                            电报推送：<select id="auto_refresh_telegram_push" class="mdui-select" mdui-select>
+                                <option value="0">关闭</option>
+                                <option value="1" {if $refresh_setting.push_swicth=='1' }selected{/if}>开启</option>
+                            </select>
+                        </div>
+                        <p class="mdui-typo">* 若频率选4，则每4小时刷新一次，每天累计刷新6次。如未生效，请参考文档：<a
+                                href="https://github.com/azpanel/azpanel/wiki/%E5%85%B3%E4%BA%8E%E5%AE%9A%E6%97%B6%E5%88%B7%E6%96%B0">关于定时刷新</a>
+                        </p>
+
+                        <button id="update_refresh"
+                            class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">保存
+                        </button>
+                    </div>
+                    <!-- 连接密钥 -->
+                    <div id="ssh-key">
+                        {if empty($ssh_key)}
+                        <p>此账户没有已生成的 SSH 密钥对，可点击下方按钮生成，然后刷新此页面</p>
+                        <p style="color: red;">注意：私钥仅提供一次下载，遗失后可重置密钥，但不可找回旧密钥</p>
+                        <a id="create_sshkey" href="/user/profile/sshkey"
+                            class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">创建
+                        </a>
+                        {else /}
+                        <p>此为公钥，请使用创建时下载的私钥登录</p>
+                        <pre><code class="language-bash" style="white-space: pre-wrap; word-wrap: break-word;">{$ssh_key->public_key}</code></pre>
+                        <button id="reset_sshkey"
+                            class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">重置
+                        </button>
+                        {/if}
+                    </div>
+                </div>
             </div>
 
-            <button id="update_personalise"
-              class="mdui-m-t-3 mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">提交
-            </button>
-          </div>
-          <!-- 定时刷新 -->
-          <div id="timed-refresh">
-            <div class="mdui-m-t-2">
-              频率：<select id="auto_refresh_rate" class="mdui-select" mdui-select>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="6">6</option>
-                <option value="8">8</option>
-                <option value="12">12</option>
-                <option value="24">24</option>
-              </select>
-            </div>
-            <div class="mdui-m-t-2">
-              开关：<select id="auto_refresh_switch" class="mdui-select" mdui-select>
-                <option value="0">关闭</option>
-                <option value="1" {if $refresh_setting.function_swicth=='1' }selected{/if}>开启</option>
-              </select>
-            </div>
-            <div class="mdui-m-t-2">
-              电报推送：<select id="auto_refresh_telegram_push" class="mdui-select" mdui-select>
-                <option value="0">关闭</option>
-                <option value="1" {if $refresh_setting.push_swicth=='1' }selected{/if}>开启</option>
-              </select>
-            </div>
-            <p class="mdui-typo">* 若频率选4，则每4小时刷新一次，每天累计刷新6次。如未生效，请参考文档：<a href="https://github.com/azpanel/azpanel/wiki/%E5%85%B3%E4%BA%8E%E5%AE%9A%E6%97%B6%E5%88%B7%E6%96%B0">关于定时刷新</a></p>
-
-            <button id="update_refresh"
-              class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">保存
-            </button>
-          </div>
-          <!-- 连接密钥 -->
-          <div id="ssh-key">
-            {if empty($ssh_key)}
-            <p>此账户没有已生成的 SSH 密钥对，可点击下方按钮生成，然后刷新此页面</p>
-            <p style="color: red;">注意：私钥仅提供一次下载，遗失后可重置密钥，但不可找回旧密钥</p>
-            <a id="create_sshkey" href="/user/profile/sshkey"
-              class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">创建
-            </a>
-            {else /}
-            <p>此为公钥，请使用创建时下载的私钥登录</p>
-            <pre><code class="language-bash" style="white-space: pre-wrap; word-wrap: break-word;">{$ssh_key->public_key}</code></pre>
-            <button id="reset_sshkey"
-              class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">重置
-            </button>
-            {/if}
-          </div>
         </div>
-      </div>
-
     </div>
-  </div>
-  <br />
+    <br />
 </div>
 </body>
 
 <script>
-  $('#update_notify').on('click', function () {
-    mdui.confirm('确认应用这些信息么？', '修改推送',
-      function () {
-        $.ajax({
-          method: 'PUT',
-          url: "/user/profile/notify",
-          data: {
-            user_email: $('#user_email').val(),
-            user_telegram: $('#user_telegram').val(),
-            user_telegram_id: $('#user_telegram_id').val()
-          },
-          dataType: "json",
-          success: function (data) {
-            if (data.status == '0') {
-              mdui.alert(data.content, data.title);
-            } else {
-              mdui.alert(data.content, data.title);
-              setTimeout("window.location = '/user/profile'", 1500);
+    $('#update_notify').on('click', function () {
+        mdui.confirm('确认应用这些信息么？', '修改推送',
+            function () {
+                $.ajax({
+                    method: 'PUT',
+                    url: "/user/profile/notify",
+                    data: {
+                        user_email: $('#user_email').val(),
+                        user_telegram: $('#user_telegram').val(),
+                        user_telegram_id: $('#user_telegram_id').val()
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.status == '0') {
+                            mdui.alert(data.content, data.title);
+                        } else {
+                            mdui.alert(data.content, data.title);
+                            setTimeout("window.location = '/user/profile'", 1500);
+                        }
+                    }
+                });
+            },
+            function () { },
+            {
+                confirmText: "确定",
+                cancelText: "取消"
             }
-          }
-        });
-      },
-      function () { },
-      {
-        confirmText: "确定",
-        cancelText: "取消"
-      }
-    );
-  });
+        );
+    });
 
-  $('#update_passwd').on('click', function () {
-    mdui.confirm('确认修改登录密码么？', '修改密码',
-      function () {
-        $.ajax({
-          method: 'PUT',
-          url: "/user/profile/passwd",
-          data: {
-            now_passwd: $('#now_passwd').val(),
-            new_passwd: $('#new_passwd').val(),
-            again_passwd: $('#again_passwd').val()
-          },
-          dataType: "json",
-          success: function (data) {
-            if (data.status == '0') {
-              mdui.alert(data.content, data.title);
-            } else {
-              mdui.alert(data.content, data.title);
-              setTimeout("window.location = '/user/profile'", 1500);
+    $('#update_passwd').on('click', function () {
+        mdui.confirm('确认修改登录密码么？', '修改密码',
+            function () {
+                $.ajax({
+                    method: 'PUT',
+                    url: "/user/profile/passwd",
+                    data: {
+                        now_passwd: $('#now_passwd').val(),
+                        new_passwd: $('#new_passwd').val(),
+                        again_passwd: $('#again_passwd').val()
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.status == '0') {
+                            mdui.alert(data.content, data.title);
+                        } else {
+                            mdui.alert(data.content, data.title);
+                            setTimeout("window.location = '/user/profile'", 1500);
+                        }
+                    }
+                });
+            },
+            function () { },
+            {
+                confirmText: "确定",
+                cancelText: "取消"
             }
-          }
-        });
-      },
-      function () { },
-      {
-        confirmText: "确定",
-        cancelText: "取消"
-      }
-    );
-  });
+        );
+    });
 
-  $('#update_personalise').on('click', function () {
-    mdui.confirm('确认应用这些偏好么？', '修改偏好',
-      function () {
-        $.ajax({
-          method: 'PUT',
-          url: "/user/profile/personalise",
-          data: {
-            vm_size: $('#vm_size').val(),
-            vm_image: $('#vm_image').val(),
-            vm_location: $('#vm_location').val(),
-            vm_disk_size: $('#vm_disk_size').val(),
-            vm_default_script: $('#vm_default_script').val(),
-            vm_default_identity: $('#vm_default_identity').val(),
-            vm_default_credentials: $('#vm_default_credentials').val(),
-          },
-          dataType: "json",
-          success: function (data) {
-            if (data.status == '0') {
-              mdui.alert(data.content, data.title);
-            } else {
-              mdui.alert(data.content, data.title);
-              setTimeout("window.location = '/user/profile'", 1500);
+    $('#update_personalise').on('click', function () {
+        mdui.confirm('确认应用这些偏好么？', '修改偏好',
+            function () {
+                $.ajax({
+                    method: 'PUT',
+                    url: "/user/profile/personalise",
+                    data: {
+                        vm_size: $('#vm_size').val(),
+                        vm_image: $('#vm_image').val(),
+                        vm_location: $('#vm_location').val(),
+                        vm_disk_size: $('#vm_disk_size').val(),
+                        vm_default_script: $('#vm_default_script').val(),
+                        vm_default_identity: $('#vm_default_identity').val(),
+                        vm_default_credentials: $('#vm_default_credentials').val(),
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.status == '0') {
+                            mdui.alert(data.content, data.title);
+                        } else {
+                            mdui.alert(data.content, data.title);
+                            setTimeout("window.location = '/user/profile'", 1500);
+                        }
+                    }
+                });
+            },
+            function () { },
+            {
+                confirmText: "确定",
+                cancelText: "取消"
             }
-          }
-        });
-      },
-      function () { },
-      {
-        confirmText: "确定",
-        cancelText: "取消"
-      }
-    );
-  });
+        );
+    });
 
-  $('#update_refresh').on('click', function () {
-    mdui.confirm('确认提交这些设置么？', '定时刷新',
-      function () {
-        $.ajax({
-          method: 'PUT',
-          url: "/user/profile/refresh",
-          data: {
-            auto_refresh_rate: $('#auto_refresh_rate').val(),
-            auto_refresh_switch: $('#auto_refresh_switch').val(),
-            auto_refresh_telegram_push: $('#auto_refresh_telegram_push').val()
-          },
-          dataType: "json",
-          success: function (data) {
-            if (data.status == '0') {
-              mdui.alert(data.content, data.title);
-            } else {
-              mdui.alert(data.content, data.title);
-              setTimeout("window.location = '/user/profile'", 1500);
+    $('#update_refresh').on('click', function () {
+        mdui.confirm('确认提交这些设置么？', '定时刷新',
+            function () {
+                $.ajax({
+                    method: 'PUT',
+                    url: "/user/profile/refresh",
+                    data: {
+                        auto_refresh_rate: $('#auto_refresh_rate').val(),
+                        auto_refresh_switch: $('#auto_refresh_switch').val(),
+                        auto_refresh_telegram_push: $('#auto_refresh_telegram_push').val()
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.status == '0') {
+                            mdui.alert(data.content, data.title);
+                        } else {
+                            mdui.alert(data.content, data.title);
+                            setTimeout("window.location = '/user/profile'", 1500);
+                        }
+                    }
+                });
+            },
+            function () { },
+            {
+                confirmText: "确定",
+                cancelText: "取消"
             }
-          }
-        });
-      },
-      function () { },
-      {
-        confirmText: "确定",
-        cancelText: "取消"
-      }
-    );
-  });
+        );
+    });
 
-  $('#reset_sshkey').on('click', function () {
-    mdui.confirm('若遗失初次创建时下载的私钥，可使用此功能重置。使用旧密钥创建的虚拟机，仍可使用旧密钥登录', '重置密钥',
-      function () {
-        $.ajax({
-          method: 'PUT',
-          url: "/user/profile/sshkey",
-          dataType: "json",
-          success: function (data) {
-            mdui.alert(data.content, data.title);
-            setTimeout("window.location = '/user/profile'", 1500);
-          }
-        });
-      },
-      function () { },
-      {
-        confirmText: "确定",
-        cancelText: "取消"
-      }
-    );
-  });
+    $('#reset_sshkey').on('click', function () {
+        mdui.confirm('若遗失初次创建时下载的私钥，可使用此功能重置。使用旧密钥创建的虚拟机，仍可使用旧密钥登录', '重置密钥',
+            function () {
+                $.ajax({
+                    method: 'PUT',
+                    url: "/user/profile/sshkey",
+                    dataType: "json",
+                    success: function (data) {
+                        mdui.alert(data.content, data.title);
+                        setTimeout("window.location = '/user/profile'", 1500);
+                    }
+                });
+            },
+            function () { },
+            {
+                confirmText: "确定",
+                cancelText: "取消"
+            }
+        );
+    });
 
-  $("#vm_size").prop('value', '{$personalise.vm_size}');
-  $("#vm_image").prop('value', '{$personalise.vm_image}');
-  $("#vm_location").prop('value', '{$personalise.vm_location}');
-  $("#vm_disk_size").prop('value', '{$personalise.vm_disk_size}');
-  $("#vm_default_identity").prop('value', '{$personalise.vm_default_identity}');
-  $("#vm_default_credentials").prop('value', '{$personalise.vm_default_credentials}');
-  $("#auto_refresh_rate").prop('value', '{$refresh_setting.rate}');
+    $("#vm_size").prop('value', '{$personalise.vm_size}');
+    $("#vm_image").prop('value', '{$personalise.vm_image}');
+    $("#vm_location").prop('value', '{$personalise.vm_location}');
+    $("#vm_disk_size").prop('value', '{$personalise.vm_disk_size}');
+    $("#vm_default_identity").prop('value', '{$personalise.vm_default_identity}');
+    $("#vm_default_credentials").prop('value', '{$personalise.vm_default_credentials}');
+    $("#auto_refresh_rate").prop('value', '{$refresh_setting.rate}');
 </script>
 {include file="../app/view/user/footer.html" /}
 

@@ -1,101 +1,101 @@
 {include file="../app/view/admin/header.html" title="公告列表" /}
 
 <div class="mdui-container-fluid">
-  <div class="mdui-row">
-    <div
-      class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
-      <div class="mdui-container-fluid">
-        <p style="color: #3F51B5; font-size: 34px">公告列表</p>
-      </div>
+    <div class="mdui-row">
+        <div
+            class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+            <div class="mdui-container-fluid">
+                <p style="color: #3F51B5; font-size: 34px">公告列表</p>
+            </div>
 
-      <div class="mdui-typo">
-        <p>你可以在这里管理已发布的所有公告</p>
-      </div>
+            <div class="mdui-typo">
+                <p>你可以在这里管理已发布的所有公告</p>
+            </div>
 
-      <div class="card-body mdui-table-fluid-fixed mdui-m-t-2">
-        <table class="mdui-table" style="border: none;">
-          <thead>
-            <tr>
-              <th>操作</th>
-              <th>#</th>
-              <th>标题</th>
-              <th>状态</th>
-              <th>创建时间</th>
-              <th>更新时间</th>
-            </tr>
-          </thead>
-          <tbody>
-            {volist id="ann" name="anns"}
-            <tr>
-              <td>
-                <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-ripple mdui-color-blue-grey"
-                  mdui-menu="{target: '#action-{$ann.id}', fixed: true}">操作</button>
-                <ul class="mdui-menu" id="action-{$ann.id}">
-                  <li class="mdui-menu-item">
-                    <a class="mdui-ripple" href="/admin/ann/{$ann.id}/edit">
-                      <i class="mdui-menu-item-icon mdui-icon material-icons">edit</i>编辑
-                    </a>
-                  </li>
-                  <li class="mdui-menu-item">
-                    <a class="mdui-ripple" onclick="remove(this)" data-id="{$ann.id}">
-                      <i class="mdui-menu-item-icon mdui-icon material-icons">deleted</i>删除
-                    </a>
-                  </li>
-                </ul>
-              </td>
-              <td>{$ann.id}</td>
-              <td>{$ann.title}</td>
-              <td>
-                {if $ann.status == 0}
-                  <span style="color: red">隐藏</span>
-                {else /}
-                  <span style="color: green">显示</span>
-                {/if}
-              </td>
-              <td>{:date('Y-m-d H:i:s', $ann.created_at)}</td>
-              <td>{:date('Y-m-d H:i:s', $ann.updated_at)}</td>
-            </tr>
-            {/volist}
-          </tbody>
-        </table>
-      </div>
+            <div class="card-body mdui-table-fluid-fixed mdui-m-t-2">
+                <table class="mdui-table" style="border: none;">
+                    <thead>
+                        <tr>
+                            <th>操作</th>
+                            <th>#</th>
+                            <th>标题</th>
+                            <th>状态</th>
+                            <th>创建时间</th>
+                            <th>更新时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {volist id="ann" name="anns"}
+                        <tr>
+                            <td>
+                                <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-ripple mdui-color-blue-grey"
+                                    mdui-menu="{target: '#action-{$ann.id}', fixed: true}">操作</button>
+                                <ul class="mdui-menu" id="action-{$ann.id}">
+                                    <li class="mdui-menu-item">
+                                        <a class="mdui-ripple" href="/admin/ann/{$ann.id}/edit">
+                                            <i class="mdui-menu-item-icon mdui-icon material-icons">edit</i>编辑
+                                        </a>
+                                    </li>
+                                    <li class="mdui-menu-item">
+                                        <a class="mdui-ripple" onclick="remove(this)" data-id="{$ann.id}">
+                                            <i class="mdui-menu-item-icon mdui-icon material-icons">deleted</i>删除
+                                        </a>
+                                    </li>
+                                </ul>
+                            </td>
+                            <td>{$ann.id}</td>
+                            <td>{$ann.title}</td>
+                            <td>
+                                {if $ann.status == 0}
+                                <span style="color: red">隐藏</span>
+                                {else /}
+                                <span style="color: green">显示</span>
+                                {/if}
+                            </td>
+                            <td>{:date('Y-m-d H:i:s', $ann.created_at)}</td>
+                            <td>{:date('Y-m-d H:i:s', $ann.updated_at)}</td>
+                        </tr>
+                        {/volist}
+                    </tbody>
+                </table>
+            </div>
 
-      <a class="mdui-fab mdui-color-theme-accent mdui-ripple mdui-fab-fixed" href="/admin/ann/create">
-        <i class="mdui-icon material-icons">add</i>
-      </a>
+            <a class="mdui-fab mdui-color-theme-accent mdui-ripple mdui-fab-fixed" href="/admin/ann/create">
+                <i class="mdui-icon material-icons">add</i>
+            </a>
 
+        </div>
     </div>
-  </div>
 </div>
 </body>
 
 <script>
-  var $ = mdui.$;
-  function remove(that) {
-    let id = $(that).data('id');
-    mdui.confirm('确认删除此条公告么？', '删除确认',
-      function () {
-        $.ajax({
-          method: 'DELETE',
-          url: "/admin/ann/" + id,
-          dataType: "json",
-          success: function (data) {
-            if (data.status == '0') {
-              mdui.alert(data.content, data.title);
-            } else {
-              mdui.alert(data.content, data.title);
-              setTimeout("window.location = '/admin/ann'", 1500);
+    var $ = mdui.$;
+    function remove(that) {
+        let id = $(that).data('id');
+        mdui.confirm('确认删除此条公告么？', '删除确认',
+            function () {
+                $.ajax({
+                    method: 'DELETE',
+                    url: "/admin/ann/" + id,
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.status == '0') {
+                            mdui.alert(data.content, data.title);
+                        } else {
+                            mdui.alert(data.content, data.title);
+                            setTimeout("window.location = '/admin/ann'", 1500);
+                        }
+                    }
+                });
+            },
+            function () { },
+            {
+                confirmText: "确定",
+                cancelText: "取消"
             }
-          }
-        });
-      },
-      function () { },
-      {
-        confirmText: "确定",
-        cancelText: "取消"
-      }
-    );
-  };
+        );
+    };
 </script>
 {include file="../app/view/admin/footer.html" /}
 

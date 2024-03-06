@@ -1,106 +1,107 @@
 {include file="../app/view/admin/header.html" title="账户资产" /}
 
 <div class="mdui-container-fluid">
-  <div class="mdui-row">
-    <div
-      class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
-      <div class="mdui-container-fluid">
-        <p style="color: #3F51B5; font-size: 34px">账户资产</p>
-      </div>
+    <div class="mdui-row">
+        <div
+            class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+            <div class="mdui-container-fluid">
+                <p style="color: #3F51B5; font-size: 34px">账户资产</p>
+            </div>
 
-      <div class="mdui-typo">
-        <p>你可以在这里查看此用户的资产</p>
-      </div>
+            <div class="mdui-typo">
+                <p>你可以在这里查看此用户的资产</p>
+            </div>
 
-      <p style="color: #3F51B5; font-size: 18px">账户</p>
+            <p style="color: #3F51B5; font-size: 18px">账户</p>
 
-      <div class="mdui-table-fluid mdui-m-t-2">
-        <table class="mdui-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>账户</th>
-              <th>备注</th>
-              <th>状态</th>
-              <th>类型</th>
-              <th>添加时间</th>
-              <th>状态更新时间</th>
-            </tr>
-          </thead>
-          <tbody>
-            {volist name="accounts" id="account"}
-            <tr>
-              <td>{++$account_count}</td>
-              <td>{$account.az_email}</td>
-              <td>{$account.user_mark}</td>
-              <td>{$account.az_sub_status}</td>
-              <td>{$account.az_sub_type}</td>
-              <td>{:date('Y-m-d H:i:s', $account.created_at)}</td>
-              <td>{:date('Y-m-d H:i:s', $account.az_sub_updated_at)}</td>
-            </tr>
-            {/volist}
-          </tbody>
-        </table>
-      </div>
+            <div class="mdui-table-fluid mdui-m-t-2">
+                <table class="mdui-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>账户</th>
+                            <th>备注</th>
+                            <th>状态</th>
+                            <th>类型</th>
+                            <th>添加时间</th>
+                            <th>状态更新时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {volist name="accounts" id="account"}
+                        <tr>
+                            <td>{++$account_count}</td>
+                            <td>{$account.az_email}</td>
+                            <td>{$account.user_mark}</td>
+                            <td>{$account.az_sub_status}</td>
+                            <td>{$account.az_sub_type}</td>
+                            <td>{:date('Y-m-d H:i:s', $account.created_at)}</td>
+                            <td>{:date('Y-m-d H:i:s', $account.az_sub_updated_at)}</td>
+                        </tr>
+                        {/volist}
+                    </tbody>
+                </table>
+            </div>
 
-      <p style="color: #3F51B5; font-size: 18px">虚拟机</p>
+            <p style="color: #3F51B5; font-size: 18px">虚拟机</p>
 
-      <div class="mdui-table-fluid mdui-m-t-2">
-        <table class="mdui-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>名称</th>
-              <th>备注</th>
-              <th>状态</th>
-              <th>地域</th>
-              <th>规格</th>
-              <th>IP</th>
-              <th>系统版本</th>
-              <th>资源组</th>
-              <th>归属账户</th>
-              <th>硬盘大小</th>
-              <th>添加时间</th>
-            </tr>
-          </thead>
-          <tbody>
-            {volist name="servers" id="server"}
-            <tr>
-              <td>{++$server_count}</td>
-              <td>{$server.name}</td>
-              <td>{$server.user_remark ?? 'null'}</td>
-              <td>{:str_replace('PowerState/', '', $server.status)}</td>
-              <td>{$server.location}</td>
-              <td>{:str_replace('Standard_', '', $server.vm_size)}</td>
-              <td id="ip-{$server.id}">{$server.ip_address}</td>
-              <td class="disable-replication" mdui-tooltip="{content: '{$server.os_sku}', position: 'top'}">{$server.os_offer}</td>
-              <td>{$server.resource_group}</td>
-              <td>{$server.account_email}</td>
-              <td>{$server.disk_size}</td>
-              <td>{:date('Y-m-d H:i:s', $server.updated_at)}</td>
-            </tr>
-            {/volist}
-          </tbody>
-        </table>
-      </div>
+            <div class="mdui-table-fluid mdui-m-t-2">
+                <table class="mdui-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>名称</th>
+                            <th>备注</th>
+                            <th>状态</th>
+                            <th>地域</th>
+                            <th>规格</th>
+                            <th>IP</th>
+                            <th>系统版本</th>
+                            <th>资源组</th>
+                            <th>归属账户</th>
+                            <th>硬盘大小</th>
+                            <th>添加时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {volist name="servers" id="server"}
+                        <tr>
+                            <td>{++$server_count}</td>
+                            <td>{$server.name}</td>
+                            <td>{$server.user_remark ?? 'null'}</td>
+                            <td>{:str_replace('PowerState/', '', $server.status)}</td>
+                            <td>{$server.location}</td>
+                            <td>{:str_replace('Standard_', '', $server.vm_size)}</td>
+                            <td id="ip-{$server.id}">{$server.ip_address}</td>
+                            <td class="disable-replication"
+                                mdui-tooltip="{content: '{$server.os_sku}', position: 'top'}">{$server.os_offer}</td>
+                            <td>{$server.resource_group}</td>
+                            <td>{$server.account_email}</td>
+                            <td>{$server.disk_size}</td>
+                            <td>{:date('Y-m-d H:i:s', $server.updated_at)}</td>
+                        </tr>
+                        {/volist}
+                    </tbody>
+                </table>
+            </div>
 
-      <div class="mdui-m-t-2"></div>
+            <div class="mdui-m-t-2"></div>
 
+        </div>
     </div>
-  </div>
 </div>
 </body>
 
 <script>
-  $("td:contains('Enabled')").css("color", "green");
-  $("td:contains('Disabled')").css("color", "red");
-  $("td:contains('Warned')").css("color", "red");
-  $("td:contains('running')").css("color", "green");
-  $("td:contains('starting')").css("color", "orange");
-  $("td:contains('stopping')").css("color", "orange");
-  $("td:contains('stopped')").css("color", "red");
-  $("td:contains('deallocated')").css("color", "red");
-  $("td:contains('null')").css("font-style", "italic");
+    $("td:contains('Enabled')").css("color", "green");
+    $("td:contains('Disabled')").css("color", "red");
+    $("td:contains('Warned')").css("color", "red");
+    $("td:contains('running')").css("color", "green");
+    $("td:contains('starting')").css("color", "orange");
+    $("td:contains('stopping')").css("color", "orange");
+    $("td:contains('stopped')").css("color", "red");
+    $("td:contains('deallocated')").css("color", "red");
+    $("td:contains('null')").css("font-style", "italic");
 </script>
 
 {include file="../app/view/admin/footer.html" /}

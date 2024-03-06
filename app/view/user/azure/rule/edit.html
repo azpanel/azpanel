@@ -1,130 +1,131 @@
 {include file="../app/view/user/header.html" title="修改规则" /}
 
 <div class="mdui-container-fluid">
-  <div class="mdui-row">
-    <div
-      class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
-      <div class="mdui-container-fluid">
-        <p style="color: #3F51B5; font-size: 34px">修改规则</p>
-      </div>
+    <div class="mdui-row">
+        <div
+            class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+            <div class="mdui-container-fluid">
+                <p style="color: #3F51B5; font-size: 34px">修改规则</p>
+            </div>
 
-      <div class="mdui-typo">
-        <p>修改此条流量控制规则</p>
-      </div>
+            <div class="mdui-typo">
+                <p>修改此条流量控制规则</p>
+            </div>
 
-      <div class="mdui-card mdui-m-t-2" style="overflow: visible">
-        <div class="mdui-card-content mdui-container">
-          <div class="mdui-col-sm-12 mdui-col-md-6">
-            <div class="mdui-textfield mdui-textfield-floating-label">
-              <i class="mdui-icon material-icons">flag</i>
-              <label class="mdui-textfield-label">规则名称</label>
-              <input class="mdui-textfield-input" id="rule_name" value="{$rule.name}" required>
+            <div class="mdui-card mdui-m-t-2" style="overflow: visible">
+                <div class="mdui-card-content mdui-container">
+                    <div class="mdui-col-sm-12 mdui-col-md-6">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">flag</i>
+                            <label class="mdui-textfield-label">规则名称</label>
+                            <input class="mdui-textfield-input" id="rule_name" value="{$rule.name}" required>
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-6">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">access_time</i>
+                            <label class="mdui-textfield-label">检索的时间范围 (以小时为单位，整数)</label>
+                            <input class="mdui-textfield-input" id="rule_interval" value="{$rule.interval}" required>
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-6">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">code</i>
+                            <label class="mdui-textfield-label">限制值 (以 GB 为单位，整数)</label>
+                            <input class="mdui-textfield-input" id="rule_limit" value="{$rule.limit}" required>
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-6">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">timer</i>
+                            <label class="mdui-textfield-label">限制时长 (以小时为单位，整数)</label>
+                            <input class="mdui-textfield-input" id="rule_time" value="{$rule.time}" required>
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-3">
+                        <div class="mdui-m-t-2">
+                            检索指标：<select id="rule_index" class="mdui-select" mdui-select>
+                                <option value="traffic_in" {if $rule.index=='traffic_in' }selected{/if}>
+                                    入向流量
+                                </option>
+                                <option value="traffic_out" {if $rule.index=='traffic_out' }selected{/if}>
+                                    出向流量
+                                </option>
+                                <option value="traffic_in_or_out" {if $rule.index=='traffic_in_or_out' }selected{/if}>
+                                    入向或出向流量
+                                </option>
+                                <option value="traffic_in_and_out" {if $rule.index=='traffic_in_and_out' }selected{/if}>
+                                    入向和出向流量
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-3">
+                        <div class="mdui-m-t-2">
+                            规则开关：<select id="rule_switch" class="mdui-select" mdui-select>
+                                <option value="1">启用</option>
+                                <option value="0" {if $rule.switch=='0' }selected{/if}>停用</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-3">
+                        <div class="mdui-m-t-2">
+                            触发时通知：<select id="rule_execute_push" class="mdui-select" mdui-select>
+                                <option value="0">停用</option>
+                                <option value="1" {if $rule.execute_push=='1' }selected{/if}>启用</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-3">
+                        <div class="mdui-m-t-2">
+                            恢复时通知：<select id="rule_recover_push" class="mdui-select" mdui-select>
+                                <option value="0">停用</option>
+                                <option value="1" {if $rule.recover_push=='1' }selected{/if}>启用</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="mdui-col-sm-12 mdui-col-md-6">
-            <div class="mdui-textfield mdui-textfield-floating-label">
-              <i class="mdui-icon material-icons">access_time</i>
-              <label class="mdui-textfield-label">检索的时间范围 (以小时为单位，整数)</label>
-              <input class="mdui-textfield-input" id="rule_interval" value="{$rule.interval}" required>
+
+            <div class="mdui-card mdui-m-t-2">
+                <div class="mdui-card-actions">
+                    <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised"
+                        id="update">修改</button>
+                </div>
             </div>
-          </div>
-          <div class="mdui-col-sm-12 mdui-col-md-6">
-            <div class="mdui-textfield mdui-textfield-floating-label">
-              <i class="mdui-icon material-icons">code</i>
-              <label class="mdui-textfield-label">限制值 (以 GB 为单位，整数)</label>
-              <input class="mdui-textfield-input" id="rule_limit" value="{$rule.limit}" required>
-            </div>
-          </div>
-          <div class="mdui-col-sm-12 mdui-col-md-6">
-            <div class="mdui-textfield mdui-textfield-floating-label">
-              <i class="mdui-icon material-icons">timer</i>
-              <label class="mdui-textfield-label">限制时长 (以小时为单位，整数)</label>
-              <input class="mdui-textfield-input" id="rule_time" value="{$rule.time}" required>
-            </div>
-          </div>
-          <div class="mdui-col-sm-12 mdui-col-md-3">
-            <div class="mdui-m-t-2">
-              检索指标：<select id="rule_index" class="mdui-select" mdui-select>
-                <option value="traffic_in" {if $rule.index=='traffic_in' }selected{/if}>
-                  入向流量
-                </option>
-                <option value="traffic_out" {if $rule.index=='traffic_out' }selected{/if}>
-                  出向流量
-                </option>
-                <option value="traffic_in_or_out" {if $rule.index=='traffic_in_or_out' }selected{/if}>
-                  入向或出向流量
-                </option>
-                <option value="traffic_in_and_out" {if $rule.index=='traffic_in_and_out' }selected{/if}>
-                  入向和出向流量
-                </option>
-              </select>
-            </div>
-          </div>
-          <div class="mdui-col-sm-12 mdui-col-md-3">
-            <div class="mdui-m-t-2">
-              规则开关：<select id="rule_switch" class="mdui-select" mdui-select>
-                <option value="1">启用</option>
-                <option value="0" {if $rule.switch=='0' }selected{/if}>停用</option>
-              </select>
-            </div>
-          </div>
-          <div class="mdui-col-sm-12 mdui-col-md-3">
-            <div class="mdui-m-t-2">
-              触发时通知：<select id="rule_execute_push" class="mdui-select" mdui-select>
-                <option value="0">停用</option>
-                <option value="1" {if $rule.execute_push=='1' }selected{/if}>启用</option>
-              </select>
-            </div>
-          </div>
-          <div class="mdui-col-sm-12 mdui-col-md-3">
-            <div class="mdui-m-t-2">
-              恢复时通知：<select id="rule_recover_push" class="mdui-select" mdui-select>
-                <option value="0">停用</option>
-                <option value="1" {if $rule.recover_push=='1' }selected{/if}>启用</option>
-              </select>
-            </div>
-          </div>
+
+            <div class="mdui-m-t-2"></div>
+
         </div>
-      </div>
-
-      <div class="mdui-card mdui-m-t-2">
-        <div class="mdui-card-actions">
-          <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised" id="update">修改</button>
-        </div>
-      </div>
-
-      <div class="mdui-m-t-2"></div>
-
     </div>
-  </div>
 </div>
 </body>
 
 <script>
-  var $ = mdui.$;
-  $('#update').on('click', function () {
-    $.ajax({
-      method: 'PUT',
-      url: '/user/server/azure/rule/{$rule.id}',
-      data: {
-        rule_name: $('#rule_name').val(),
-        rule_interval: $('#rule_interval').val(),
-        rule_limit: $('#rule_limit').val(),
-        rule_time: $('#rule_time').val(),
-        rule_index: $('#rule_index').val(),
-        rule_switch: $('#rule_switch').val(),
-        rule_execute_push: $('#rule_execute_push').val(),
-        rule_recover_push: $('#rule_recover_push').val()
-      },
-      dataType: "json",
-      success: function (data) {
-        mdui.alert(data.content, data.title);
-        if (data.status == '1') {
-          setTimeout("window.location = '/user/server/azure/rule'", 1500);
-        }
-      }
+    var $ = mdui.$;
+    $('#update').on('click', function () {
+        $.ajax({
+            method: 'PUT',
+            url: '/user/server/azure/rule/{$rule.id}',
+            data: {
+                rule_name: $('#rule_name').val(),
+                rule_interval: $('#rule_interval').val(),
+                rule_limit: $('#rule_limit').val(),
+                rule_time: $('#rule_time').val(),
+                rule_index: $('#rule_index').val(),
+                rule_switch: $('#rule_switch').val(),
+                rule_execute_push: $('#rule_execute_push').val(),
+                rule_recover_push: $('#rule_recover_push').val()
+            },
+            dataType: "json",
+            success: function (data) {
+                mdui.alert(data.content, data.title);
+                if (data.status == '1') {
+                    setTimeout("window.location = '/user/server/azure/rule'", 1500);
+                }
+            }
+        });
     });
-  });
 </script>
 {include file="../app/view/user/footer.html" /}
 

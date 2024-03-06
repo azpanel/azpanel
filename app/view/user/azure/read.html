@@ -1,121 +1,124 @@
 {include file="../app/view/user/header.html" title="订阅详情" /}
 
 <div class="mdui-container-fluid">
-  <div class="mdui-row">
-    <div
-      class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
-      <div class="mdui-container-fluid">
-        <p style="color: #3F51B5; font-size: 34px">订阅详情</p>
-      </div>
-
-      <div class="mdui-typo">
-        <p>该账户下的订阅详情</p>
-      </div>
-
-      <div class="mdui-row">
-        <div class="mdui-col-md-5 mdui-col-sm-12 mdui-m-t-2">
-          <div class="mdui-card">
-            <div class="mdui-card-content">
-              <p style="color: #3F51B5; font-size: 18px"><i class="mdui-icon material-icons">people</i>&nbsp;订阅详情
-              </p>
-              <div class="mdui-typo">
-                <p>名称：<code>{$az_sub.value.0.displayName}</code></p>
-                <p>状态：<code>{$az_sub.value.0.state}</code></p>
-                <p>更新时间：<code>{:date('Y-m-d H:i:s', $account.az_sub_updated_at)}</code></p>
-                <p>订阅 ID：<code>{$az_sub.value.0.subscriptionId}</code></p>
-              </div>
+    <div class="mdui-row">
+        <div
+            class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+            <div class="mdui-container-fluid">
+                <p style="color: #3F51B5; font-size: 34px">订阅详情</p>
             </div>
-          </div>
-        </div>
 
-        <div class="mdui-col-md-3 mdui-col-sm-12 mdui-m-t-2">
-          <div class="mdui-card">
-            <div class="mdui-card-content">
-              <p style="color: #3F51B5; font-size: 18px"><i class="mdui-icon material-icons">flag</i>&nbsp;订阅政策
-              </p>
-              <div class="mdui-typo">
-                <p>位置安置：<code>{$az_sub.value.0.subscriptionPolicies.locationPlacementId}</code></p>
-                <p>配额 ID：<code>{$az_sub.value.0.subscriptionPolicies.quotaId}</code></p>
-                <p>消费限额：<code>{$az_sub.value.0.subscriptionPolicies.spendingLimit}</code></p>
-              </div>
+            <div class="mdui-typo">
+                <p>该账户下的订阅详情</p>
             </div>
-          </div>
-        </div>
 
-        <div class="mdui-col-md-4 mdui-col-sm-12 mdui-m-t-2">
-          <div class="mdui-card" style="overflow: visible">
-            <div class="mdui-card-content">
-              <p style="color: #3F51B5; font-size: 18px"><i class="mdui-icon material-icons">ev_station</i>&nbsp;订阅配额
-              </p>
-              <div class="mdui-typo">
-                <div class="mdui-m-t-2">
-                  地区：<select id="location" class="mdui-select" mdui-select>
-                    {volist name="locations" id="location"}
-                    <option value="{$key}">{$location}</option>
-                    {/volist}
-                  </select>
+            <div class="mdui-row">
+                <div class="mdui-col-md-5 mdui-col-sm-12 mdui-m-t-2">
+                    <div class="mdui-card">
+                        <div class="mdui-card-content">
+                            <p style="color: #3F51B5; font-size: 18px"><i
+                                    class="mdui-icon material-icons">people</i>&nbsp;订阅详情
+                            </p>
+                            <div class="mdui-typo">
+                                <p>名称：<code>{$az_sub.value.0.displayName}</code></p>
+                                <p>状态：<code>{$az_sub.value.0.state}</code></p>
+                                <p>更新时间：<code>{:date('Y-m-d H:i:s', $account.az_sub_updated_at)}</code></p>
+                                <p>订阅 ID：<code>{$az_sub.value.0.subscriptionId}</code></p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
+
+                <div class="mdui-col-md-3 mdui-col-sm-12 mdui-m-t-2">
+                    <div class="mdui-card">
+                        <div class="mdui-card-content">
+                            <p style="color: #3F51B5; font-size: 18px"><i
+                                    class="mdui-icon material-icons">flag</i>&nbsp;订阅政策
+                            </p>
+                            <div class="mdui-typo">
+                                <p>位置安置：<code>{$az_sub.value.0.subscriptionPolicies.locationPlacementId}</code></p>
+                                <p>配额 ID：<code>{$az_sub.value.0.subscriptionPolicies.quotaId}</code></p>
+                                <p>消费限额：<code>{$az_sub.value.0.subscriptionPolicies.spendingLimit}</code></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mdui-col-md-4 mdui-col-sm-12 mdui-m-t-2">
+                    <div class="mdui-card" style="overflow: visible">
+                        <div class="mdui-card-content">
+                            <p style="color: #3F51B5; font-size: 18px"><i
+                                    class="mdui-icon material-icons">ev_station</i>&nbsp;订阅配额
+                            </p>
+                            <div class="mdui-typo">
+                                <div class="mdui-m-t-2">
+                                    地区：<select id="location" class="mdui-select" mdui-select>
+                                        {volist name="locations" id="location"}
+                                        <option value="{$key}">{$location}</option>
+                                        {/volist}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mdui-card-actions">
+                            <button onclick="search()"
+                                class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-ripple mdui-color-indigo">查询</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="mdui-card-actions">
-              <button onclick="search()"
-                class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-ripple mdui-color-indigo">查询</button>
+
+            <p style="color: #3F51B5; font-size: 20px">订阅配额</p>
+            <div class="mdui-table-fluid mdui-m-t-2">
+                <table class="mdui-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>项目</th>
+                            <th>描述</th>
+                            <th>限额</th>
+                            <th>已用</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table_content">
+                    </tbody>
+                </table>
             </div>
-          </div>
+
+            <div class="mdui-m-t-2"></div>
+
         </div>
-      </div>
-
-      <p style="color: #3F51B5; font-size: 20px">订阅配额</p>
-      <div class="mdui-table-fluid mdui-m-t-2">
-        <table class="mdui-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>项目</th>
-              <th>描述</th>
-              <th>限额</th>
-              <th>已用</th>
-            </tr>
-          </thead>
-          <tbody id="table_content">
-          </tbody>
-        </table>
-      </div>
-
-      <div class="mdui-m-t-2"></div>
-
     </div>
-  </div>
 </div>
 </body>
 <script>
-  function search() {
-    var load = new mdui.alert('<div class=\"mdui-progress\"><div class=\"mdui-progress-indeterminate\"></div></div>', '查询中');
-    $.ajax({
-      method: 'POST',
-      url: "/user/azure/quota/{$account->id}",
-      data: {
-        location: $('#location').val(),
-      },
-      dataType: "json",
-      success: function (data) {
-        load.close();
-        var str = '';
-        for (var i = 0; i < data.result.length; i++) {
-          str += "<tr><td>" + (i + 1) +
-            "</td><td>" + data.result[i].name +
-            "</td><td>" + data.result[i].note +
-            "</td><td>" + data.result[i].limit +
-            "</td><td>" + data.result[i].usage + "</td></tr>";
-        }
-        $("#table_content").html(str);
-      },
-      error: function (data) {
-        load.close();
-        mdui.alert('首次获取可能会失败，一般重试即可解决问题', '获取失败');
-      },
-    });
-  }
+    function search() {
+        var load = new mdui.alert('<div class=\"mdui-progress\"><div class=\"mdui-progress-indeterminate\"></div></div>', '查询中');
+        $.ajax({
+            method: 'POST',
+            url: "/user/azure/quota/{$account->id}",
+            data: {
+                location: $('#location').val(),
+            },
+            dataType: "json",
+            success: function (data) {
+                load.close();
+                var str = '';
+                for (var i = 0; i < data.result.length; i++) {
+                    str += "<tr><td>" + (i + 1) +
+                        "</td><td>" + data.result[i].name +
+                        "</td><td>" + data.result[i].note +
+                        "</td><td>" + data.result[i].limit +
+                        "</td><td>" + data.result[i].usage + "</td></tr>";
+                }
+                $("#table_content").html(str);
+            },
+            error: function (data) {
+                load.close();
+                mdui.alert('首次获取可能会失败，一般重试即可解决问题', '获取失败');
+            },
+        });
+    }
 </script>
 {include file="../app/view/user/footer.html" /}
 

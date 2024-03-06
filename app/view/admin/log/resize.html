@@ -1,49 +1,49 @@
 {include file="../app/view/admin/header.html" title="升降配" /}
 
 <div class="mdui-container-fluid">
-  <div class="mdui-row">
-    <div
-      class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
-      <div class="mdui-container-fluid">
-        <p style="color: #3F51B5; font-size: 34px">升降配</p>
-      </div>
+    <div class="mdui-row">
+        <div
+            class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+            <div class="mdui-container-fluid">
+                <p style="color: #3F51B5; font-size: 34px">升降配</p>
+            </div>
 
-      <div class="mdui-typo">
-        <p>你可以在这里查看所有用户提交的升降配请求</p>
-      </div>
+            <div class="mdui-typo">
+                <p>你可以在这里查看所有用户提交的升降配请求</p>
+            </div>
 
-      <div class="mdui-table-fluid mdui-m-t-2">
-        <table class="mdui-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>提交用户</th>
-              <th>虚拟机</th>
-              <th>原规格</th>
-              <th>调整规格</th>
-              <th>时间</th>
-            </tr>
-          </thead>
-          <tbody>
-            {volist name="logs" id="log"}
-            <tr>
-              <td>{$log.id}</td>
-              <td>{$log.user_id}</td>
-              <td>{$log.vm_id}</td>
-              <td>{$log.before_size}</td>
-              <td>{$log.after_size}</td>
-              <td>{:date('Y-m-d H:i:s', $log.created_at)}</td>
-            </tr>
-            {/volist}
-          </tbody>
-        </table>
-      </div>
+            <div class="mdui-table-fluid mdui-m-t-2">
+                <table class="mdui-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>提交用户</th>
+                            <th>虚拟机</th>
+                            <th>原规格</th>
+                            <th>调整规格</th>
+                            <th>时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {volist name="logs" id="log"}
+                        <tr>
+                            <td>{$log.id}</td>
+                            <td>{$log.user_id}</td>
+                            <td>{$log.vm_id}</td>
+                            <td>{$log.before_size}</td>
+                            <td>{$log.after_size}</td>
+                            <td>{:date('Y-m-d H:i:s', $log.created_at)}</td>
+                        </tr>
+                        {/volist}
+                    </tbody>
+                </table>
+            </div>
 
-      {$page | raw}
+            {$page | raw}
 
+        </div>
     </div>
-  </div>
-  </br/>
+    </br />
 </div>
 
 </body>

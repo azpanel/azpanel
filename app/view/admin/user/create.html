@@ -1,90 +1,92 @@
 {include file="../app/view/admin/header.html" title="添加用户" /}
 
 <div class="mdui-container-fluid">
-  <div class="mdui-row">
-    <div class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
-      <div class="mdui-container-fluid">
-        <p style="color: #3F51B5; font-size: 34px">添加用户</p>
-      </div>
+    <div class="mdui-row">
+        <div
+            class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+            <div class="mdui-container-fluid">
+                <p style="color: #3F51B5; font-size: 34px">添加用户</p>
+            </div>
 
-      <div class="mdui-typo">
-        <p>你可以在这里添加一个新用户</p>
-      </div>
+            <div class="mdui-typo">
+                <p>你可以在这里添加一个新用户</p>
+            </div>
 
-      <div class="mdui-card mdui-m-t-2" style="overflow: visible">
-        <div class="mdui-card-content mdui-container">
-          <div class="mdui-textfield mdui-textfield-floating-label">
-            <i class="mdui-icon material-icons">email</i>
-            <label class="mdui-textfield-label">登录邮箱</label>
-            <input class="mdui-textfield-input" type="text" id="user_email" />
-          </div>
-          <div class="mdui-textfield mdui-textfield-floating-label">
-            <i class="mdui-icon material-icons">vpn_key</i>
-            <label class="mdui-textfield-label">登录密码（留空则随机生成）</label>
-            <input class="mdui-textfield-input" type="text" id="user_passwd" />
-          </div>
-          <div class="mdui-textfield mdui-textfield-floating-label">
-            <i class="mdui-icon material-icons">bookmark</i>
-            <label class="mdui-textfield-label">用户备注</label>
-            <input class="mdui-textfield-input" type="text" id="user_remark" />
-          </div>
-          <div class="mdui-m-t-2">
-            身份：<select id="is_admin" class="mdui-select" mdui-select>
-              <option value="0">注册用户</option>
-              <option value="1">管理员</option>
-            </select>
-          </div>
-          <p>* 如果你开启了邮件推送功能，面板登录地址和登录密码会发送到登录邮箱中</p>
+            <div class="mdui-card mdui-m-t-2" style="overflow: visible">
+                <div class="mdui-card-content mdui-container">
+                    <div class="mdui-textfield mdui-textfield-floating-label">
+                        <i class="mdui-icon material-icons">email</i>
+                        <label class="mdui-textfield-label">登录邮箱</label>
+                        <input class="mdui-textfield-input" type="text" id="user_email" />
+                    </div>
+                    <div class="mdui-textfield mdui-textfield-floating-label">
+                        <i class="mdui-icon material-icons">vpn_key</i>
+                        <label class="mdui-textfield-label">登录密码（留空则随机生成）</label>
+                        <input class="mdui-textfield-input" type="text" id="user_passwd" />
+                    </div>
+                    <div class="mdui-textfield mdui-textfield-floating-label">
+                        <i class="mdui-icon material-icons">bookmark</i>
+                        <label class="mdui-textfield-label">用户备注</label>
+                        <input class="mdui-textfield-input" type="text" id="user_remark" />
+                    </div>
+                    <div class="mdui-m-t-2">
+                        身份：<select id="is_admin" class="mdui-select" mdui-select>
+                            <option value="0">注册用户</option>
+                            <option value="1">管理员</option>
+                        </select>
+                    </div>
+                    <p>* 如果你开启了邮件推送功能，面板登录地址和登录密码会发送到登录邮箱中</p>
+                </div>
+            </div>
+
+            <div class="mdui-card mdui-m-t-2">
+                <div class="mdui-card-actions">
+                    <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised"
+                        id="create">添加</button>
+                </div>
+            </div>
+
+            <div class="mdui-m-t-2"></div>
+
         </div>
-      </div>
-
-      <div class="mdui-card mdui-m-t-2">
-        <div class="mdui-card-actions">
-          <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised" id="create">添加</button>
-        </div>
-      </div>
-      
-      <div class="mdui-m-t-2"></div>
-
     </div>
-  </div>
 </div>
 </body>
 
 <script>
-  var $ = mdui.$;
-  $('#create').on('click', function () {
-    mdui.confirm('确认添加此新用户么', '添加确认',
-      function () {
-        $.ajax({
-          method: 'POST',
-          url: "/admin/user",
-          data: {
-            email: $('#user_email').val(),
-            passwd: $('#user_passwd').val(),
-            remark: $('#user_remark').val(),
-            admin: $('#is_admin').val()
-          },
-          dataType: "json",
-          success: function (data) {
-            if (data.status == '0') {
-              mdui.alert(data.content, data.title);
+    var $ = mdui.$;
+    $('#create').on('click', function () {
+        mdui.confirm('确认添加此新用户么', '添加确认',
+            function () {
+                $.ajax({
+                    method: 'POST',
+                    url: "/admin/user",
+                    data: {
+                        email: $('#user_email').val(),
+                        passwd: $('#user_passwd').val(),
+                        remark: $('#user_remark').val(),
+                        admin: $('#is_admin').val()
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.status == '0') {
+                            mdui.alert(data.content, data.title);
+                        }
+                        else {
+                            mdui.alert(data.content, data.title);
+                            setTimeout("window.location = '/admin/user'", 1500);
+                        }
+                    }
+                });
+            },
+            function () {
+            },
+            {
+                confirmText: "确定",
+                cancelText: "取消"
             }
-            else {
-              mdui.alert(data.content, data.title);
-              setTimeout("window.location = '/admin/user'", 1500);
-            }
-          }
-        });
-      },
-      function () {
-      },
-      {
-        confirmText: "确定",
-        cancelText: "取消"
-      }
-    );
-  });
+        );
+    });
 </script>
 {include file="../app/view/admin/footer.html" /}
 

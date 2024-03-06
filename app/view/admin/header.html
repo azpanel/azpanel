@@ -2,157 +2,157 @@
 <html lang="cn">
 
 <head>
-  <title>[title]</title>
-  <meta name="viewport" content="width=device-width" charset="utf-8" />
-  <meta name="format-detection" content="telephone=no" />
-  <link rel="stylesheet" href="/static/css/mdui.min.css">
-  <link rel="stylesheet" href="/static/css/bootstrap.css">
-  <link href="/static/prism/prism.css" rel="stylesheet" />
-  <script src="/static/prism/prism.js"></script>
-  <script src="/static/js/mdui.min.js"></script>
-  <script src="/static/js/anychart-base.min.js"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <style type="text/css">
-    td {
-      white-space: nowrap;
-    }
+    <title>[title]</title>
+    <meta name="viewport" content="width=device-width" charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="stylesheet" href="/static/css/mdui.min.css">
+    <link rel="stylesheet" href="/static/css/bootstrap.css">
+    <link href="/static/prism/prism.css" rel="stylesheet" />
+    <script src="/static/prism/prism.js"></script>
+    <script src="/static/js/mdui.min.js"></script>
+    <script src="/static/js/anychart-base.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style type="text/css">
+        td {
+            white-space: nowrap;
+        }
 
-    .mdui-table-fluid-fixed {
-      overflow-y: auto;
-      white-space: nowrap;
-      border: 1px solid rgba(0, 0, 0, .12);
-      border-bottom: none;
-      box-shadow: 0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%);
-    }
-  </style>
+        .mdui-table-fluid-fixed {
+            overflow-y: auto;
+            white-space: nowrap;
+            border: 1px solid rgba(0, 0, 0, .12);
+            border-bottom: none;
+            box-shadow: 0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%);
+        }
+    </style>
 </head>
 
 <body class="mdui-drawer-body-left mdui-appbar-with-toolbar mdui-theme-primary-indigo mdui-theme-accent-pink">
-  <div class="mdui-appbar mdui-appbar-fixed">
-    <div class="mdui-toolbar mdui-color-theme">
-      <span class="mdui-btn mdui-btn-icon mdui-ripple mdui-ripple-white"
-        mdui-drawer="{target: '#main-drawer', swipe: true}">
-        <i class="mdui-icon material-icons">menu</i>
-      </span>
-      <p class="mdui-typo-title">{:think\\facade\\Env::get('app.APP_NAME')}</p>
-      <div class="mdui-toolbar-spacer"></div>
-      <a class="mdui-btn mdui-btn-icon id" id="logout">
-        <i class="mdui-icon material-icons">exit_to_app</i>
-      </a>
+    <div class="mdui-appbar mdui-appbar-fixed">
+        <div class="mdui-toolbar mdui-color-theme">
+            <span class="mdui-btn mdui-btn-icon mdui-ripple mdui-ripple-white"
+                mdui-drawer="{target: '#main-drawer', swipe: true}">
+                <i class="mdui-icon material-icons">menu</i>
+            </span>
+            <p class="mdui-typo-title">{:think\\facade\\Env::get('app.APP_NAME')}</p>
+            <div class="mdui-toolbar-spacer"></div>
+            <a class="mdui-btn mdui-btn-icon id" id="logout">
+                <i class="mdui-icon material-icons">exit_to_app</i>
+            </a>
+        </div>
     </div>
-  </div>
 
-  <div class="mdui-drawer" id="main-drawer">
-    <div class="mdui-list" mdui-collapse="{accordion: true}" style="margin-bottom: 76px;">
-      <div class="mdui-collapse-item">
-        <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
-          <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-blue-grey">settings</i>
-          <div class="mdui-list-item-content">系统设置</div>
-          <i class="mdui-collapse-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
+    <div class="mdui-drawer" id="main-drawer">
+        <div class="mdui-list" mdui-collapse="{accordion: true}" style="margin-bottom: 76px;">
+            <div class="mdui-collapse-item">
+                <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                    <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-blue-grey">settings</i>
+                    <div class="mdui-list-item-content">系统设置</div>
+                    <i class="mdui-collapse-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
+                </div>
+                <div class="mdui-collapse-item-body mdui-list">
+                    <a href="/admin/setting" class="mdui-list-item mdui-ripple">
+                        通用
+                    </a>
+
+                    <a href="/admin/setting/email" class="mdui-list-item mdui-ripple">
+                        邮件设置
+                    </a>
+
+                    <a href="/admin/setting/custom" class="mdui-list-item mdui-ripple">
+                        网站设置
+                    </a>
+
+                    <a href="/admin/setting/resolv" class="mdui-list-item mdui-ripple">
+                        解析设置
+                    </a>
+
+                    <a href="/admin/setting/telegram" class="mdui-list-item mdui-ripple">
+                        Telegram Bot
+                    </a>
+                </div>
+            </div>
+
+            <div class="mdui-collapse-item">
+                <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                    <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-blue-grey">people</i>
+                    <div class="mdui-list-item-content">用户管理</div>
+                    <i class="mdui-collapse-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
+                </div>
+                <div class="mdui-collapse-item-body mdui-list">
+                    <a href="/admin/user" class="mdui-list-item mdui-ripple">
+                        用户列表
+                    </a>
+
+                    <a href="/admin/user/create" class="mdui-list-item mdui-ripple">
+                        添加用户
+                    </a>
+
+                    <a href="/admin/user/report" class="mdui-list-item mdui-ripple">
+                        站点报告
+                    </a>
+                </div>
+            </div>
+
+            <div class="mdui-collapse-item">
+                <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                    <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-blue-grey">event_note</i>
+                    <div class="mdui-list-item-content">公告管理</div>
+                    <i class="mdui-collapse-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
+                </div>
+                <div class="mdui-collapse-item-body mdui-list">
+                    <a href="/admin/ann" class="mdui-list-item mdui-ripple">
+                        公告列表
+                    </a>
+
+                    <a href="/admin/ann/create" class="mdui-list-item mdui-ripple">
+                        添加公告
+                    </a>
+                </div>
+            </div>
+
+            <div class="mdui-collapse-item">
+                <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                    <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-blue-grey">book</i>
+                    <div class="mdui-list-item-content">站点日志</div>
+                    <i class="mdui-collapse-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
+                </div>
+                <div class="mdui-collapse-item-body mdui-list">
+                    <a href="/admin/log/task" class="mdui-list-item mdui-ripple">
+                        任务
+                    </a>
+
+                    <a href="/admin/log/login" class="mdui-list-item mdui-ripple">
+                        登录
+                    </a>
+
+                    <a href="/admin/log/verify" class="mdui-list-item mdui-ripple">
+                        验证码
+                    </a>
+
+                    <a href="/admin/log/resize" class="mdui-list-item mdui-ripple">
+                        升降配
+                    </a>
+
+                    <a href="/admin/log/traffic" class="mdui-list-item mdui-ripple">
+                        流量控制
+                    </a>
+                </div>
+            </div>
+
+            <a href="/user" class="mdui-list-item mdui-ripple">
+                返回用户中心
+            </a>
+
+            <div class="mdui-typo">
+                <hr />
+            </div>
+
+            <div class="mdui-typo mdui-m-a-2">
+                <span>v.{:app\\model\\Config::obtain('version')}</span>
+                <p class="mdui-float-right">
+                    <a href="https://github.com/azpanel/azpanel">Github</a>
+                </p>
+            </div>
         </div>
-        <div class="mdui-collapse-item-body mdui-list">
-          <a href="/admin/setting" class="mdui-list-item mdui-ripple">
-            通用
-          </a>
-
-          <a href="/admin/setting/email" class="mdui-list-item mdui-ripple">
-            邮件设置
-          </a>
-
-          <a href="/admin/setting/custom" class="mdui-list-item mdui-ripple">
-            网站设置
-          </a>
-
-          <a href="/admin/setting/resolv" class="mdui-list-item mdui-ripple">
-            解析设置
-          </a>
-
-          <a href="/admin/setting/telegram" class="mdui-list-item mdui-ripple">
-            Telegram Bot
-          </a>
-        </div>
-      </div>
-
-      <div class="mdui-collapse-item">
-        <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
-          <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-blue-grey">people</i>
-          <div class="mdui-list-item-content">用户管理</div>
-          <i class="mdui-collapse-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
-        </div>
-        <div class="mdui-collapse-item-body mdui-list">
-          <a href="/admin/user" class="mdui-list-item mdui-ripple">
-            用户列表
-          </a>
-
-          <a href="/admin/user/create" class="mdui-list-item mdui-ripple">
-            添加用户
-          </a>
-
-          <a href="/admin/user/report" class="mdui-list-item mdui-ripple">
-            站点报告
-          </a>
-        </div>
-      </div>
-
-      <div class="mdui-collapse-item">
-        <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
-          <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-blue-grey">event_note</i>
-          <div class="mdui-list-item-content">公告管理</div>
-          <i class="mdui-collapse-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
-        </div>
-        <div class="mdui-collapse-item-body mdui-list">
-          <a href="/admin/ann" class="mdui-list-item mdui-ripple">
-            公告列表
-          </a>
-
-          <a href="/admin/ann/create" class="mdui-list-item mdui-ripple">
-            添加公告
-          </a>
-        </div>
-      </div>
-
-      <div class="mdui-collapse-item">
-        <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
-          <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-blue-grey">book</i>
-          <div class="mdui-list-item-content">站点日志</div>
-          <i class="mdui-collapse-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
-        </div>
-        <div class="mdui-collapse-item-body mdui-list">
-          <a href="/admin/log/task" class="mdui-list-item mdui-ripple">
-            任务
-          </a>
-
-          <a href="/admin/log/login" class="mdui-list-item mdui-ripple">
-            登录
-          </a>
-
-          <a href="/admin/log/verify" class="mdui-list-item mdui-ripple">
-            验证码
-          </a>
-
-          <a href="/admin/log/resize" class="mdui-list-item mdui-ripple">
-            升降配
-          </a>
-
-          <a href="/admin/log/traffic" class="mdui-list-item mdui-ripple">
-            流量控制
-          </a>
-        </div>
-      </div>
-
-      <a href="/user" class="mdui-list-item mdui-ripple">
-        返回用户中心
-      </a>
-
-      <div class="mdui-typo">
-        <hr/>
-      </div>
-
-      <div class="mdui-typo mdui-m-a-2">
-        <span>v.{:app\\model\\Config::obtain('version')}</span>
-        <p class="mdui-float-right">
-          <a href="https://github.com/azpanel/azpanel">Github</a>
-        </p>
-      </div>
     </div>
-  </div>

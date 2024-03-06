@@ -1,67 +1,67 @@
 {include file="../app/view/admin/header.html" title="管理中心" /}
 
 <div class="mdui-container-fluid">
-  <div class="mdui-row">
-    <div
-      class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
-      <div class="mdui-container-fluid">
-        <p style="color: #3F51B5; font-size: 34px">管理中心</p>
-        <div class="doc-chapter">
-          <div class="mdui-typo">
-            <p>下方是有关此虚拟机的部分基本信息</p>
-          </div>
+    <div class="mdui-row">
+        <div
+            class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+            <div class="mdui-container-fluid">
+                <p style="color: #3F51B5; font-size: 34px">管理中心</p>
+                <div class="doc-chapter">
+                    <div class="mdui-typo">
+                        <p>下方是有关此虚拟机的部分基本信息</p>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
 
-    <div
-      class="mdui-col-xs-12 mdui-m-t-2 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
-      <div class="mdui-table-fluid">
-        <table class="mdui-table">
-          <thead>
-            <tr>
-              <th>项</th>
-              <th>值</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>系统类型</td>
-              <td>{$info.server_os}</td>
-            </tr>
-            <tr>
-              <td>IPv4地址</td>
-              <td>{$info.server_ip}</td>
-            </tr>
-            <tr>
-              <td>PHP版本</td>
-              <td>{$info.php_version}</td>
-            </tr>
-            <tr>
-              <td>内存限制</td>
-              <td>{$info.memory_limit}</td>
-            </tr>
-            <tr>
-              <td>框架版本</td>
-              <td>{$info.think_version}</td>
-            </tr>
-            <tr>
-              <td>运行模式</td>
-              <td>{$info.php_sapi_name}</td>
-            </tr>
-            <tr>
-              <td>SQL版本</td>
-              <td>{$info.db_version}</td>
-            </tr>
-            <tr>
-              <td>系统时区</td>
-              <td>{$info.timezone}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+        <div
+            class="mdui-col-xs-12 mdui-m-t-2 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+            <div class="mdui-table-fluid">
+                <table class="mdui-table">
+                    <thead>
+                        <tr>
+                            <th>项</th>
+                            <th>值</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>系统类型</td>
+                            <td>{$info.server_os}</td>
+                        </tr>
+                        <tr>
+                            <td>IPv4地址</td>
+                            <td>{$info.server_ip}</td>
+                        </tr>
+                        <tr>
+                            <td>PHP版本</td>
+                            <td>{$info.php_version}</td>
+                        </tr>
+                        <tr>
+                            <td>内存限制</td>
+                            <td>{$info.memory_limit}</td>
+                        </tr>
+                        <tr>
+                            <td>框架版本</td>
+                            <td>{$info.think_version}</td>
+                        </tr>
+                        <tr>
+                            <td>运行模式</td>
+                            <td>{$info.php_sapi_name}</td>
+                        </tr>
+                        <tr>
+                            <td>SQL版本</td>
+                            <td>{$info.db_version}</td>
+                        </tr>
+                        <tr>
+                            <td>系统时区</td>
+                            <td>{$info.timezone}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 </body>

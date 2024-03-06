@@ -1,168 +1,169 @@
 {include file="../app/view/user/header.html" title="Azure 账户添加" /}
 
 <div class="mdui-container-fluid">
-  <div class="mdui-row">
-    <div
-      class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
-      <div class="mdui-container-fluid">
-        <p style="color: #3F51B5; font-size: 34px">Azure 账户添加</p>
-      </div>
+    <div class="mdui-row">
+        <div
+            class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+            <div class="mdui-container-fluid">
+                <p style="color: #3F51B5; font-size: 34px">Azure 账户添加</p>
+            </div>
 
-      <div class="mdui-typo">
-        <p>你可以在这里添加 Azure 账户</p>
-      </div>
+            <div class="mdui-typo">
+                <p>你可以在这里添加 Azure 账户</p>
+            </div>
 
-      <div class="mdui-card mdui-m-t-2" style="overflow: visible">
-        <div class="mdui-card-content mdui-container">
-          <div class="mdui-col-sm-12 mdui-col-md-4">
-            <div class="mdui-textfield mdui-textfield-floating-label">
-              <i class="mdui-icon material-icons">mail</i>
-              <label class="mdui-textfield-label">登录邮箱</label>
-              <textarea class="mdui-textfield-input" id="az_email" required></textarea>
+            <div class="mdui-card mdui-m-t-2" style="overflow: visible">
+                <div class="mdui-card-content mdui-container">
+                    <div class="mdui-col-sm-12 mdui-col-md-4">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">mail</i>
+                            <label class="mdui-textfield-label">登录邮箱</label>
+                            <textarea class="mdui-textfield-input" id="az_email" required></textarea>
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-4">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">lock</i>
+                            <label class="mdui-textfield-label">登录密码（选填）</label>
+                            <textarea class="mdui-textfield-input" id="az_passwd"></textarea>
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-4">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">bookmark</i>
+                            <label class="mdui-textfield-label">备注</label>
+                            <textarea class="mdui-textfield-input" id="user_mark"></textarea>
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-6">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">apps</i>
+                            <label class="mdui-textfield-label">appId（若使用自动识别可不填）</label>
+                            <textarea class="mdui-textfield-input" id="az_app_id"></textarea>
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-6">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">vpn_key</i>
+                            <label class="mdui-textfield-label">password（若使用自动识别可不填）</label>
+                            <textarea class="mdui-textfield-input" id="az_secret"></textarea>
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-6">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">location_city</i>
+                            <label class="mdui-textfield-label">tenant（若使用自动识别可不填）</label>
+                            <textarea class="mdui-textfield-input" id="az_tenant_id"></textarea>
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-6">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">subscriptions</i>
+                            <label class="mdui-textfield-label">subscription</label>
+                            <textarea class="mdui-textfield-input" disabled>此项将自动获取</textarea>
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-12">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">wrap_text</i>
+                            <label class="mdui-textfield-label">自动识别填写区块（完整的 JSON 内容）</label>
+                            <textarea class="mdui-textfield-input" id="az_configs" rows="6"></textarea>
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-12 mdui-m-t-2">
+                        <p style="color: #3F51B5; font-size: 18px">更多</p>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-6">
+                        备注填充：
+                        <select id="remark_filling" class="mdui-select" mdui-select>
+                            <option value="input">使用输入框值</option>
+                            <option value="{:date('md')}">{:date('md')}</option>
+                            {volist name="notes" id="note"}
+                            <option value="{$note.user_mark}">{$note.user_mark}</option>
+                            {/volist}
+                        </select>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-6">
+                        <div class="mdui-col">
+                            忽略订阅状态：
+                            <label class="mdui-switch">
+                                <input id="ignore_status" type="checkbox" />
+                                <i class="mdui-switch-icon"></i>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-12">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">link</i>
+                            <label class="mdui-textfield-label">通过分享链接添加</label>
+                            <textarea class="mdui-textfield-input" id="share_link"></textarea>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="mdui-col-sm-12 mdui-col-md-4">
-            <div class="mdui-textfield mdui-textfield-floating-label">
-              <i class="mdui-icon material-icons">lock</i>
-              <label class="mdui-textfield-label">登录密码（选填）</label>
-              <textarea class="mdui-textfield-input" id="az_passwd"></textarea>
+
+            <div class="mdui-card mdui-m-t-2">
+                <div class="mdui-card-actions">
+                    <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised"
+                        id="add">添加</button>
+                </div>
             </div>
-          </div>
-          <div class="mdui-col-sm-12 mdui-col-md-4">
-            <div class="mdui-textfield mdui-textfield-floating-label">
-              <i class="mdui-icon material-icons">bookmark</i>
-              <label class="mdui-textfield-label">备注</label>
-              <textarea class="mdui-textfield-input" id="user_mark"></textarea>
-            </div>
-          </div>
-          <div class="mdui-col-sm-12 mdui-col-md-6">
-            <div class="mdui-textfield mdui-textfield-floating-label">
-              <i class="mdui-icon material-icons">apps</i>
-              <label class="mdui-textfield-label">appId（若使用自动识别可不填）</label>
-              <textarea class="mdui-textfield-input" id="az_app_id"></textarea>
-            </div>
-          </div>
-          <div class="mdui-col-sm-12 mdui-col-md-6">
-            <div class="mdui-textfield mdui-textfield-floating-label">
-              <i class="mdui-icon material-icons">vpn_key</i>
-              <label class="mdui-textfield-label">password（若使用自动识别可不填）</label>
-              <textarea class="mdui-textfield-input" id="az_secret"></textarea>
-            </div>
-          </div>
-          <div class="mdui-col-sm-12 mdui-col-md-6">
-            <div class="mdui-textfield mdui-textfield-floating-label">
-              <i class="mdui-icon material-icons">location_city</i>
-              <label class="mdui-textfield-label">tenant（若使用自动识别可不填）</label>
-              <textarea class="mdui-textfield-input" id="az_tenant_id"></textarea>
-            </div>
-          </div>
-          <div class="mdui-col-sm-12 mdui-col-md-6">
-            <div class="mdui-textfield mdui-textfield-floating-label">
-              <i class="mdui-icon material-icons">subscriptions</i>
-              <label class="mdui-textfield-label">subscription</label>
-              <textarea class="mdui-textfield-input" disabled>此项将自动获取</textarea>
-            </div>
-          </div>
-          <div class="mdui-col-sm-12 mdui-col-md-12">
-            <div class="mdui-textfield mdui-textfield-floating-label">
-              <i class="mdui-icon material-icons">wrap_text</i>
-              <label class="mdui-textfield-label">自动识别填写区块（完整的 JSON 内容）</label>
-              <textarea class="mdui-textfield-input" id="az_configs" rows="6"></textarea>
-            </div>
-          </div>
-          <div class="mdui-col-sm-12 mdui-col-md-12 mdui-m-t-2">
-            <p style="color: #3F51B5; font-size: 18px">更多</p>
-          </div>
-          <div class="mdui-col-sm-12 mdui-col-md-6">
-            备注填充：
-            <select id="remark_filling" class="mdui-select" mdui-select>
-              <option value="input">使用输入框值</option>
-              <option value="{:date('md')}">{:date('md')}</option>
-              {volist name="notes" id="note"}
-              <option value="{$note.user_mark}">{$note.user_mark}</option>
-              {/volist}
-            </select>
-          </div>
-          <div class="mdui-col-sm-12 mdui-col-md-6">
-            <div class="mdui-col">
-              忽略订阅状态：
-              <label class="mdui-switch">
-                <input id="ignore_status" type="checkbox" />
-                <i class="mdui-switch-icon"></i>
-              </label>
-            </div>
-          </div>
-          <div class="mdui-col-sm-12 mdui-col-md-12">
-            <div class="mdui-textfield mdui-textfield-floating-label">
-              <i class="mdui-icon material-icons">link</i>
-              <label class="mdui-textfield-label">通过分享链接添加</label>
-              <textarea class="mdui-textfield-input" id="share_link"></textarea>
-            </div>
-          </div>
+
+            <div class="mdui-m-t-2"></div>
+
         </div>
-      </div>
-
-      <div class="mdui-card mdui-m-t-2">
-        <div class="mdui-card-actions">
-          <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised" id="add">添加</button>
-        </div>
-      </div>
-
-      <div class="mdui-m-t-2"></div>
-
     </div>
-  </div>
 </div>
 </body>
 
 <script>
-  var $ = mdui.$;
-  $('#add').on('click', function () {
-    mdui.confirm('添加账户时，面板需要获取此账户的订阅详情，以及账户下所创建的虚拟机列表，这将花费 3~5 秒，等待期间请勿重复点击添加按钮', '添加确认',
-      function () {
-        var link = $('#share_link').val();
-        var load = new mdui.alert('<div class=\"mdui-progress\"><div class=\"mdui-progress-indeterminate\"></div></div>', '进行中');
-        // case
-        if (link == '') {
-          ajax_url = '/user/azure';
-        } else {
-          ajax_url = '/user/azure/share';
-        }
-        // ajax
-        $.ajax({
-          method: 'POST',
-          url: ajax_url,
-          data: {
-            user_mark: $('#user_mark').val(),
-            az_email: $('#az_email').val(),
-            az_passwd: $('#az_passwd').val(),
-            az_app_id: $('#az_app_id').val(),
-            az_secret: $('#az_secret').val(),
-            az_tenant_id: $('#az_tenant_id').val(),
-            az_configs: $('#az_configs').val(),
-            share_link: $('#share_link').val(),
-            remark_filling: $('#remark_filling').val(),
-            ignore_status: $("#ignore_status").is(":checked"),
-          },
-          dataType: "json",
-          success: function (data) {
-            load.close();
-            if (data.status == '0') {
-              mdui.alert(data.content, data.title);
-            } else {
-              mdui.alert(data.content, data.title);
-              setTimeout("window.location = '/user/azure'", 1500);
+    var $ = mdui.$;
+    $('#add').on('click', function () {
+        mdui.confirm('添加账户时，面板需要获取此账户的订阅详情，以及账户下所创建的虚拟机列表，这将花费 3~5 秒，等待期间请勿重复点击添加按钮', '添加确认',
+            function () {
+                var link = $('#share_link').val();
+                var load = new mdui.alert('<div class=\"mdui-progress\"><div class=\"mdui-progress-indeterminate\"></div></div>', '进行中');
+                // case
+                if (link == '') {
+                    ajax_url = '/user/azure';
+                } else {
+                    ajax_url = '/user/azure/share';
+                }
+                // ajax
+                $.ajax({
+                    method: 'POST',
+                    url: ajax_url,
+                    data: {
+                        user_mark: $('#user_mark').val(),
+                        az_email: $('#az_email').val(),
+                        az_passwd: $('#az_passwd').val(),
+                        az_app_id: $('#az_app_id').val(),
+                        az_secret: $('#az_secret').val(),
+                        az_tenant_id: $('#az_tenant_id').val(),
+                        az_configs: $('#az_configs').val(),
+                        share_link: $('#share_link').val(),
+                        remark_filling: $('#remark_filling').val(),
+                        ignore_status: $("#ignore_status").is(":checked"),
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        load.close();
+                        if (data.status == '0') {
+                            mdui.alert(data.content, data.title);
+                        } else {
+                            mdui.alert(data.content, data.title);
+                            setTimeout("window.location = '/user/azure'", 1500);
+                        }
+                    }
+                });
+            },
+            function () { },
+            {
+                confirmText: "确定",
+                cancelText: "取消"
             }
-          }
-        });
-      },
-      function () { },
-      {
-        confirmText: "确定",
-        cancelText: "取消"
-      }
-    );
-  });
+        );
+    });
 </script>
 {include file="../app/view/user/footer.html" /}
 

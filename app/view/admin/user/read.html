@@ -1,53 +1,55 @@
 {include file="../app/view/admin/header.html" title="用户资料" /}
 
 <div class="mdui-container-fluid">
-  <div class="mdui-row">
-    <div
-      class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
-      <div class="mdui-container-fluid">
-        <p style="color: #3F51B5; font-size: 34px">用户资料</p>
-      </div>
-
-      <div class="mdui-typo">
-        <p>此注册用户的详细资料</p>
-      </div>
-
-      <div class="mdui-row">
-        <div class="mdui-col-md-8 mdui-col-sm-12 mdui-m-t-2">
-          <div class="mdui-card">
-            <div class="mdui-card-content">
-              <p style="color: #3F51B5; font-size: 18px"><i class="mdui-icon material-icons">people</i>&nbsp;订阅详情
-              </p>
-              <div class="mdui-typo">
-                <p>名称：<code>{$az_sub.value.0.displayName}</code></p>
-                <p>状态：<code>{$az_sub.value.0.state}</code></p>
-                <p>更新时间：<code>{:date('Y-m-d H:i:s', $account.az_sub_updated_at)}</code></p>
-                <p>订阅 ID：<code>{$az_sub.value.0.subscriptionId}</code></p>
-                <p>授权来源：<code>{$az_sub.value.0.id}</code></p>
-              </div>
+    <div class="mdui-row">
+        <div
+            class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+            <div class="mdui-container-fluid">
+                <p style="color: #3F51B5; font-size: 34px">用户资料</p>
             </div>
-          </div>
-        </div>
 
-        <div class="mdui-col-md-4 mdui-col-sm-12 mdui-m-t-2">
-          <div class="mdui-card">
-            <div class="mdui-card-content">
-              <p style="color: #3F51B5; font-size: 18px"><i class="mdui-icon material-icons">flag</i>&nbsp;订阅政策
-              </p>
-              <div class="mdui-typo">
-                <p>位置安置：<code>{$az_sub.value.0.subscriptionPolicies.locationPlacementId}</code></p>
-                <p>配额 ID：<code>{$az_sub.value.0.subscriptionPolicies.quotaId}</code></p>
-                <p>消费限额：<code>{$az_sub.value.0.subscriptionPolicies.spendingLimit}</code></p>
-              </div>
+            <div class="mdui-typo">
+                <p>此注册用户的详细资料</p>
             </div>
-          </div>
+
+            <div class="mdui-row">
+                <div class="mdui-col-md-8 mdui-col-sm-12 mdui-m-t-2">
+                    <div class="mdui-card">
+                        <div class="mdui-card-content">
+                            <p style="color: #3F51B5; font-size: 18px"><i
+                                    class="mdui-icon material-icons">people</i>&nbsp;订阅详情
+                            </p>
+                            <div class="mdui-typo">
+                                <p>名称：<code>{$az_sub.value.0.displayName}</code></p>
+                                <p>状态：<code>{$az_sub.value.0.state}</code></p>
+                                <p>更新时间：<code>{:date('Y-m-d H:i:s', $account.az_sub_updated_at)}</code></p>
+                                <p>订阅 ID：<code>{$az_sub.value.0.subscriptionId}</code></p>
+                                <p>授权来源：<code>{$az_sub.value.0.id}</code></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mdui-col-md-4 mdui-col-sm-12 mdui-m-t-2">
+                    <div class="mdui-card">
+                        <div class="mdui-card-content">
+                            <p style="color: #3F51B5; font-size: 18px"><i
+                                    class="mdui-icon material-icons">flag</i>&nbsp;订阅政策
+                            </p>
+                            <div class="mdui-typo">
+                                <p>位置安置：<code>{$az_sub.value.0.subscriptionPolicies.locationPlacementId}</code></p>
+                                <p>配额 ID：<code>{$az_sub.value.0.subscriptionPolicies.quotaId}</code></p>
+                                <p>消费限额：<code>{$az_sub.value.0.subscriptionPolicies.spendingLimit}</code></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mdui-m-t-2"></div>
+
         </div>
-      </div>
-
-      <div class="mdui-m-t-2"></div>
-
     </div>
-  </div>
 </div>
 </body>
 

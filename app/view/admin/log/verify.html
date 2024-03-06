@@ -1,62 +1,62 @@
 {include file="../app/view/admin/header.html" title="验证码" /}
 
 <div class="mdui-container-fluid">
-  <div class="mdui-row">
-    <div
-      class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
-      <div class="mdui-container-fluid">
-        <p style="color: #3F51B5; font-size: 34px">验证码</p>
-      </div>
+    <div class="mdui-row">
+        <div
+            class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+            <div class="mdui-container-fluid">
+                <p style="color: #3F51B5; font-size: 34px">验证码</p>
+            </div>
 
-      <div class="mdui-typo">
-        <p>你可以在这里查看发送的验证码</p>
-      </div>
+            <div class="mdui-typo">
+                <p>你可以在这里查看发送的验证码</p>
+            </div>
 
-      <div class="mdui-table-fluid mdui-m-t-2">
-        <table class="mdui-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>邮箱</th>
-              <th>类型</th>
-              <th>验证码</th>
-              <th>IP</th>
-              <th>结果</th>
-              <th>创建时间</th>
-              <th>过期时间</th>
-            </tr>
-          </thead>
-          <tbody>
-            {volist name="logs" id="log"}
-            <tr>
-              <td>{$log.id}</td>
-              <td>{$log.email}</td>
-              <td>{$log.type}</td>
-              <td>{$log.code}</td>
-              <td>{$log.ip}</td>
-              {if $log.result == 0}
-              <td>失败</td>
-              {else /}
-              <td>成功</td>
-              {/if}
-              <td>{:date('Y-m-d H:i:s', $log.created_at)}</td>
-              <td>{:date('Y-m-d H:i:s', $log.expired_at)}</td>
-            </tr>
-            {/volist}
-          </tbody>
-        </table>
-      </div>
+            <div class="mdui-table-fluid mdui-m-t-2">
+                <table class="mdui-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>邮箱</th>
+                            <th>类型</th>
+                            <th>验证码</th>
+                            <th>IP</th>
+                            <th>结果</th>
+                            <th>创建时间</th>
+                            <th>过期时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {volist name="logs" id="log"}
+                        <tr>
+                            <td>{$log.id}</td>
+                            <td>{$log.email}</td>
+                            <td>{$log.type}</td>
+                            <td>{$log.code}</td>
+                            <td>{$log.ip}</td>
+                            {if $log.result == 0}
+                            <td>失败</td>
+                            {else /}
+                            <td>成功</td>
+                            {/if}
+                            <td>{:date('Y-m-d H:i:s', $log.created_at)}</td>
+                            <td>{:date('Y-m-d H:i:s', $log.expired_at)}</td>
+                        </tr>
+                        {/volist}
+                    </tbody>
+                </table>
+            </div>
 
-      {$page | raw}
+            {$page | raw}
 
+        </div>
     </div>
-  </div>
-  </br/>
+    </br />
 </div>
 
 <script>
-  $("td:contains('成功')").css("color", "green");
-  $("td:contains('失败')").css("color", "red");
+    $("td:contains('成功')").css("color", "green");
+    $("td:contains('失败')").css("color", "red");
 </script>
 
 </body>

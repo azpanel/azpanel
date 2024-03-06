@@ -1,84 +1,84 @@
 {include file="../app/view/user/header.html" title="回收站" /}
 
 <div class="mdui-container-fluid">
-  <div class="mdui-row">
-    <div
-      class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
-      <div class="mdui-container-fluid">
-        <p style="color: #3F51B5; font-size: 34px">回收站</p>
-      </div>
-
-      <div class="mdui-typo">
-        <p>你可以在这里查看回收的账户</p>
-      </div>
-
-      <div class="mdui-row">
-        <div class="mdui-col-md-6 mdui-col-xs-6 mdui-m-t-2">
-          <div class="mdui-card">
-            <div class="mdui-card-content">
-              <p style="color: #3F51B5; font-size: 18px">
-                <i class="mdui-icon material-icons">timer</i>&nbsp;
-                最长生命周期
-              </p>
-              <div class="mdui-typo">
-                <p><code>{$ranking['time']}</code></p>
-              </div>
+    <div class="mdui-row">
+        <div
+            class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+            <div class="mdui-container-fluid">
+                <p style="color: #3F51B5; font-size: 34px">回收站</p>
             </div>
-          </div>
-        </div>
-        <div class="mdui-col-md-6 mdui-col-xs-6 mdui-m-t-2">
-          <div class="mdui-card">
-            <div class="mdui-card-content">
-              <p style="color: #3F51B5; font-size: 18px">
-                <i class="mdui-icon material-icons">credit_card</i>&nbsp;
-                最高账单金额
-              </p>
-              <div class="mdui-typo">
-                <p><code>{$ranking['cost']}</code></p>
-              </div>
+
+            <div class="mdui-typo">
+                <p>你可以在这里查看回收的账户</p>
             </div>
-          </div>
+
+            <div class="mdui-row">
+                <div class="mdui-col-md-6 mdui-col-xs-6 mdui-m-t-2">
+                    <div class="mdui-card">
+                        <div class="mdui-card-content">
+                            <p style="color: #3F51B5; font-size: 18px">
+                                <i class="mdui-icon material-icons">timer</i>&nbsp;
+                                最长生命周期
+                            </p>
+                            <div class="mdui-typo">
+                                <p><code>{$ranking['time']}</code></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mdui-col-md-6 mdui-col-xs-6 mdui-m-t-2">
+                    <div class="mdui-card">
+                        <div class="mdui-card-content">
+                            <p style="color: #3F51B5; font-size: 18px">
+                                <i class="mdui-icon material-icons">credit_card</i>&nbsp;
+                                最高账单金额
+                            </p>
+                            <div class="mdui-typo">
+                                <p><code>{$ranking['cost']}</code></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mdui-table-fluid mdui-m-t-2">
+                <table class="mdui-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>账户</th>
+                            <th>类型</th>
+                            <th>备注</th>
+                            <th>预估费用 (USD)</th>
+                            <th>生命周期 (Day)</th>
+                            <th>回收时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {volist name="accounts" id="account"}
+                        <tr>
+                            <td>{$account.id}</td>
+                            <td>{$account.az_email}</td>
+                            <td>{$account.az_sub_type}</td>
+                            <td>{$account.user_mark}</td>
+                            <td>{$account.bill_charges ?? 'null'}</td>
+                            <td>{$account.life_cycle}</td>
+                            <td>{:date('Y-m-d H:i:s', $account.created_at)}</td>
+                        </tr>
+                        {/volist}
+                    </tbody>
+                </table>
+            </div>
+
+            {$page | raw}
+
         </div>
-      </div>
-
-      <div class="mdui-table-fluid mdui-m-t-2">
-        <table class="mdui-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>账户</th>
-              <th>类型</th>
-              <th>备注</th>
-              <th>预估费用 (USD)</th>
-              <th>生命周期 (Day)</th>
-              <th>回收时间</th>
-            </tr>
-          </thead>
-          <tbody>
-            {volist name="accounts" id="account"}
-            <tr>
-              <td>{$account.id}</td>
-              <td>{$account.az_email}</td>
-              <td>{$account.az_sub_type}</td>
-              <td>{$account.user_mark}</td>
-              <td>{$account.bill_charges ?? 'null'}</td>
-              <td>{$account.life_cycle}</td>
-              <td>{:date('Y-m-d H:i:s', $account.created_at)}</td>
-            </tr>
-            {/volist}
-          </tbody>
-        </table>
-      </div>
-
-      {$page | raw}
-
     </div>
-  </div>
-  </br />
+    </br />
 </div>
 
 <script>
-  $("td:contains('null')").css("font-style", "italic");
+    $("td:contains('null')").css("font-style", "italic");
 </script>
 
 </body>

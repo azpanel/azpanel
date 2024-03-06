@@ -1,99 +1,106 @@
 {include file="../app/view/admin/header.html" title="邮件设置" /}
 
 <div class="mdui-container-fluid">
-  <div class="mdui-row">
-    <div
-      class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
-      <div class="mdui-container-fluid">
-        <p style="color: #3F51B5; font-size: 34px">邮件设置</p>
-      </div>
+    <div class="mdui-row">
+        <div
+            class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+            <div class="mdui-container-fluid">
+                <p style="color: #3F51B5; font-size: 34px">邮件设置</p>
+            </div>
 
-      <div class="mdui-typo">
-        <p>你可以在这里配置邮件发信设置</p>
-      </div>
+            <div class="mdui-typo">
+                <p>你可以在这里配置邮件发信设置</p>
+            </div>
 
-      <div class="mdui-card mdui-m-t-2" style="overflow: visible">
-        <div class="mdui-card-content mdui-container">
-          <div class="mdui-textfield mdui-textfield-floating-label">
-            <i class="mdui-icon material-icons">markunread_mailbox</i>
-            <label class="mdui-textfield-label">发信主机</label>
-            <textarea class="mdui-textfield-input" id="smtp_host" required>{$smtp.smtp_host ?? ''}</textarea>
-          </div>
-          <div class="mdui-textfield mdui-textfield-floating-label">
-            <i class="mdui-icon material-icons">account_circle</i>
-            <label class="mdui-textfield-label">发信账户</label>
-            <textarea class="mdui-textfield-input" id="smtp_username" required>{$smtp.smtp_username ?? ''}</textarea>
-          </div>
-          <div class="mdui-textfield mdui-textfield-floating-label">
-            <i class="mdui-icon material-icons">vpn_key</i>
-            <label class="mdui-textfield-label">发信账户密码</label>
-            <textarea class="mdui-textfield-input" id="smtp_password" required>{$smtp.smtp_password ?? ''}</textarea>
-          </div>
-          <div class="mdui-textfield mdui-textfield-floating-label">
-            <i class="mdui-icon material-icons">directions_boat</i>
-            <label class="mdui-textfield-label">发信端口</label>
-            <textarea class="mdui-textfield-input" id="smtp_port" required>{$smtp.smtp_port ?? ''}</textarea>
-          </div>
-          <div class="mdui-textfield mdui-textfield-floating-label">
-            <i class="mdui-icon material-icons">contact_mail</i>
-            <label class="mdui-textfield-label">发件人昵称</label>
-            <textarea class="mdui-textfield-input" id="smtp_name" required>{$smtp.smtp_name ?? ''}</textarea>
-          </div>
-          <div class="mdui-textfield mdui-textfield-floating-label">
-            <i class="mdui-icon material-icons">location_city</i>
-            <label class="mdui-textfield-label">发件人地址</label>
-            <textarea class="mdui-textfield-input" id="smtp_sender" required>{$smtp.smtp_sender ?? ''}</textarea>
-          </div>
+            <div class="mdui-card mdui-m-t-2" style="overflow: visible">
+                <div class="mdui-card-content mdui-container">
+                    <div class="mdui-textfield mdui-textfield-floating-label">
+                        <i class="mdui-icon material-icons">markunread_mailbox</i>
+                        <label class="mdui-textfield-label">发信主机</label>
+                        <textarea class="mdui-textfield-input" id="smtp_host"
+                            required>{$smtp.smtp_host ?? ''}</textarea>
+                    </div>
+                    <div class="mdui-textfield mdui-textfield-floating-label">
+                        <i class="mdui-icon material-icons">account_circle</i>
+                        <label class="mdui-textfield-label">发信账户</label>
+                        <textarea class="mdui-textfield-input" id="smtp_username"
+                            required>{$smtp.smtp_username ?? ''}</textarea>
+                    </div>
+                    <div class="mdui-textfield mdui-textfield-floating-label">
+                        <i class="mdui-icon material-icons">vpn_key</i>
+                        <label class="mdui-textfield-label">发信账户密码</label>
+                        <textarea class="mdui-textfield-input" id="smtp_password"
+                            required>{$smtp.smtp_password ?? ''}</textarea>
+                    </div>
+                    <div class="mdui-textfield mdui-textfield-floating-label">
+                        <i class="mdui-icon material-icons">directions_boat</i>
+                        <label class="mdui-textfield-label">发信端口</label>
+                        <textarea class="mdui-textfield-input" id="smtp_port"
+                            required>{$smtp.smtp_port ?? ''}</textarea>
+                    </div>
+                    <div class="mdui-textfield mdui-textfield-floating-label">
+                        <i class="mdui-icon material-icons">contact_mail</i>
+                        <label class="mdui-textfield-label">发件人昵称</label>
+                        <textarea class="mdui-textfield-input" id="smtp_name"
+                            required>{$smtp.smtp_name ?? ''}</textarea>
+                    </div>
+                    <div class="mdui-textfield mdui-textfield-floating-label">
+                        <i class="mdui-icon material-icons">location_city</i>
+                        <label class="mdui-textfield-label">发件人地址</label>
+                        <textarea class="mdui-textfield-input" id="smtp_sender"
+                            required>{$smtp.smtp_sender ?? ''}</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mdui-card mdui-m-t-2">
+                <div class="mdui-card-actions">
+                    <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised"
+                        id="modify">修改</button>
+                </div>
+            </div>
+
+            <div class="mdui-m-t-2"></div>
+
         </div>
-      </div>
-
-      <div class="mdui-card mdui-m-t-2">
-        <div class="mdui-card-actions">
-          <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised" id="modify">修改</button>
-        </div>
-      </div>
-
-      <div class="mdui-m-t-2"></div>
-
     </div>
-  </div>
 </div>
 </body>
 
 <script>
-  var $ = mdui.$;
-  $('#modify').on('click', function () {
-    mdui.confirm('确认提交这些信息么？', '修改确认',
-      function () {
-        $.ajax({
-          method: 'PUT',
-          url: "/admin/setting/email",
-          data: {
-            smtp_host: $('#smtp_host').val(),
-            smtp_username: $('#smtp_username').val(),
-            smtp_password: $('#smtp_password').val(),
-            smtp_port: $('#smtp_port').val(),
-            smtp_name: $('#smtp_name').val(),
-            smtp_sender: $('#smtp_sender').val()
-          },
-          dataType: "json",
-          success: function (data) {
-            if (data.status == '0') {
-              mdui.alert(data.content, data.title);
-            } else {
-              mdui.alert(data.content, data.title);
-              setTimeout("window.location = '/admin/setting/email'", 1500);
+    var $ = mdui.$;
+    $('#modify').on('click', function () {
+        mdui.confirm('确认提交这些信息么？', '修改确认',
+            function () {
+                $.ajax({
+                    method: 'PUT',
+                    url: "/admin/setting/email",
+                    data: {
+                        smtp_host: $('#smtp_host').val(),
+                        smtp_username: $('#smtp_username').val(),
+                        smtp_password: $('#smtp_password').val(),
+                        smtp_port: $('#smtp_port').val(),
+                        smtp_name: $('#smtp_name').val(),
+                        smtp_sender: $('#smtp_sender').val()
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.status == '0') {
+                            mdui.alert(data.content, data.title);
+                        } else {
+                            mdui.alert(data.content, data.title);
+                            setTimeout("window.location = '/admin/setting/email'", 1500);
+                        }
+                    }
+                });
+            },
+            function () { },
+            {
+                confirmText: "确定",
+                cancelText: "取消"
             }
-          }
-        });
-      },
-      function () { },
-      {
-        confirmText: "确定",
-        cancelText: "取消"
-      }
-    );
-  });
+        );
+    });
 </script>
 {include file="../app/view/admin/footer.html" /}
 

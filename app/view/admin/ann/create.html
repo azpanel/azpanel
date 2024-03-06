@@ -1,86 +1,86 @@
 {include file="../app/view/admin/header.html" title="添加公告" /}
 
 <div class="mdui-container-fluid">
-  <div class="mdui-row">
-    <div
-      class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
-      <div class="mdui-container-fluid">
-        <p style="color: #3F51B5; font-size: 34px">添加公告</p>
-      </div>
+    <div class="mdui-row">
+        <div
+            class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+            <div class="mdui-container-fluid">
+                <p style="color: #3F51B5; font-size: 34px">添加公告</p>
+            </div>
 
-      <div class="mdui-typo">
-        <p>你可以在这里添加新公告</p>
-        <p>* 公告内容支持使用 <code>html</code> 代码</p>
-      </div>
+            <div class="mdui-typo">
+                <p>你可以在这里添加新公告</p>
+                <p>* 公告内容支持使用 <code>html</code> 代码</p>
+            </div>
 
-      <div class="mdui-card mdui-m-t-2" style="overflow: visible">
-        <div class="mdui-card-content mdui-container">
-          <div class="mdui-textfield mdui-textfield-floating-label">
-            <i class="mdui-icon material-icons">title</i>
-            <label class="mdui-textfield-label">标题</label>
-            <input class="mdui-textfield-input" type="text" id="title" required />
-            <div class="mdui-textfield-error">标题不能为空</div>
-          </div>
-          <div class="mdui-textfield mdui-textfield-floating-label">
-            <i class="mdui-icon material-icons">wrap_text</i>
-            <label class="mdui-textfield-label">内容</label>
-            <textarea class="mdui-textfield-input" id="content" rows="10" required></textarea>
-            <div class="mdui-textfield-error">内容不能为空</div>
-          </div>
-          <div>
-            显示状态：<select id="status" class="mdui-select" mdui-select>
-              <option value="1">显示</option>
-              <option value="0">隐藏</option>
-            </select>
-          </div>
+            <div class="mdui-card mdui-m-t-2" style="overflow: visible">
+                <div class="mdui-card-content mdui-container">
+                    <div class="mdui-textfield mdui-textfield-floating-label">
+                        <i class="mdui-icon material-icons">title</i>
+                        <label class="mdui-textfield-label">标题</label>
+                        <input class="mdui-textfield-input" type="text" id="title" required />
+                        <div class="mdui-textfield-error">标题不能为空</div>
+                    </div>
+                    <div class="mdui-textfield mdui-textfield-floating-label">
+                        <i class="mdui-icon material-icons">wrap_text</i>
+                        <label class="mdui-textfield-label">内容</label>
+                        <textarea class="mdui-textfield-input" id="content" rows="10" required></textarea>
+                        <div class="mdui-textfield-error">内容不能为空</div>
+                    </div>
+                    <div>
+                        显示状态：<select id="status" class="mdui-select" mdui-select>
+                            <option value="1">显示</option>
+                            <option value="0">隐藏</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mdui-card mdui-m-t-2">
+                <div class="mdui-card-actions">
+                    <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised"
+                        id="add">添加</button>
+                </div>
+            </div>
+
+            <div class="mdui-m-t-2"></div>
+
         </div>
-      </div>
-
-      <div class="mdui-card mdui-m-t-2">
-        <div class="mdui-card-actions">
-          <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised"
-            id="add">添加</button>
-        </div>
-      </div>
-      
-      <div class="mdui-m-t-2"></div>
-
     </div>
-  </div>
 </div>
 </body>
 
 <script>
-  var $ = mdui.$;
-  $('#add').on('click', function () {
-    mdui.confirm('确认添加此公告么', '添加确认',
-      function () {
-        $.ajax({
-          method: 'POST',
-          url: "/admin/ann",
-          data: {
-            title: $('#title').val(),
-            content: $('#content').val(),
-            status: $('#status').val()
-          },
-          dataType: "json",
-          success: function (data) {
-            if (data.status == '0') {
-              mdui.alert(data.content, data.title);
-            } else {
-              mdui.alert(data.content, data.title);
-              setTimeout("window.location = '/admin/ann'", 1500);
+    var $ = mdui.$;
+    $('#add').on('click', function () {
+        mdui.confirm('确认添加此公告么', '添加确认',
+            function () {
+                $.ajax({
+                    method: 'POST',
+                    url: "/admin/ann",
+                    data: {
+                        title: $('#title').val(),
+                        content: $('#content').val(),
+                        status: $('#status').val()
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.status == '0') {
+                            mdui.alert(data.content, data.title);
+                        } else {
+                            mdui.alert(data.content, data.title);
+                            setTimeout("window.location = '/admin/ann'", 1500);
+                        }
+                    }
+                });
+            },
+            function () { },
+            {
+                confirmText: "确定",
+                cancelText: "取消"
             }
-          }
-        });
-      },
-      function () { },
-      {
-        confirmText: "确定",
-        cancelText: "取消"
-      }
-    );
-  });
+        );
+    });
 </script>
 {include file="../app/view/admin/footer.html" /}
 

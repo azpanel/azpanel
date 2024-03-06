@@ -1,334 +1,336 @@
 {include file="../app/view/admin/header.html" title="基础设置" /}
 
 <div class="mdui-container-fluid">
-  <div class="mdui-row">
-    <div
-      class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
-      <div class="mdui-container-fluid">
-        <p style="color: #3F51B5; font-size: 34px">基础设置</p>
-      </div>
-
-      <div class="mdui-typo">
-        <p>你可以在这里配置基础设置</p>
-      </div>
-
-      <div class="mdui-row">
-        <div class="mdui-col-md-4 mdui-col-sm-12 mdui-m-t-2">
-          <div class="mdui-card">
-            <div class="mdui-card-content">
-              <p style="color: #3F51B5; font-size: 18px">
-                <i class="mdui-icon material-icons">flight_takeoff</i>&nbsp;通知开关
-              </p>
-              <div class="mdui-m-t-2">邮件：
-                <select id="email_notify" class="mdui-select" mdui-select>
-                  <option value="0">关闭</option>
-                  <option value="1">开启</option>
-                </select>
-              </div>
-              <div class="mdui-m-t-2">Telegram：
-                <select id="telegram_notify" class="mdui-select" mdui-select>
-                  <option value="0">关闭</option>
-                  <option value="1">开启</option>
-                </select>
-              </div>
-              <button id="save_switch"
-                class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">保存</button>
+    <div class="mdui-row">
+        <div
+            class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+            <div class="mdui-container-fluid">
+                <p style="color: #3F51B5; font-size: 34px">基础设置</p>
             </div>
-          </div>
-        </div>
 
-        <div class="mdui-col-md-4 mdui-col-sm-12 mdui-m-t-2">
-          <div class="mdui-card">
-            <div class="mdui-card-content">
-              <p style="color: #3F51B5; font-size: 18px">
-                <i class="mdui-icon material-icons">flash_on</i>&nbsp;邮件推送
-              </p>
-              <div class="mdui-textfield mdui-textfield-floating-label">
-                <i class="mdui-icon material-icons">email</i>
-                <label class="mdui-textfield-label">测试收件人邮箱</label>
-                <textarea class="mdui-textfield-input" id="email_recipient"></textarea>
-              </div>
-
-              <button id="test_email"
-                class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">测试邮件</button>
+            <div class="mdui-typo">
+                <p>你可以在这里配置基础设置</p>
             </div>
-          </div>
-        </div>
 
-        <div class="mdui-col-md-4 mdui-col-sm-12 mdui-m-t-2">
-          <div class="mdui-card">
-            <div class="mdui-card-content">
-              <p style="color: #3F51B5; font-size: 18px">
-                <i class="mdui-icon material-icons">phone_forwarded</i>&nbsp;Telegram 推送
-              </p>
-              <span class="mdui-typo">* 测试推送前，请先向你的 bot 发送 <code>/start</code> 命令</span>
-              <div class="mdui-textfield mdui-textfield-floating-label">
-                <i class="mdui-icon material-icons">message</i>
-                <label class="mdui-textfield-label">与 @userinfobot 互动获取 uid</label>
-                <textarea class="mdui-textfield-input" id="telegram_recipient"></textarea>
-              </div>
+            <div class="mdui-row">
+                <div class="mdui-col-md-4 mdui-col-sm-12 mdui-m-t-2">
+                    <div class="mdui-card">
+                        <div class="mdui-card-content">
+                            <p style="color: #3F51B5; font-size: 18px">
+                                <i class="mdui-icon material-icons">flight_takeoff</i>&nbsp;通知开关
+                            </p>
+                            <div class="mdui-m-t-2">邮件：
+                                <select id="email_notify" class="mdui-select" mdui-select>
+                                    <option value="0">关闭</option>
+                                    <option value="1">开启</option>
+                                </select>
+                            </div>
+                            <div class="mdui-m-t-2">Telegram：
+                                <select id="telegram_notify" class="mdui-select" mdui-select>
+                                    <option value="0">关闭</option>
+                                    <option value="1">开启</option>
+                                </select>
+                            </div>
+                            <button id="save_switch"
+                                class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">保存</button>
+                        </div>
+                    </div>
+                </div>
 
-              <button id="test_telegram"
-                class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">测试电报</button>
+                <div class="mdui-col-md-4 mdui-col-sm-12 mdui-m-t-2">
+                    <div class="mdui-card">
+                        <div class="mdui-card-content">
+                            <p style="color: #3F51B5; font-size: 18px">
+                                <i class="mdui-icon material-icons">flash_on</i>&nbsp;邮件推送
+                            </p>
+                            <div class="mdui-textfield mdui-textfield-floating-label">
+                                <i class="mdui-icon material-icons">email</i>
+                                <label class="mdui-textfield-label">测试收件人邮箱</label>
+                                <textarea class="mdui-textfield-input" id="email_recipient"></textarea>
+                            </div>
+
+                            <button id="test_email"
+                                class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">测试邮件</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mdui-col-md-4 mdui-col-sm-12 mdui-m-t-2">
+                    <div class="mdui-card">
+                        <div class="mdui-card-content">
+                            <p style="color: #3F51B5; font-size: 18px">
+                                <i class="mdui-icon material-icons">phone_forwarded</i>&nbsp;Telegram 推送
+                            </p>
+                            <span class="mdui-typo">* 测试推送前，请先向你的 bot 发送 <code>/start</code> 命令</span>
+                            <div class="mdui-textfield mdui-textfield-floating-label">
+                                <i class="mdui-icon material-icons">message</i>
+                                <label class="mdui-textfield-label">与 @userinfobot 互动获取 uid</label>
+                                <textarea class="mdui-textfield-input" id="telegram_recipient"></textarea>
+                            </div>
+
+                            <button id="test_telegram"
+                                class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">测试电报</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-      </div>
 
-      <div class="mdui-row">
-        <div class="mdui-col-md-4 mdui-col-sm-12 mdui-m-t-2">
-          <div class="mdui-card">
-            <div class="mdui-card-content">
-              <p style="color: #3F51B5; font-size: 18px">
-                <i class="mdui-icon material-icons">accessibility</i>&nbsp;注册开关
-              </p>
-              <div class="mdui-m-t-2">开放注册：
-                <select id="allow_public_reg" class="mdui-select" mdui-select>
-                  <option value="0">关闭</option>
-                  <option value="1">开启</option>
-                </select>
-              </div>
-              <div class="mdui-m-t-2">注册邮箱验证码：
-                <select id="reg_email_veriy" class="mdui-select" mdui-select>
-                  <option value="0">关闭</option>
-                  <option value="1">开启</option>
-                </select>
-              </div>
-              <button id="save_register"
-                class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">保存</button>
+            <div class="mdui-row">
+                <div class="mdui-col-md-4 mdui-col-sm-12 mdui-m-t-2">
+                    <div class="mdui-card">
+                        <div class="mdui-card-content">
+                            <p style="color: #3F51B5; font-size: 18px">
+                                <i class="mdui-icon material-icons">accessibility</i>&nbsp;注册开关
+                            </p>
+                            <div class="mdui-m-t-2">开放注册：
+                                <select id="allow_public_reg" class="mdui-select" mdui-select>
+                                    <option value="0">关闭</option>
+                                    <option value="1">开启</option>
+                                </select>
+                            </div>
+                            <div class="mdui-m-t-2">注册邮箱验证码：
+                                <select id="reg_email_veriy" class="mdui-select" mdui-select>
+                                    <option value="0">关闭</option>
+                                    <option value="1">开启</option>
+                                </select>
+                            </div>
+                            <button id="save_register"
+                                class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">保存</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mdui-col-md-4 mdui-col-sm-12 mdui-m-t-2">
+                    <div class="mdui-card">
+                        <div class="mdui-card-content">
+                            <p style="color: #3F51B5; font-size: 18px">
+                                <i class="mdui-icon material-icons">verified_user</i>&nbsp;验证码
+                            </p>
+                            <div class="mdui-m-t-2">提供者：
+                                <select id="captcha_provider" class="mdui-select" mdui-select>
+                                    <option value="think-captcha">think-captcha</option>
+                                    <option value="hcaptcha">hcaptcha</option>
+                                </select>
+                            </div>
+                            <div class="mdui-m-t-2">注册：
+                                <select id="registration_verification_code" class="mdui-select" mdui-select>
+                                    <option value="0">关闭</option>
+                                    <option value="1">开启</option>
+                                </select>
+                            </div>
+                            <div class="mdui-m-t-2">登录：
+                                <select id="login_verification_code" class="mdui-select" mdui-select>
+                                    <option value="0">关闭</option>
+                                    <option value="1">开启</option>
+                                </select>
+                            </div>
+                            <div class="mdui-m-t-2">重置密码：
+                                <select id="reset_password_verification_code" class="mdui-select" mdui-select>
+                                    <option value="0">关闭</option>
+                                    <option value="1" disabled>开启</option>
+                                </select>
+                            </div>
+                            <div class="mdui-m-t-2">创建虚拟机：
+                                <select id="create_virtual_machine_verification_code" class="mdui-select" mdui-select>
+                                    <option value="0">关闭</option>
+                                    <option value="1" disabled>开启</option>
+                                </select>
+                            </div>
+                            <button id="save_verification_code"
+                                class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">保存</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mdui-col-md-4 mdui-col-sm-12 mdui-m-t-2">
+                    <div class="mdui-card">
+                        <div class="mdui-card-content">
+                            <p style="color: #3F51B5; font-size: 18px">
+                                <i class="mdui-icon material-icons">android</i>&nbsp;hCaptcha
+                            </p>
+                            <div class="mdui-textfield mdui-textfield-floating-label">
+                                <i class="mdui-icon material-icons">vpn_key</i>
+                                <label class="mdui-textfield-label">sitekey</label>
+                                <textarea class="mdui-textfield-input"
+                                    id="hcaptcha_site_key">{$verify.hcaptcha_site_key}</textarea>
+                            </div>
+                            <div class="mdui-textfield mdui-textfield-floating-label">
+                                <i class="mdui-icon material-icons">vpn_lock</i>
+                                <label class="mdui-textfield-label">secret</label>
+                                <textarea class="mdui-textfield-input"
+                                    id="hcaptcha_secret">{$verify.hcaptcha_secret}</textarea>
+                            </div>
+                            <button id="save_hcaptcha"
+                                class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">保存</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
+
+            <div class="mdui-m-t-2"></div>
+
         </div>
-
-        <div class="mdui-col-md-4 mdui-col-sm-12 mdui-m-t-2">
-          <div class="mdui-card">
-            <div class="mdui-card-content">
-              <p style="color: #3F51B5; font-size: 18px">
-                <i class="mdui-icon material-icons">verified_user</i>&nbsp;验证码
-              </p>
-              <div class="mdui-m-t-2">提供者：
-                <select id="captcha_provider" class="mdui-select" mdui-select>
-                  <option value="think-captcha">think-captcha</option>
-                  <option value="hcaptcha">hcaptcha</option>
-                </select>
-              </div>
-              <div class="mdui-m-t-2">注册：
-                <select id="registration_verification_code" class="mdui-select" mdui-select>
-                  <option value="0">关闭</option>
-                  <option value="1">开启</option>
-                </select>
-              </div>
-              <div class="mdui-m-t-2">登录：
-                <select id="login_verification_code" class="mdui-select" mdui-select>
-                  <option value="0">关闭</option>
-                  <option value="1">开启</option>
-                </select>
-              </div>
-              <div class="mdui-m-t-2">重置密码：
-                <select id="reset_password_verification_code" class="mdui-select" mdui-select>
-                  <option value="0">关闭</option>
-                  <option value="1" disabled>开启</option>
-                </select>
-              </div>
-              <div class="mdui-m-t-2">创建虚拟机：
-                <select id="create_virtual_machine_verification_code" class="mdui-select" mdui-select>
-                  <option value="0">关闭</option>
-                  <option value="1" disabled>开启</option>
-                </select>
-              </div>
-              <button id="save_verification_code"
-                class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">保存</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="mdui-col-md-4 mdui-col-sm-12 mdui-m-t-2">
-          <div class="mdui-card">
-            <div class="mdui-card-content">
-              <p style="color: #3F51B5; font-size: 18px">
-                <i class="mdui-icon material-icons">android</i>&nbsp;hCaptcha
-              </p>
-              <div class="mdui-textfield mdui-textfield-floating-label">
-                <i class="mdui-icon material-icons">vpn_key</i>
-                <label class="mdui-textfield-label">sitekey</label>
-                <textarea class="mdui-textfield-input" id="hcaptcha_site_key">{$verify.hcaptcha_site_key}</textarea>
-              </div>
-              <div class="mdui-textfield mdui-textfield-floating-label">
-                <i class="mdui-icon material-icons">vpn_lock</i>
-                <label class="mdui-textfield-label">secret</label>
-                <textarea class="mdui-textfield-input" id="hcaptcha_secret">{$verify.hcaptcha_secret}</textarea>
-              </div>
-              <button id="save_hcaptcha"
-                class="mdui-m-t-2 mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-indigo mdui-ripple">保存</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="mdui-m-t-2"></div>
-
     </div>
-  </div>
 </div>
 </body>
 
 <script>
-  var $ = mdui.$;
+    var $ = mdui.$;
 
-  // 应用设置值
-  $("#email_notify").val("{$switch.email_notify}");
-  $("#telegram_notify").val("{$switch.telegram_notify}");
-  $("#allow_public_reg").val("{$register.allow_public_reg}");
-  $("#reg_email_veriy").val("{$register.reg_email_veriy}");
-  $("#captcha_provider").val("{$verify.captcha_provider}");
-  $("#login_verification_code").val("{$verify.login_verification_code}");
-  $("#registration_verification_code").val("{$verify.registration_verification_code}");
-  $("#reset_password_verification_code").val("{$verify.reset_password_verification_code}");
-  $("#create_virtual_machine_verification_code").val("{$verify.create_virtual_machine_verification_code}");
+    // 应用设置值
+    $("#email_notify").val("{$switch.email_notify}");
+    $("#telegram_notify").val("{$switch.telegram_notify}");
+    $("#allow_public_reg").val("{$register.allow_public_reg}");
+    $("#reg_email_veriy").val("{$register.reg_email_veriy}");
+    $("#captcha_provider").val("{$verify.captcha_provider}");
+    $("#login_verification_code").val("{$verify.login_verification_code}");
+    $("#registration_verification_code").val("{$verify.registration_verification_code}");
+    $("#reset_password_verification_code").val("{$verify.reset_password_verification_code}");
+    $("#create_virtual_machine_verification_code").val("{$verify.create_virtual_machine_verification_code}");
 
-  // 点击事件
-  $('#save_switch').on('click', function () {
-    mdui.confirm('确认提交这些信息么？', '修改确认',
-      function () {
-        $.ajax({
-          method: 'PUT',
-          url: "/admin/setting",
-          data: {
-            class: 'notify',
-            email_notify: $('#email_notify').val(),
-            telegram_notify: $('#telegram_notify').val()
-          },
-          dataType: "json",
-          success: function (data) {
-            mdui.alert(data.content, data.title);
-            if (data.status == '1') {
-              setTimeout("window.location = '/admin/setting'", 1500);
+    // 点击事件
+    $('#save_switch').on('click', function () {
+        mdui.confirm('确认提交这些信息么？', '修改确认',
+            function () {
+                $.ajax({
+                    method: 'PUT',
+                    url: "/admin/setting",
+                    data: {
+                        class: 'notify',
+                        email_notify: $('#email_notify').val(),
+                        telegram_notify: $('#telegram_notify').val()
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        mdui.alert(data.content, data.title);
+                        if (data.status == '1') {
+                            setTimeout("window.location = '/admin/setting'", 1500);
+                        }
+                    }
+                });
+            },
+            function () { },
+            {
+                confirmText: "确定",
+                cancelText: "取消"
             }
-          }
-        });
-      },
-      function () { },
-      {
-        confirmText: "确定",
-        cancelText: "取消"
-      }
-    );
-  });
-
-  $('#save_register').on('click', function () {
-    mdui.confirm('确认提交这些信息么？', '修改确认',
-      function () {
-        $.ajax({
-          method: 'PUT',
-          url: "/admin/setting",
-          data: {
-            class: 'register',
-            allow_public_reg: $('#allow_public_reg').val(),
-            reg_email_veriy: $('#reg_email_veriy').val()
-          },
-          dataType: "json",
-          success: function (data) {
-            mdui.alert(data.content, data.title);
-            if (data.status == '1') {
-              setTimeout("window.location = '/admin/setting'", 1500);
-            }
-          }
-        });
-      },
-      function () { },
-      {
-        confirmText: "确定",
-        cancelText: "取消"
-      }
-    );
-  });
-
-  $('#save_verification_code').on('click', function () {
-    mdui.confirm('确认提交这些信息么？', '修改确认',
-      function () {
-        $.ajax({
-          method: 'PUT',
-          url: "/admin/setting",
-          data: {
-            class: 'verify',
-            captcha_provider: $('#captcha_provider').val(),
-            login_verification_code: $('#login_verification_code').val(),
-            registration_verification_code: $('#registration_verification_code').val(),
-            reset_password_verification_code: $('#reset_password_verification_code').val(),
-            create_virtual_machine_verification_code: $('#create_virtual_machine_verification_code').val(),
-          },
-          dataType: "json",
-          success: function (data) {
-            mdui.alert(data.content, data.title);
-            if (data.status == '1') {
-              setTimeout("window.location = '/admin/setting'", 1500);
-            }
-          }
-        });
-      },
-      function () { },
-      {
-        confirmText: "确定",
-        cancelText: "取消"
-      }
-    );
-  });
-
-  $('#save_hcaptcha').on('click', function () {
-    mdui.confirm('确认提交这些信息么？', '修改确认',
-      function () {
-        $.ajax({
-          method: 'PUT',
-          url: "/admin/setting",
-          data: {
-            class: 'hcaptcha',
-            hcaptcha_site_key: $('#hcaptcha_site_key').val(),
-            hcaptcha_secret: $('#hcaptcha_secret').val()
-          },
-          dataType: "json",
-          success: function (data) {
-            mdui.alert(data.content, data.title);
-            if (data.status == '1') {
-              setTimeout("window.location = '/admin/setting'", 1500);
-            }
-          }
-        });
-      },
-      function () { },
-      {
-        confirmText: "确定",
-        cancelText: "取消"
-      }
-    );
-  });
-
-  $('#test_email').on('click', function () {
-    $.ajax({
-      method: 'POST',
-      url: "/admin/setting/email/test",
-      data: {
-        recipient: $('#email_recipient').val()
-      },
-      dataType: "json",
-      success: function (data) {
-        mdui.alert(data.content, data.title);
-      }
+        );
     });
-  });
 
-  $('#test_telegram').on('click', function () {
-    $.ajax({
-      method: 'POST',
-      url: "/admin/setting/telegram/test",
-      data: {
-        recipient: $('#telegram_recipient').val()
-      },
-      dataType: "json",
-      success: function (data) {
-        mdui.alert(data.content, data.title);
-      }
+    $('#save_register').on('click', function () {
+        mdui.confirm('确认提交这些信息么？', '修改确认',
+            function () {
+                $.ajax({
+                    method: 'PUT',
+                    url: "/admin/setting",
+                    data: {
+                        class: 'register',
+                        allow_public_reg: $('#allow_public_reg').val(),
+                        reg_email_veriy: $('#reg_email_veriy').val()
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        mdui.alert(data.content, data.title);
+                        if (data.status == '1') {
+                            setTimeout("window.location = '/admin/setting'", 1500);
+                        }
+                    }
+                });
+            },
+            function () { },
+            {
+                confirmText: "确定",
+                cancelText: "取消"
+            }
+        );
     });
-  });
+
+    $('#save_verification_code').on('click', function () {
+        mdui.confirm('确认提交这些信息么？', '修改确认',
+            function () {
+                $.ajax({
+                    method: 'PUT',
+                    url: "/admin/setting",
+                    data: {
+                        class: 'verify',
+                        captcha_provider: $('#captcha_provider').val(),
+                        login_verification_code: $('#login_verification_code').val(),
+                        registration_verification_code: $('#registration_verification_code').val(),
+                        reset_password_verification_code: $('#reset_password_verification_code').val(),
+                        create_virtual_machine_verification_code: $('#create_virtual_machine_verification_code').val(),
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        mdui.alert(data.content, data.title);
+                        if (data.status == '1') {
+                            setTimeout("window.location = '/admin/setting'", 1500);
+                        }
+                    }
+                });
+            },
+            function () { },
+            {
+                confirmText: "确定",
+                cancelText: "取消"
+            }
+        );
+    });
+
+    $('#save_hcaptcha').on('click', function () {
+        mdui.confirm('确认提交这些信息么？', '修改确认',
+            function () {
+                $.ajax({
+                    method: 'PUT',
+                    url: "/admin/setting",
+                    data: {
+                        class: 'hcaptcha',
+                        hcaptcha_site_key: $('#hcaptcha_site_key').val(),
+                        hcaptcha_secret: $('#hcaptcha_secret').val()
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        mdui.alert(data.content, data.title);
+                        if (data.status == '1') {
+                            setTimeout("window.location = '/admin/setting'", 1500);
+                        }
+                    }
+                });
+            },
+            function () { },
+            {
+                confirmText: "确定",
+                cancelText: "取消"
+            }
+        );
+    });
+
+    $('#test_email').on('click', function () {
+        $.ajax({
+            method: 'POST',
+            url: "/admin/setting/email/test",
+            data: {
+                recipient: $('#email_recipient').val()
+            },
+            dataType: "json",
+            success: function (data) {
+                mdui.alert(data.content, data.title);
+            }
+        });
+    });
+
+    $('#test_telegram').on('click', function () {
+        $.ajax({
+            method: 'POST',
+            url: "/admin/setting/telegram/test",
+            data: {
+                recipient: $('#telegram_recipient').val()
+            },
+            dataType: "json",
+            success: function (data) {
+                mdui.alert(data.content, data.title);
+            }
+        });
+    });
 </script>
 {include file="../app/view/admin/footer.html" /}
 

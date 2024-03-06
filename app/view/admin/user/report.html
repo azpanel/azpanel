@@ -1,82 +1,82 @@
 {include file="../app/view/admin/header.html" title="站点报告" /}
 
 <div class="mdui-container-fluid">
-  <div class="mdui-row">
-    <div
-      class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
-      <div class="mdui-container-fluid">
-        <p style="color: #3F51B5; font-size: 34px">站点报告</p>
-        <div class="doc-chapter">
-          <div class="mdui-typo">
-            <p>下方是有关此站点的汇总报告</p>
-          </div>
+    <div class="mdui-row">
+        <div
+            class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+            <div class="mdui-container-fluid">
+                <p style="color: #3F51B5; font-size: 34px">站点报告</p>
+                <div class="doc-chapter">
+                    <div class="mdui-typo">
+                        <p>下方是有关此站点的汇总报告</p>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
 
-    <div
-      class="mdui-col-xs-12 mdui-m-t-2 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
-      <div class="mdui-table-fluid">
-        <table class="mdui-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>项</th>
-              <th>值</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>1</td>
-              <td>注册用户数</td>
-              <td>{$data.user_number}</td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>有效用户数（有添加账户的）</td>
-              <td>{$data.valid_user_number}</td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td>添加账户数</td>
-              <td>{$data.account_number}</td>
-            </tr>
-            <tr>
-              <td>4</td>
-              <td>有效账户总数（Enabled状态）</td>
-              <td>{$data.valid_account_number}</td>
-            </tr>
-            <tr>
-              <td>5</td>
-              <td>有效PayAsYouGo账户</td>
-              <td>{$data.valid_payasyougo_account_number}</td>
-            </tr>
-            <tr>
-              <td>6</td>
-              <td>有效Students账户</td>
-              <td>{$data.valid_students_account_number}</td>
-            </tr>
-            <tr>
-              <td>7</td>
-              <td>有效FreeTrial账户</td>
-              <td>{$data.valid_freetrial_account_number}</td>
-            </tr>
-            <tr>
-              <td>8</td>
-              <td>虚拟机总数</td>
-              <td>{$data.server_number}</td>
-            </tr>
-            <tr>
-              <td>9</td>
-              <td>有效虚拟机总数（运行中状态）</td>
-              <td>{$data.valid_server_number}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="mdui-m-t-2"></div>
+        <div
+            class="mdui-col-xs-12 mdui-m-t-2 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+            <div class="mdui-table-fluid">
+                <table class="mdui-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>项</th>
+                            <th>值</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>注册用户数</td>
+                            <td>{$data.user_number}</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>有效用户数（有添加账户的）</td>
+                            <td>{$data.valid_user_number}</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>添加账户数</td>
+                            <td>{$data.account_number}</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>有效账户总数（Enabled状态）</td>
+                            <td>{$data.valid_account_number}</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>有效PayAsYouGo账户</td>
+                            <td>{$data.valid_payasyougo_account_number}</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>有效Students账户</td>
+                            <td>{$data.valid_students_account_number}</td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>有效FreeTrial账户</td>
+                            <td>{$data.valid_freetrial_account_number}</td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>虚拟机总数</td>
+                            <td>{$data.server_number}</td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td>有效虚拟机总数（运行中状态）</td>
+                            <td>{$data.valid_server_number}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="mdui-m-t-2"></div>
+        </div>
     </div>
-  </div>
 </div>
 
 </body>

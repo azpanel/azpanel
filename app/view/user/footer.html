@@ -1,34 +1,34 @@
 <script>
-  var $ = mdui.$;
-  $('#logout').on('click', function () {
-    mdui.confirm('你确认要登出后台么', '登出确认',
-      function () {
-        $.ajax({
-          method: 'POST',
-          url: "/logout",
-          dataType: "json",
-          success: function (data) {
-            if (data.status == '1') {
-              mdui.alert(data.content, data.title);
-              setTimeout("window.location = '/login'", 1500);
-            }
-          }
-        });
-      },
+    var $ = mdui.$;
+    $('#logout').on('click', function () {
+        mdui.confirm('你确认要登出后台么', '登出确认',
+            function () {
+                $.ajax({
+                    method: 'POST',
+                    url: "/logout",
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.status == '1') {
+                            mdui.alert(data.content, data.title);
+                            setTimeout("window.location = '/login'", 1500);
+                        }
+                    }
+                });
+            },
 
-      function () {
-      },
-      {
-        confirmText: "确定",
-        cancelText: "取消"
-      }
-    );
-  });
+            function () {
+            },
+            {
+                confirmText: "确定",
+                cancelText: "取消"
+            }
+        );
+    });
 </script>
 
 <div class="mdui-typo" style="position: static; left: 0px; bottom: 0px; width: 100%">
-  <div class="mdui-m-y-1" style="margin: 0 auto; text-align: center">
-    {:app\\model\\Config::obtain('custom_text')}
-  </div>
+    <div class="mdui-m-y-1" style="margin: 0 auto; text-align: center">
+        {:app\\model\\Config::obtain('custom_text')}
+    </div>
 </div>
 {:app\\model\\Config::obtain('custom_script')}

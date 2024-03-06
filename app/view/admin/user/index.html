@@ -1,148 +1,149 @@
 {include file="../app/view/admin/header.html" title="用户列表" /}
 
 <div class="mdui-container-fluid">
-  <div class="mdui-row">
-    <div
-      class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
-      <div class="mdui-container-fluid">
-        <p style="color: #3F51B5; font-size: 34px">用户列表</p>
-      </div>
+    <div class="mdui-row">
+        <div
+            class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+            <div class="mdui-container-fluid">
+                <p style="color: #3F51B5; font-size: 34px">用户列表</p>
+            </div>
 
-      <div class="mdui-typo">
-        <p>你可以在这里管理所有注册用户</p>
-      </div>
+            <div class="mdui-typo">
+                <p>你可以在这里管理所有注册用户</p>
+            </div>
 
-      <div class="card-body mdui-table-fluid-fixed mdui-m-t-2">
-        <table class="mdui-table" style="border: none;">
-          <thead>
-            <tr>
-              <th>操作</th>
-              <th>#</th>
-              <th>注册邮箱</th>
-              <th>用户备注</th>
-              <th>账户状态</th>
-              <th>账户数</th>
-              <th>虚拟机数</th>
-              <th>注册时间</th>
-            </tr>
-          </thead>
-          <tbody>
-            {volist name="users" id="user"}
-            <tr>
-              <td>
-                <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-ripple mdui-color-blue-grey"
-                  mdui-menu="{target: '#action-{$user.id}', fixed: true}">操作</button>
-                <ul class="mdui-menu" id="action-{$user.id}">
-                  <li class="mdui-menu-item">
-                    <a class="mdui-ripple" href="/admin/user/{$user.id}/edit" target="view_window">
-                      <i class="mdui-menu-item-icon mdui-icon material-icons">build</i>编辑资料
-                    </a>
-                  </li>
-                  <li class="mdui-menu-item">
-                    <a class="mdui-ripple" onclick="remark(this)" data-id="{$user.id}">
-                      <i class="mdui-menu-item-icon mdui-icon material-icons">edit</i>修改备注
-                    </a>
-                  </li>
-                  <li class="mdui-menu-item">
-                    <a class="mdui-ripple" href="/admin/user/assets/{$user.id}" target="view_window">
-                      <i class="mdui-menu-item-icon mdui-icon material-icons">subject</i>账户资产
-                    </a>
-                  </li>
-                  <li class="mdui-menu-item">
-                    <a class="mdui-ripple" onclick="remove(this)" data-id="{$user.id}">
-                      <i class="mdui-menu-item-icon mdui-icon material-icons">deleted</i>删除用户
-                    </a>
-                  </li>
-                </ul>
-              </td>
-              <td>{$user.id}</td>
-              <td>{$user.email}</td>
-              <td>{$user.remark ?? 'null'}</td>
-              <td>{$user.status == 0 ? '停用' : '启用'}</td>
-              <td>{:app\\model\\Azure::where('user_id', $user.id)->count()}</td>
-              <td>{:app\\model\\AzureServer::where('user_id', $user.id)->count()}</td>
-              <td>{:date('Y-m-d H:i:s', $user.created_at)}</td>
-            </tr>
-            {/volist}
-          </tbody>
-        </table>
-      </div>
-      
-      <div class="mdui-m-t-2"></div>
+            <div class="card-body mdui-table-fluid-fixed mdui-m-t-2">
+                <table class="mdui-table" style="border: none;">
+                    <thead>
+                        <tr>
+                            <th>操作</th>
+                            <th>#</th>
+                            <th>注册邮箱</th>
+                            <th>用户备注</th>
+                            <th>账户状态</th>
+                            <th>账户数</th>
+                            <th>虚拟机数</th>
+                            <th>注册时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {volist name="users" id="user"}
+                        <tr>
+                            <td>
+                                <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-ripple mdui-color-blue-grey"
+                                    mdui-menu="{target: '#action-{$user.id}', fixed: true}">操作</button>
+                                <ul class="mdui-menu" id="action-{$user.id}">
+                                    <li class="mdui-menu-item">
+                                        <a class="mdui-ripple" href="/admin/user/{$user.id}/edit" target="view_window">
+                                            <i class="mdui-menu-item-icon mdui-icon material-icons">build</i>编辑资料
+                                        </a>
+                                    </li>
+                                    <li class="mdui-menu-item">
+                                        <a class="mdui-ripple" onclick="remark(this)" data-id="{$user.id}">
+                                            <i class="mdui-menu-item-icon mdui-icon material-icons">edit</i>修改备注
+                                        </a>
+                                    </li>
+                                    <li class="mdui-menu-item">
+                                        <a class="mdui-ripple" href="/admin/user/assets/{$user.id}"
+                                            target="view_window">
+                                            <i class="mdui-menu-item-icon mdui-icon material-icons">subject</i>账户资产
+                                        </a>
+                                    </li>
+                                    <li class="mdui-menu-item">
+                                        <a class="mdui-ripple" onclick="remove(this)" data-id="{$user.id}">
+                                            <i class="mdui-menu-item-icon mdui-icon material-icons">deleted</i>删除用户
+                                        </a>
+                                    </li>
+                                </ul>
+                            </td>
+                            <td>{$user.id}</td>
+                            <td>{$user.email}</td>
+                            <td>{$user.remark ?? 'null'}</td>
+                            <td>{$user.status == 0 ? '停用' : '启用'}</td>
+                            <td>{:app\\model\\Azure::where('user_id', $user.id)->count()}</td>
+                            <td>{:app\\model\\AzureServer::where('user_id', $user.id)->count()}</td>
+                            <td>{:date('Y-m-d H:i:s', $user.created_at)}</td>
+                        </tr>
+                        {/volist}
+                    </tbody>
+                </table>
+            </div>
 
-      {$page | raw}
+            <div class="mdui-m-t-2"></div>
 
-      <a class="mdui-fab mdui-color-theme-accent mdui-ripple mdui-fab-fixed" href="/admin/user/create">
-        <i class="mdui-icon material-icons">add</i>
-      </a>
+            {$page | raw}
 
-      <div class="mdui-m-t-2"></div>
+            <a class="mdui-fab mdui-color-theme-accent mdui-ripple mdui-fab-fixed" href="/admin/user/create">
+                <i class="mdui-icon material-icons">add</i>
+            </a>
 
+            <div class="mdui-m-t-2"></div>
+
+        </div>
     </div>
-  </div>
-  </br/>
+    </br />
 </div>
 </body>
 
 <script>
-  function remove(that) {
-    let id = $(that).data('id');
-    mdui.confirm('确认删除此用户么？', '删除确认',
-      function () {
-        $.ajax({
-          method: 'DELETE',
-          url: "/admin/user/" + id,
-          dataType: "json",
-          success: function (data) {
-            if (data.status == '0') {
-              mdui.alert(data.content, data.title);
-            } else {
-              mdui.alert(data.content, data.title);
-              setTimeout("window.location = '/admin/user'", 1500);
+    function remove(that) {
+        let id = $(that).data('id');
+        mdui.confirm('确认删除此用户么？', '删除确认',
+            function () {
+                $.ajax({
+                    method: 'DELETE',
+                    url: "/admin/user/" + id,
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.status == '0') {
+                            mdui.alert(data.content, data.title);
+                        } else {
+                            mdui.alert(data.content, data.title);
+                            setTimeout("window.location = '/admin/user'", 1500);
+                        }
+                    }
+                });
+            },
+            function () { },
+            {
+                confirmText: "确定",
+                cancelText: "取消"
             }
-          }
-        });
-      },
-      function () { },
-      {
-        confirmText: "确定",
-        cancelText: "取消"
-      }
-    );
-  };
+        );
+    };
 
-  function remark(that) {
-    let id = $(that).data('id');
-    mdui.prompt('请输入新备注', '修改备注',
-      function (remark) {
-        $.ajax({
-          method: 'PATCH',
-          url: "/admin/user/remark/" + id,
-          data: {
-            remark: remark
-          },
-          dataType: "json",
-          success: function (data) {
-            if (data.status == '0') {
-              mdui.alert(data.content, data.title);
-            } else {
-              mdui.alert(data.content, data.title);
-              setTimeout("window.location = '/admin/user'", 1500);
+    function remark(that) {
+        let id = $(that).data('id');
+        mdui.prompt('请输入新备注', '修改备注',
+            function (remark) {
+                $.ajax({
+                    method: 'PATCH',
+                    url: "/admin/user/remark/" + id,
+                    data: {
+                        remark: remark
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.status == '0') {
+                            mdui.alert(data.content, data.title);
+                        } else {
+                            mdui.alert(data.content, data.title);
+                            setTimeout("window.location = '/admin/user'", 1500);
+                        }
+                    }
+                });
+            },
+            function () { },
+            {
+                confirmText: "确定",
+                cancelText: "取消"
             }
-          }
-        });
-      },
-      function () { },
-      {
-        confirmText: "确定",
-        cancelText: "取消"
-      }
-    );
-  };
+        );
+    };
 
-  $("td:contains('null')").css("font-style", "italic");
-  $("td:contains('启用')").css("color", "green");
-  $("td:contains('停用')").css("color", "red");
+    $("td:contains('null')").css("font-style", "italic");
+    $("td:contains('启用')").css("color", "green");
+    $("td:contains('停用')").css("color", "red");
 </script>
 {include file="../app/view/admin/footer.html" /}
 

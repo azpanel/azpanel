@@ -1,75 +1,78 @@
 {include file="../app/view/admin/header.html" title="Telegram Bot" /}
 
 <div class="mdui-container-fluid">
-  <div class="mdui-row">
-    <div
-      class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
-      <div class="mdui-container-fluid">
-        <p style="color: #3F51B5; font-size: 34px">Telegram Bot</p>
-      </div>
+    <div class="mdui-row">
+        <div
+            class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+            <div class="mdui-container-fluid">
+                <p style="color: #3F51B5; font-size: 34px">Telegram Bot</p>
+            </div>
 
-      <div class="mdui-typo">
-        <p>你可以在这里配置 Telegram Bot</p>
-      </div>
+            <div class="mdui-typo">
+                <p>你可以在这里配置 Telegram Bot</p>
+            </div>
 
-      <div class="mdui-card mdui-m-t-2" style="overflow: visible">
-        <div class="mdui-card-content mdui-container">
-          <div class="mdui-textfield mdui-textfield-floating-label">
-            <i class="mdui-icon material-icons">account_circle</i>
-            <label class="mdui-textfield-label">机器人用户名，不包含@</label>
-            <textarea class="mdui-textfield-input" id="telegram_account" required>{$telegram.telegram_account ?? ''}</textarea>
-          </div>
-          <div class="mdui-textfield mdui-textfield-floating-label">
-            <i class="mdui-icon material-icons">vpn_key</i>
-            <label class="mdui-textfield-label">token</label>
-            <textarea class="mdui-textfield-input" id="telegram_token" required>{$telegram.telegram_token ?? ''}</textarea>
-          </div>
+            <div class="mdui-card mdui-m-t-2" style="overflow: visible">
+                <div class="mdui-card-content mdui-container">
+                    <div class="mdui-textfield mdui-textfield-floating-label">
+                        <i class="mdui-icon material-icons">account_circle</i>
+                        <label class="mdui-textfield-label">机器人用户名，不包含@</label>
+                        <textarea class="mdui-textfield-input" id="telegram_account"
+                            required>{$telegram.telegram_account ?? ''}</textarea>
+                    </div>
+                    <div class="mdui-textfield mdui-textfield-floating-label">
+                        <i class="mdui-icon material-icons">vpn_key</i>
+                        <label class="mdui-textfield-label">token</label>
+                        <textarea class="mdui-textfield-input" id="telegram_token"
+                            required>{$telegram.telegram_token ?? ''}</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mdui-card mdui-m-t-2">
+                <div class="mdui-card-actions">
+                    <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised"
+                        id="modify">修改</button>
+                </div>
+            </div>
+
+            <div class="mdui-m-t-2"></div>
+
         </div>
-      </div>
-
-      <div class="mdui-card mdui-m-t-2">
-        <div class="mdui-card-actions">
-          <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised" id="modify">修改</button>
-        </div>
-      </div>
-
-      <div class="mdui-m-t-2"></div>
-
     </div>
-  </div>
 </div>
 </body>
 
 <script>
-  var $ = mdui.$;
-  $('#modify').on('click', function () {
-    mdui.confirm('确认提交这些信息么？', '修改确认',
-      function () {
-        $.ajax({
-          method: 'PUT',
-          url: "/admin/setting/telegram",
-          data: {
-            telegram_account: $('#telegram_account').val(),
-            telegram_token: $('#telegram_token').val()
-          },
-          dataType: "json",
-          success: function (data) {
-            if (data.status == '0') {
-              mdui.alert(data.content, data.title);
-            } else {
-              mdui.alert(data.content, data.title);
-              setTimeout("window.location = '/admin/setting/telegram'", 1500);
+    var $ = mdui.$;
+    $('#modify').on('click', function () {
+        mdui.confirm('确认提交这些信息么？', '修改确认',
+            function () {
+                $.ajax({
+                    method: 'PUT',
+                    url: "/admin/setting/telegram",
+                    data: {
+                        telegram_account: $('#telegram_account').val(),
+                        telegram_token: $('#telegram_token').val()
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.status == '0') {
+                            mdui.alert(data.content, data.title);
+                        } else {
+                            mdui.alert(data.content, data.title);
+                            setTimeout("window.location = '/admin/setting/telegram'", 1500);
+                        }
+                    }
+                });
+            },
+            function () { },
+            {
+                confirmText: "确定",
+                cancelText: "取消"
             }
-          }
-        });
-      },
-      function () { },
-      {
-        confirmText: "确定",
-        cancelText: "取消"
-      }
-    );
-  });
+        );
+    });
 </script>
 {include file="../app/view/admin/footer.html" /}
 

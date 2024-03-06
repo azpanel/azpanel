@@ -1,85 +1,87 @@
 {include file="../app/view/admin/header.html" title="更新公告" /}
 
 <div class="mdui-container-fluid">
-  <div class="mdui-row">
-    <div class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
-      <div class="mdui-container-fluid">
-        <p style="color: #3F51B5; font-size: 34px">更新公告</p>
-      </div>
+    <div class="mdui-row">
+        <div
+            class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+            <div class="mdui-container-fluid">
+                <p style="color: #3F51B5; font-size: 34px">更新公告</p>
+            </div>
 
-      <div class="mdui-typo">
-        <p>你可以在这里更新现有的公告</p>
-      </div>
+            <div class="mdui-typo">
+                <p>你可以在这里更新现有的公告</p>
+            </div>
 
-      <div class="mdui-card mdui-m-t-2" style="overflow: visible">
-        <div class="mdui-card-content mdui-container">
-          <div class="mdui-textfield mdui-textfield-floating-label">
-            <i class="mdui-icon material-icons">title</i>
-            <label class="mdui-textfield-label">标题</label>
-            <input class="mdui-textfield-input" type="text" id="title" value="{$ann.title}" required />
-            <div class="mdui-textfield-error">标题不能为空</div>
-          </div>
-          <div class="mdui-textfield mdui-textfield-floating-label">
-            <i class="mdui-icon material-icons">wrap_text</i>
-            <label class="mdui-textfield-label">内容</label>
-            <textarea class="mdui-textfield-input" id="content" rows="10" required>{$ann.content}</textarea>
-            <div class="mdui-textfield-error">内容不能为空</div>
-          </div>
-          <div>显示状态：
-            <select id="status" class="mdui-select" mdui-select>
-              <option value="1" {if $ann.status == '1' }selected{/if}>显示</option>
-              <option value="0" {if $ann.status == '0' }selected{/if}>隐藏</option>
-            </select>
-          </div>
+            <div class="mdui-card mdui-m-t-2" style="overflow: visible">
+                <div class="mdui-card-content mdui-container">
+                    <div class="mdui-textfield mdui-textfield-floating-label">
+                        <i class="mdui-icon material-icons">title</i>
+                        <label class="mdui-textfield-label">标题</label>
+                        <input class="mdui-textfield-input" type="text" id="title" value="{$ann.title}" required />
+                        <div class="mdui-textfield-error">标题不能为空</div>
+                    </div>
+                    <div class="mdui-textfield mdui-textfield-floating-label">
+                        <i class="mdui-icon material-icons">wrap_text</i>
+                        <label class="mdui-textfield-label">内容</label>
+                        <textarea class="mdui-textfield-input" id="content" rows="10" required>{$ann.content}</textarea>
+                        <div class="mdui-textfield-error">内容不能为空</div>
+                    </div>
+                    <div>显示状态：
+                        <select id="status" class="mdui-select" mdui-select>
+                            <option value="1" {if $ann.status=='1' }selected{/if}>显示</option>
+                            <option value="0" {if $ann.status=='0' }selected{/if}>隐藏</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mdui-card mdui-m-t-2">
+                <div class="mdui-card-actions">
+                    <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised"
+                        id="update">修改</button>
+                </div>
+            </div>
+
+            <div class="mdui-m-t-2"></div>
+
         </div>
-      </div>
-
-      <div class="mdui-card mdui-m-t-2">
-        <div class="mdui-card-actions">
-          <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised" id="update">修改</button>
-        </div>
-      </div>
-      
-      <div class="mdui-m-t-2"></div>
-
     </div>
-  </div>
 </div>
 </body>
 
 <script>
-  var $ = mdui.$;
-  $('#update').on('click', function () {
-    mdui.confirm('确认更新此公告么', '更新确认',
-      function () {
-        $.ajax({
-          method: 'PUT',
-          url: "/admin/ann/{$ann.id}",
-          data: {
-            title: $('#title').val(),
-            content: $('#content').val(),
-            status: $('#status').val()
-          },
-          dataType: "json",
-          success: function (data) {
-            if (data.status == '0') {
-              mdui.alert(data.content, data.title);
+    var $ = mdui.$;
+    $('#update').on('click', function () {
+        mdui.confirm('确认更新此公告么', '更新确认',
+            function () {
+                $.ajax({
+                    method: 'PUT',
+                    url: "/admin/ann/{$ann.id}",
+                    data: {
+                        title: $('#title').val(),
+                        content: $('#content').val(),
+                        status: $('#status').val()
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.status == '0') {
+                            mdui.alert(data.content, data.title);
+                        }
+                        else {
+                            mdui.alert(data.content, data.title);
+                            setTimeout("window.location = '/admin/ann'", 1500);
+                        }
+                    }
+                });
+            },
+            function () {
+            },
+            {
+                confirmText: "确定",
+                cancelText: "取消"
             }
-            else {
-              mdui.alert(data.content, data.title);
-              setTimeout("window.location = '/admin/ann'", 1500);
-            }
-          }
-        });
-      },
-      function () {
-      },
-      {
-        confirmText: "确定",
-        cancelText: "取消"
-      }
-    );
-  });
+        );
+    });
 </script>
 {include file="../app/view/admin/footer.html" /}
 

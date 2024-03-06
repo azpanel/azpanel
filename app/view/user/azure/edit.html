@@ -1,129 +1,130 @@
 {include file="../app/view/user/header.html" title="编辑账户" /}
 
 <div class="mdui-container-fluid">
-  <div class="mdui-row">
-    <div
-      class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
-      <div class="mdui-container-fluid">
-        <p style="color: #3F51B5; font-size: 34px">编辑账户</p>
-      </div>
+    <div class="mdui-row">
+        <div
+            class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+            <div class="mdui-container-fluid">
+                <p style="color: #3F51B5; font-size: 34px">编辑账户</p>
+            </div>
 
-      <div class="mdui-typo">
-        <p>你可以在这里编辑此账户的部分信息</p>
-      </div>
+            <div class="mdui-typo">
+                <p>你可以在这里编辑此账户的部分信息</p>
+            </div>
 
-      <div class="mdui-card mdui-m-t-2" style="overflow: visible">
-        <div class="mdui-card-content mdui-container">
-          <div class="mdui-col-sm-12 mdui-col-md-6">
-            <div class="mdui-textfield mdui-textfield-floating-label">
-              <i class="mdui-icon material-icons">mail</i>
-              <label class="mdui-textfield-label">登录邮箱</label>
-              <textarea class="mdui-textfield-input" id="az_email" required>{$account.az_email}</textarea>
+            <div class="mdui-card mdui-m-t-2" style="overflow: visible">
+                <div class="mdui-card-content mdui-container">
+                    <div class="mdui-col-sm-12 mdui-col-md-6">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">mail</i>
+                            <label class="mdui-textfield-label">登录邮箱</label>
+                            <textarea class="mdui-textfield-input" id="az_email" required>{$account.az_email}</textarea>
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-6">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">lock</i>
+                            <label class="mdui-textfield-label">登录密码（选填）</label>
+                            <textarea class="mdui-textfield-input" id="az_passwd">{$account.az_passwd}</textarea>
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-6">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">bookmark</i>
+                            <label class="mdui-textfield-label">备注</label>
+                            <textarea class="mdui-textfield-input" id="user_mark">{$account.user_mark}</textarea>
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-6">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">apps</i>
+                            <label class="mdui-textfield-label">app_id</label>
+                            <textarea class="mdui-textfield-input" disabled>{$az_api.appId}</textarea>
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-6">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">location_city</i>
+                            <label class="mdui-textfield-label">tenant_id</label>
+                            <textarea class="mdui-textfield-input" disabled>{$az_api.tenant}</textarea>
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-6">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">subscriptions</i>
+                            <label class="mdui-textfield-label">subscription_id</label>
+                            <textarea class="mdui-textfield-input" disabled>{$account.az_sub_id}</textarea>
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-12">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <i class="mdui-icon material-icons">vpn_key</i>
+                            <label class="mdui-textfield-label">password</label>
+                            <textarea class="mdui-textfield-input" disabled>{$az_api.password}</textarea>
+                        </div>
+                    </div>
+                    <div class="mdui-col-sm-12 mdui-col-md-12">
+                        <p style="color: #3F51B5; font-size: 18px">操作</p>
+                        <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-blue-grey"
+                            data-clipboard-text="{$share}">复制API参数</button>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="mdui-col-sm-12 mdui-col-md-6">
-            <div class="mdui-textfield mdui-textfield-floating-label">
-              <i class="mdui-icon material-icons">lock</i>
-              <label class="mdui-textfield-label">登录密码（选填）</label>
-              <textarea class="mdui-textfield-input" id="az_passwd">{$account.az_passwd}</textarea>
+
+            <div class="mdui-card mdui-m-t-2">
+                <div class="mdui-card-actions">
+                    <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised"
+                        id="update">修改</button>
+                </div>
             </div>
-          </div>
-          <div class="mdui-col-sm-12 mdui-col-md-6">
-            <div class="mdui-textfield mdui-textfield-floating-label">
-              <i class="mdui-icon material-icons">bookmark</i>
-              <label class="mdui-textfield-label">备注</label>
-              <textarea class="mdui-textfield-input" id="user_mark">{$account.user_mark}</textarea>
-            </div>
-          </div>
-          <div class="mdui-col-sm-12 mdui-col-md-6">
-            <div class="mdui-textfield mdui-textfield-floating-label">
-              <i class="mdui-icon material-icons">apps</i>
-              <label class="mdui-textfield-label">app_id</label>
-              <textarea class="mdui-textfield-input" disabled>{$az_api.appId}</textarea>
-            </div>
-          </div>
-          <div class="mdui-col-sm-12 mdui-col-md-6">
-            <div class="mdui-textfield mdui-textfield-floating-label">
-              <i class="mdui-icon material-icons">location_city</i>
-              <label class="mdui-textfield-label">tenant_id</label>
-              <textarea class="mdui-textfield-input" disabled>{$az_api.tenant}</textarea>
-            </div>
-          </div>
-          <div class="mdui-col-sm-12 mdui-col-md-6">
-            <div class="mdui-textfield mdui-textfield-floating-label">
-              <i class="mdui-icon material-icons">subscriptions</i>
-              <label class="mdui-textfield-label">subscription_id</label>
-              <textarea class="mdui-textfield-input" disabled>{$account.az_sub_id}</textarea>
-            </div>
-          </div>
-          <div class="mdui-col-sm-12 mdui-col-md-12">
-            <div class="mdui-textfield mdui-textfield-floating-label">
-              <i class="mdui-icon material-icons">vpn_key</i>
-              <label class="mdui-textfield-label">password</label>
-              <textarea class="mdui-textfield-input" disabled>{$az_api.password}</textarea>
-            </div>
-          </div>
-          <div class="mdui-col-sm-12 mdui-col-md-12">
-            <p style="color: #3F51B5; font-size: 18px">操作</p>
-            <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-blue-grey"
-              data-clipboard-text="{$share}">复制API参数</button>
-          </div>
+
+            <div class="mdui-m-t-2"></div>
+
         </div>
-      </div>
-
-      <div class="mdui-card mdui-m-t-2">
-        <div class="mdui-card-actions">
-          <button class="mdui-btn mdui-btn-block mdui-color-indigo mdui-ripple mdui-btn-raised" id="update">修改</button>
-        </div>
-      </div>
-
-      <div class="mdui-m-t-2"></div>
-
     </div>
-  </div>
 </div>
 </body>
 
 <script>
-  let clipboard = new ClipboardJS('.mdui-color-blue-grey')
-  clipboard.on('success', (e) => {
-    mdui.snackbar({
-      message: "复制成功"
-    })
-  });
+    let clipboard = new ClipboardJS('.mdui-color-blue-grey')
+    clipboard.on('success', (e) => {
+        mdui.snackbar({
+            message: "复制成功"
+        })
+    });
 
-  var $ = mdui.$;
-  $('#update').on('click', function () {
-    mdui.confirm('确认更新此账户资料么', '更新确认',
-      function () {
-        $.ajax({
-          method: 'PUT',
-          url: "/user/azure/{$account.id}",
-          data: {
-            user_mark: $('#user_mark').val(),
-            az_email: $('#az_email').val(),
-            az_passwd: $('#az_passwd').val()
-          },
-          dataType: "json",
-          success: function (data) {
-            if (data.status == '0') {
-              mdui.alert(data.content, data.title);
+    var $ = mdui.$;
+    $('#update').on('click', function () {
+        mdui.confirm('确认更新此账户资料么', '更新确认',
+            function () {
+                $.ajax({
+                    method: 'PUT',
+                    url: "/user/azure/{$account.id}",
+                    data: {
+                        user_mark: $('#user_mark').val(),
+                        az_email: $('#az_email').val(),
+                        az_passwd: $('#az_passwd').val()
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.status == '0') {
+                            mdui.alert(data.content, data.title);
+                        }
+                        else {
+                            mdui.alert(data.content, data.title);
+                            setTimeout("window.location = '/user/azure'", 1500);
+                        }
+                    }
+                });
+            },
+            function () {
+            },
+            {
+                confirmText: "确定",
+                cancelText: "取消"
             }
-            else {
-              mdui.alert(data.content, data.title);
-              setTimeout("window.location = '/user/azure'", 1500);
-            }
-          }
-        });
-      },
-      function () {
-      },
-      {
-        confirmText: "确定",
-        cancelText: "取消"
-      }
-    );
-  });
+        );
+    });
 </script>
 {include file="../app/view/user/footer.html" /}
 

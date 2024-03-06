@@ -1,122 +1,123 @@
 {include file="../app/view/user/header.html" title="Azure 资源组列表" /}
 
 <div class="mdui-container-fluid">
-  <div class="mdui-row">
-    <div
-      class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
-      <div class="mdui-container-fluid">
-        <p style="color: #3F51B5; font-size: 34px">Azure 资源组列表</p>
-      </div>
+    <div class="mdui-row">
+        <div
+            class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+            <div class="mdui-container-fluid">
+                <p style="color: #3F51B5; font-size: 34px">Azure 资源组列表</p>
+            </div>
 
-      <div class="mdui-typo">
-        <p>你可以在这里查看此账户下的所有资源组</p>
-      </div>
+            <div class="mdui-typo">
+                <p>你可以在这里查看此账户下的所有资源组</p>
+            </div>
 
-      <div class="mdui-table-fluid mdui-m-t-2">
-        <table class="mdui-table">
-          <thead>
-            <tr>
-              <th>操作</th>
-              <th>名称</th>
-              <th>地域</th>
-              <th>状态</th>
-            </tr>
-          </thead>
-          <tbody>
-            {foreach $resources['value'] as $resource}
-            <tr>
-              <td>
-                <a href="/user/azure/resources/{:input('id')}/{$resource.name}"
-                  class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-ripple mdui-color-blue-grey">浏览组</a>
-                <a onclick="destroy(this)" data-url="{$resource.id}"
-                  class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-ripple mdui-color-pink-400">删除组</a>
-              </td>
-              <td>{$resource.name}</td>
-              <td>{$resource.location}</td>
-              <td>{$resource.properties.provisioningState}</td>
-            </tr>
-            {/foreach}
-          </tbody>
-        </table>
-      </div>
+            <div class="mdui-table-fluid mdui-m-t-2">
+                <table class="mdui-table">
+                    <thead>
+                        <tr>
+                            <th>操作</th>
+                            <th>名称</th>
+                            <th>地域</th>
+                            <th>状态</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {foreach $resources['value'] as $resource}
+                        <tr>
+                            <td>
+                                <a href="/user/azure/resources/{:input('id')}/{$resource.name}"
+                                    class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-ripple mdui-color-blue-grey">浏览组</a>
+                                <a onclick="destroy(this)" data-url="{$resource.id}"
+                                    class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-ripple mdui-color-pink-400">删除组</a>
+                            </td>
+                            <td>{$resource.name}</td>
+                            <td>{$resource.location}</td>
+                            <td>{$resource.properties.provisioningState}</td>
+                        </tr>
+                        {/foreach}
+                    </tbody>
+                </table>
+            </div>
 
-      <p style="color: #3F51B5; font-size: 18px">虚拟机列表</p>
+            <p style="color: #3F51B5; font-size: 18px">虚拟机列表</p>
 
-      <div class="mdui-table-fluid mdui-m-t-2">
-        <table class="mdui-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>名称</th>
-              <th>地域</th>
-              <th>地址</th>
-              <th>规格</th>
-              <th>系统 Offer</th>
-              <th>系统 Sku</th>
-              <th>资源组</th>
-              <th>硬盘大小</th>
-            </tr>
-          </thead>
-          <tbody>
-            {volist name="virtual_machines" id="virtual_machine"}
-            <tr>
-              <td>{++$count}</td>
-              <td>{$virtual_machine['name']}</td>
-              <td>{$virtual_machine['location']}</td>
-              <td>{$ip_set[$virtual_machine['properties']['vmId']]}</td>
-              <td>{$virtual_machine['properties']['hardwareProfile']['vmSize']}</td>
-              <td>{$virtual_machine['properties']['storageProfile']['imageReference']['offer']}</td>
-              <td>{$virtual_machine['properties']['storageProfile']['imageReference']['sku']}</td>
-              <td>{:explode('/', $virtual_machine['id'])['4']}</td>
-              <td>{$virtual_machine['properties']['storageProfile']['osDisk']['diskSizeGB'] ?? 'null'}</td>
-            </tr>
-            {/volist}
-          </tbody>
-        </table>
-      </div>
+            <div class="mdui-table-fluid mdui-m-t-2">
+                <table class="mdui-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>名称</th>
+                            <th>地域</th>
+                            <th>地址</th>
+                            <th>规格</th>
+                            <th>系统 Offer</th>
+                            <th>系统 Sku</th>
+                            <th>资源组</th>
+                            <th>硬盘大小</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {volist name="virtual_machines" id="virtual_machine"}
+                        <tr>
+                            <td>{++$count}</td>
+                            <td>{$virtual_machine['name']}</td>
+                            <td>{$virtual_machine['location']}</td>
+                            <td>{$ip_set[$virtual_machine['properties']['vmId']]}</td>
+                            <td>{$virtual_machine['properties']['hardwareProfile']['vmSize']}</td>
+                            <td>{$virtual_machine['properties']['storageProfile']['imageReference']['offer']}</td>
+                            <td>{$virtual_machine['properties']['storageProfile']['imageReference']['sku']}</td>
+                            <td>{:explode('/', $virtual_machine['id'])['4']}</td>
+                            <td>{$virtual_machine['properties']['storageProfile']['osDisk']['diskSizeGB'] ?? 'null'}
+                            </td>
+                        </tr>
+                        {/volist}
+                    </tbody>
+                </table>
+            </div>
 
-      <div class="mdui-m-t-2"></div>
+            <div class="mdui-m-t-2"></div>
 
+        </div>
     </div>
-  </div>
 </div>
 </body>
 
 <script>
-  function destroy(that) {
-    let url = $(that).data('url');
-    mdui.prompt('输入 yes 删除此资源组中的所有资源', '删除确认',
-      function (value) {
-        if (value == 'yes') {
-          var load = new mdui.alert('<div class=\"mdui-progress\"><div class=\"mdui-progress-indeterminate\"></div></div>', '进行中');
-          $.ajax({
-            method: 'DELETE',
-            url: "/user/azure/resources",
-            data: {
-              url: url
+    function destroy(that) {
+        let url = $(that).data('url');
+        mdui.prompt('输入 yes 删除此资源组中的所有资源', '删除确认',
+            function (value) {
+                if (value == 'yes') {
+                    var load = new mdui.alert('<div class=\"mdui-progress\"><div class=\"mdui-progress-indeterminate\"></div></div>', '进行中');
+                    $.ajax({
+                        method: 'DELETE',
+                        url: "/user/azure/resources",
+                        data: {
+                            url: url
+                        },
+                        dataType: "json",
+                        success: function (data) {
+                            load.close();
+                            if (data.status == '0') {
+                                mdui.alert(data.content, data.title);
+                            } else {
+                                mdui.alert(data.content, data.title);
+                                setTimeout("window.location = window.location.pathname", 1500);
+                            }
+                        }
+                    });
+                } else {
+                    mdui.alert('为避免误操作，请按提示在文本框中输入 yes', '删除失败');
+                }
             },
-            dataType: "json",
-            success: function (data) {
-              load.close();
-              if (data.status == '0') {
-                mdui.alert(data.content, data.title);
-              } else {
-                mdui.alert(data.content, data.title);
-                setTimeout("window.location = window.location.pathname", 1500);
-              }
+            function () { },
+            {
+                confirmText: "确定",
+                cancelText: "取消"
             }
-          });
-        } else {
-          mdui.alert('为避免误操作，请按提示在文本框中输入 yes', '删除失败');
-        }
-      },
-      function () { },
-      {
-        confirmText: "确定",
-        cancelText: "取消"
-      }
-    );
-  };
+        );
+    };
 </script>
 
 {include file="../app/view/user/footer.html" /}

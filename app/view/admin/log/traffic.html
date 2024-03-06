@@ -1,56 +1,56 @@
 {include file="../app/view/admin/header.html" title="流量控制" /}
 
 <div class="mdui-container-fluid">
-  <div class="mdui-row">
-    <div
-      class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
-      <div class="mdui-container-fluid">
-        <p style="color: #3F51B5; font-size: 34px">流量控制</p>
-      </div>
+    <div class="mdui-row">
+        <div
+            class="mdui-col-xs-12 mdui-col-md-{:think\\facade\\Env::get('theme.CARD_WIDTH')} mdui-col-offset-md-{:think\\facade\\Env::get('theme.CARD_RIGHT_OFFSET')}">
+            <div class="mdui-container-fluid">
+                <p style="color: #3F51B5; font-size: 34px">流量控制</p>
+            </div>
 
-      <div class="mdui-typo">
-        <p>你可以在这里查看流量控制的执行日志</p>
-      </div>
+            <div class="mdui-typo">
+                <p>你可以在这里查看流量控制的执行日志</p>
+            </div>
 
-      <div class="mdui-table-fluid mdui-m-t-2">
-        <table class="mdui-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>用户</th>
-              <th>触发规则</th>
-              <th>触发虚拟机</th>
-              <th>虚拟机</th>
-              <th>操作</th>
-              <th>时间</th>
-            </tr>
-          </thead>
-          <tbody>
-            {volist name="logs" id="log"}
-            <tr>
-              <td>{$log.id}</td>
-              <td>{$log.user_id}</td>
-              <td>{$log.rule_name}</td>
-              <td>{$log.vm_name}</td>
-              <td>{$log.vm_id}</td>
-              <td>{$log.action}</td>
-              <td>{:date('Y-m-d H:i:s', $log.created_at)}</td>
-            </tr>
-            {/volist}
-          </tbody>
-        </table>
-      </div>
+            <div class="mdui-table-fluid mdui-m-t-2">
+                <table class="mdui-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>用户</th>
+                            <th>触发规则</th>
+                            <th>触发虚拟机</th>
+                            <th>虚拟机</th>
+                            <th>操作</th>
+                            <th>时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {volist name="logs" id="log"}
+                        <tr>
+                            <td>{$log.id}</td>
+                            <td>{$log.user_id}</td>
+                            <td>{$log.rule_name}</td>
+                            <td>{$log.vm_name}</td>
+                            <td>{$log.vm_id}</td>
+                            <td>{$log.action}</td>
+                            <td>{:date('Y-m-d H:i:s', $log.created_at)}</td>
+                        </tr>
+                        {/volist}
+                    </tbody>
+                </table>
+            </div>
 
-      {$page | raw}
+            {$page | raw}
 
+        </div>
     </div>
-  </div>
-  </br/>
+    </br />
 </div>
 
 <script>
-  $("td:contains('start')").css("color", "green");
-  $("td:contains('stop')").css("color", "red");
+    $("td:contains('start')").css("color", "green");
+    $("td:contains('stop')").css("color", "red");
 </script>
 
 </body>
