@@ -181,6 +181,7 @@ class UserAwsServer extends UserBase
             try {
                 $controller_params = [
                     'name' => $name,
+                    'disk_size' => $vm_disk_size,
                     'size' => $specified_size === '' ? $vm_size : $specified_size,
                     'userDataRaw' => $this->generateScriptContent($vm_name, $vm_passwd, $vm_script),
                     'imageName' => AwsList::instanceImage()[$vm_image]['imageName'],

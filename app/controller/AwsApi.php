@@ -146,7 +146,7 @@ class AwsApi extends BaseController
                 [
                     'DeviceName' => '/dev/xvda',
                     'Ebs' => [
-                        'VolumeSize' => 32,
+                        'VolumeSize' => $params['disk_size'],
                     ],
                 ],
             ],
