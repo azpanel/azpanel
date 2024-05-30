@@ -134,7 +134,7 @@ class AdminUser extends AdminBase
             ->distinct(true)
             ->count('user_id');
 
-        $azureEnabledQuery = Azure::where('az_sub_status', 'Enabled')->select(['az_sub_type']);
+        $azureEnabledQuery = Azure::where('az_sub_status', 'Enabled')->select();
 
         $valid_account_number = $azureEnabledQuery->count();
         $valid_payasyougo_account_number = $azureEnabledQuery->where('az_sub_type', 'PayAsYouGo')->count();
