@@ -21,9 +21,9 @@
     ],
     "require": {
         "php": ">=8.0",
-        "topthink/framework": "^6.0.0",
-        "topthink/think-orm": "^2.0",
-        "topthink/think-view": "^1.0",
+        "topthink/framework": "^8.0",
+        "topthink/think-orm": "^3.0",
+        "topthink/think-view": "^2.0",
         "guzzlehttp/guzzle": "~7.0",
         "phpmailer/phpmailer": "^6.5",
         "topthink/think-helper": "^3.1",
