@@ -81,23 +81,23 @@ class AwsList
         return [
             'debian-10' => [
                 'imageOwner' => '136693071363',
-                'imageName' => 'debian-10-amd64-2022*',
+                'imageName' => 'debian-10-amd64-2024*',
             ],
             'debian-11' => [
                 'imageOwner' => '136693071363',
-                'imageName' => 'debian-11-amd64-2022*',
+                'imageName' => 'debian-11-amd64-2024*',
             ],
             'debian-12' => [
                 'imageOwner' => '136693071363',
-                'imageName' => 'debian-12-amd64-2023*',
+                'imageName' => 'debian-12-amd64-2024*',
             ],
             'ubuntu-20.04' => [
                 'imageOwner' => '099720109477',
-                'imageName' => 'ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-2022*',
+                'imageName' => 'ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-2024*',
             ],
             'ubuntu-22.04' => [
                 'imageOwner' => '099720109477',
-                'imageName' => 'ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-2022*',
+                'imageName' => 'ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-2025*',
             ],
             // TODO: 完成密钥登入
             // 'windows-server-2022-chinese' => [
