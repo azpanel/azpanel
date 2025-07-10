@@ -1,5 +1,4 @@
 <?php
-
 namespace app\controller;
 
 use app\controller\AwsApi;
@@ -62,7 +61,7 @@ class UserAws extends UserBase
         if ($params[0] === '') {
             throw new \Exception("邮箱不能为空");
         }
-        if (!Tools::emailCheck($params[0])) {
+        if (! Tools::emailCheck($params[0])) {
             throw new \Exception("不是有效的邮箱：{$params[0]}");
         }
         if (strlen($params[2]) !== 20) {
@@ -168,10 +167,11 @@ class UserAws extends UserBase
             $account = Aws::where('user_id', session('user_id'))->find($id);
             if (input('action/s') === 'refresh') {
                 $quota = [];
-                foreach ($account['quota'] as $key => $value) {
+                $aws_account_quota = json_decode($account['quota'], true);
+                foreach ($aws_account_quota as $key => $value) {
                     $quota[$key] = AwsApi::getQuota($key, $account->ak, $account->sk);
                 }
-                $account->quota = $quota;
+                $account->quota = json_encode($quota);
                 $account->disable = $quota['ap-northeast-1'] === 'null' ? 1 : 0;
                 $account->save();
                 return json(Tools::msg('1', '刷新结果', '刷新成功'));
@@ -187,10 +187,11 @@ class UserAws extends UserBase
                         //sleep(2);
                         UserTask::update($task_id, $count / $accounts->count(), '正在刷新 ' . $account->email);
                         $quota = [];
-                        foreach ($account['quota'] as $key => $value) {
+                        $aws_account_quota = json_decode($account['quota'], true);
+                        foreach ($aws_account_quota as $key => $value) {
                             $quota[$key] = AwsApi::getQuota($key, $account->ak, $account->sk);
                         }
-                        $account->quota = $quota;
+                        $account->quota = json_encode($quota);
                         $account->disable = $quota['ap-northeast-1'] === 'null' ? 1 : 0;
                         $account->save();
                     } catch (\Exception $e) {
