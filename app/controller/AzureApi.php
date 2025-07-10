@@ -1,5 +1,4 @@
 <?php
-
 namespace app\controller;
 
 use app\BaseController;
@@ -8,6 +7,7 @@ use app\model\Azure;
 use app\model\AzureServer;
 use app\model\SshKey;
 use GuzzleHttp\Client;
+use Psr\Http\Message\ResponseInterface;
 use think\helper\Str;
 
 class AzureApi extends BaseController
@@ -111,16 +111,16 @@ class AzureApi extends BaseController
         return json_decode($result->getBody(), true);
     }
 
-    public static function getAzureValidResourceGroupsList($account_id)
+    public static function getAzureValidResourceGroupsList($account_id, $az_sub_id)
     {
         // https://docs.microsoft.com/zh-cn/rest/api/resources/resource-groups/list
 
-        $resource_groups_list = self::getAzureResourceGroupsList($account_id);
+        $resource_groups_list = self::getAzureResourceGroupsList($account_id, $az_sub_id);
         $azure_valid_resource_groups_list = [];
 
         foreach ($resource_groups_list['value'] as $resource_group) {
-            if (!strstr($resource_group['name'], 'NetworkWatcher') &&
-                !strstr($resource_group['name'], 'cloud-shell')) {
+            if (! strstr($resource_group['name'], 'NetworkWatcher') &&
+                ! strstr($resource_group['name'], 'cloud-shell')) {
                 array_push($azure_valid_resource_groups_list, $resource_group['name']);
             }
         }
@@ -174,7 +174,7 @@ class AzureApi extends BaseController
         $servers = AzureServer::where('account_id', $account_id)->select();
         $encode_data = json_encode($virtual_machines);
         foreach ($servers as $server) {
-            if (!strpos($encode_data, $server->vm_id)) {
+            if (! strpos($encode_data, $server->vm_id)) {
                 AzureServer::where('vm_id', $server->vm_id)->delete();
             }
         }

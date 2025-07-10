@@ -1,5 +1,4 @@
 <?php
-
 namespace app\controller;
 
 use app\controller\AzureList;
@@ -131,8 +130,7 @@ class AdminUser extends AdminBase
     public function userReport()
     {
         $valid_user_number = Db::table('azure_server')
-            ->distinct(true)
-            ->count('user_id');
+            ->value('COUNT(DISTINCT user_id)');
 
         $azureEnabledQuery = Azure::where('az_sub_status', 'Enabled')->select();
 

@@ -1,0 +1,9 @@
+parameters:
+    ignoreErrors:
+        - '#Function input not found#'
+        - '#Function session not found#'
+        - '#Function json not found#'
+        - '#Function download not found#'
+        - '#Function redirect not found#'
+        - '#Function app not found#'
+        - '#Function request not found#'

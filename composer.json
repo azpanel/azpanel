@@ -22,12 +22,12 @@
     "require": {
         "php": ">=8.0",
         "topthink/framework": "^8.0",
-        "topthink/think-orm": "^3.0",
+        "topthink/think-orm": "^4.0",
         "topthink/think-view": "^2.0",
         "guzzlehttp/guzzle": "~7.0",
         "phpmailer/phpmailer": "^6.5",
         "topthink/think-helper": "^3.1",
-        "nesbot/carbon": "^2.57",
+        "nesbot/carbon": "^3.0",
         "topthink/think-migration": "^3.0",
         "phpseclib/phpseclib": "^3.0",
         "alibabacloud/client": "^1.5",
@@ -38,8 +38,9 @@
         "sentry/sentry": "^4.6"
     },
     "require-dev": {
-        "symfony/var-dumper": "^4.2",
-        "topthink/think-trace":"^1.0"
+        "symfony/var-dumper": "^7.0",
+        "topthink/think-trace":"^1.0",
+        "phpstan/phpstan": "^2.1"
     },
     "autoload": {
         "psr-4": {
