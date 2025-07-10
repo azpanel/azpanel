@@ -12,14 +12,16 @@ class Aws extends Model
 
     public function judgmentState()
     {
-        return $this->quota['ap-northeast-1'] === 'null' ? 'Disabled' : 'Enabled';
+        $quota = json_decode($this->quota, true);
+        return $quota['ap-northeast-1'] === 'null' ? 'Disabled' : 'Enabled';
     }
 
     public function getQuotaText()
     {
         $regions = \app\controller\AwsList::instanceRegion();
         $text = '';
-        foreach ($this->quota as $key => $value) {
+        $quota = json_decode($this->quota, true);
+        foreach ($quota as $key => $value) {
             $text .= $regions[$key] . ($value !== 'null' ? ": {$value}V " : 'null ');
         }
         return $text;
